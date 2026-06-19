@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import {
   Plus,
@@ -31,7 +30,8 @@ import {
 } from "lucide-react"
 import { InvoicePreview } from "./invoice-preview"
 import { generateInvoicePDF } from "@/lib/pdf/generate-invoice"
-import { cn, formatCurrency, calculateGST } from "@/lib/utils"
+import type { InvoiceItemTotals, InvoiceData } from "@/lib/pdf/types"
+import { cn, formatCurrency } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
 const itemSchema = z.object({
@@ -46,30 +46,21 @@ const itemSchema = z.object({
 })
 
 const invoiceSchema = z.object({
-  // Business details
   businessName: z.string().min(1, "Business name required"),
   businessGstin: z.string().optional(),
   businessAddress: z.string().optional(),
   businessPhone: z.string().optional(),
   businessEmail: z.string().email().optional().or(z.literal("")),
-
-  // Client details
   clientName: z.string().min(1, "Client name required"),
   clientGstin: z.string().optional(),
   clientAddress: z.string().optional(),
   clientEmail: z.string().email().optional().or(z.literal("")),
   clientPhone: z.string().optional(),
-
-  // Invoice details
   invoiceNumber: z.string().min(1, "Invoice number required"),
   invoiceDate: z.string().min(1, "Invoice date required"),
   dueDate: z.string().optional(),
   currency: z.string().default("INR"),
-
-  // Items
   items: z.array(itemSchema).min(1, "Add at least one item"),
-
-  // Extras
   notes: z.string().optional(),
   terms: z.string().optional(),
   upiId: z.string().optional(),
@@ -81,7 +72,7 @@ const defaultItem = {
   description: "",
   hsnCode: "",
   quantity: 1,
-  unit: "Nos",
+  unit: "Nos" as const,
   rate: 0,
   discount: 0,
   gstRate: 18,
@@ -89,7 +80,6 @@ const defaultItem = {
 }
 
 const GST_RATES = [0, 5, 12, 18, 28]
-const UNITS = ["Nos", "Kg", "L", "m", "m²", "m³", "Box", "Pcs", "Set", "Hr", "Day", "Month"]
 
 export function InvoiceGenerator() {
   const { toast } = useToast()
@@ -97,7 +87,7 @@ export function InvoiceGenerator() {
   const [isGenerating, setIsGenerating] = useState(false)
 
   const today = new Date().toISOString().split("T")[0]
-  const dueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+  const defaultDueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
 
   const form = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceSchema),
@@ -107,7 +97,7 @@ export function InvoiceGenerator() {
       businessAddress: "",
       invoiceNumber: `INV-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`,
       invoiceDate: today,
-      dueDate: dueDate,
+      dueDate: defaultDueDate,
       currency: "INR",
       items: [{ ...defaultItem }],
       terms: "Payment is due within 30 days of invoice date.",
@@ -121,8 +111,7 @@ export function InvoiceGenerator() {
 
   const watchedValues = form.watch()
 
-  // Calculate totals
-  const calculateTotals = useCallback(() => {
+  const { totals, invoiceData } = useMemo(() => {
     const items = watchedValues.items || []
     let subtotal = 0
     let totalCgst = 0
@@ -130,7 +119,7 @@ export function InvoiceGenerator() {
     let totalIgst = 0
     let totalDiscount = 0
 
-    const itemsWithTotals = items.map((item) => {
+    const itemsWithTotals: InvoiceItemTotals[] = items.map((item) => {
       const qty = Number(item.quantity) || 0
       const rate = Number(item.rate) || 0
       const discount = Number(item.discount) || 0
@@ -159,23 +148,45 @@ export function InvoiceGenerator() {
       totalIgst += igst
       totalDiscount += discountAmount
 
-      return { ...item, cgst, sgst, igst, taxAmount, total, baseAmount, discountAmount, taxableAmount }
+      return {
+        description: item.description,
+        hsnCode: item.hsnCode,
+        quantity: qty,
+        unit: item.unit,
+        rate,
+        discount,
+        gstRate,
+        gstType: item.gstType,
+        taxableAmount,
+        cgst,
+        sgst,
+        igst,
+        taxAmount,
+        total,
+        discountAmount,
+      }
     })
 
     const totalTax = totalCgst + totalSgst + totalIgst
     const grandTotal = subtotal + totalTax
 
-    return { subtotal, totalCgst, totalSgst, totalIgst, totalTax, grandTotal, totalDiscount, itemsWithTotals }
-  }, [watchedValues.items])
+    const totals = { subtotal, totalCgst, totalSgst, totalIgst, totalTax, grandTotal, totalDiscount, itemsWithTotals }
 
-  const totals = calculateTotals()
+    const invoiceData: InvoiceData = {
+      ...watchedValues,
+      ...totals,
+      itemsWithTotals,
+    }
+
+    return { totals, invoiceData }
+  }, [watchedValues])
 
   const handleDownloadPDF = async () => {
     setIsGenerating(true)
     try {
-      await generateInvoicePDF({ ...watchedValues, ...totals })
+      await generateInvoicePDF(invoiceData)
       toast({ title: "PDF downloaded!", description: "Your invoice has been saved." })
-    } catch (error) {
+    } catch {
       toast({ title: "Error", description: "Could not generate PDF. Please try again.", variant: "destructive" })
     } finally {
       setIsGenerating(false)
@@ -223,7 +234,7 @@ export function InvoiceGenerator() {
         </div>
       </div>
 
-      <div className={cn("grid gap-6", showPreview ? "xl:grid-cols-[1fr_420px]" : "")}>
+      <div className={cn("grid gap-6", showPreview ? "xl:grid-cols-[1fr_520px]" : "")}>
         {/* Form */}
         <div className="space-y-6 min-w-0">
           {/* Business Details */}
@@ -336,7 +347,6 @@ export function InvoiceGenerator() {
             </h2>
 
             <div className="space-y-3">
-              {/* Header row */}
               <div className="hidden sm:grid grid-cols-[1fr_80px_80px_90px_80px_70px_80px_32px] gap-2 text-xs font-medium text-muted-foreground px-1">
                 <span>Description</span>
                 <span>HSN/SAC</span>
@@ -483,7 +493,7 @@ export function InvoiceGenerator() {
                     <span>₹{totals.totalIgst.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</span>
                   </div>
                 )}
-                <Separator />
+                <div className="h-px bg-border" />
                 <div className="flex justify-between font-display font-bold text-lg">
                   <span>Grand Total</span>
                   <span className="text-blue-600 dark:text-blue-400">
@@ -566,10 +576,11 @@ export function InvoiceGenerator() {
                   Auto-updating
                 </Badge>
               </div>
-              <div className="overflow-auto max-h-[calc(100vh-160px)] rounded-xl shadow-lg border border-border">
-                <div className="transform scale-[0.65] origin-top-left w-[154%]">
-                  <InvoicePreview data={watchedValues} totals={totals} />
-                </div>
+              <div
+                className="rounded-xl shadow-lg border border-border overflow-hidden"
+                style={{ height: "calc(100vh - 180px)" }}
+              >
+                <InvoicePreview data={invoiceData} />
               </div>
             </div>
           </div>
