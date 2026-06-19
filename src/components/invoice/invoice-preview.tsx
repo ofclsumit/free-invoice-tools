@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import type { InvoiceData } from "@/lib/pdf/types"
-import { registerInvoiceFonts } from "@/lib/pdf/fonts"
+import { loadFonts, registerFonts } from "@/lib/pdf/fonts"
 
 interface InvoicePreviewProps {
   data: InvoiceData
@@ -15,25 +15,33 @@ export function InvoicePreview({ data }: InvoicePreviewProps) {
     let mounted = true
 
     async function render() {
-      const { PDFViewer, Font } = await import("@react-pdf/renderer")
-      registerInvoiceFonts(Font)
-      const { InvoiceDocument } = await import("@/lib/pdf/invoice-template")
+      try {
+        await loadFonts()
 
-      if (!mounted) return
+        const pdfModule = await import("@react-pdf/renderer")
+        const { PDFViewer, Font } = pdfModule
+        registerFonts(Font)
 
-      setRenderedPreview(
-        <PDFViewer
-          style={{
-            width: "100%",
-            height: "100%",
-            border: "none",
-            borderRadius: "8px",
-          }}
-          showToolbar={false}
-        >
-          {InvoiceDocument({ data })}
-        </PDFViewer>,
-      )
+        const { InvoiceDocument } = await import("@/lib/pdf/invoice-template")
+
+        if (!mounted) return
+
+        setRenderedPreview(
+          <PDFViewer
+            style={{
+              width: "100%",
+              height: "100%",
+              border: "none",
+              borderRadius: "8px",
+            }}
+            showToolbar={false}
+          >
+            {InvoiceDocument({ data })}
+          </PDFViewer>,
+        )
+      } catch (err) {
+        console.error("[PDF Preview] Failed:", err)
+      }
     }
 
     render()
