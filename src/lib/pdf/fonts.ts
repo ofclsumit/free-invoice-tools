@@ -1,25 +1,30 @@
-let regularFont: { data: Uint8Array; format: "truetype" } | null = null
-let boldFont: { data: Uint8Array; format: "truetype" } | null = null
-let italicFont: { data: Uint8Array; format: "truetype" } | null = null
+let regularURI: string | null = null
+let boldURI: string | null = null
+let italicURI: string | null = null
 
-async function fetchFont(url: string) {
+async function fetchFontAsDataURI(url: string): Promise<string> {
   const res = await fetch(url)
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   const buf = await res.arrayBuffer()
-  return { data: new Uint8Array(buf), format: "truetype" as const }
+  const bytes = new Uint8Array(buf)
+  let binary = ""
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i])
+  }
+  return `data:font/ttf;base64,${btoa(binary)}`
 }
 
 export async function loadFonts(): Promise<void> {
-  if (regularFont) return
+  if (regularURI) return
   try {
     const [reg, bold, italic] = await Promise.all([
-      fetchFont("/fonts/Inter-Regular.ttf"),
-      fetchFont("/fonts/Inter-Bold.ttf"),
-      fetchFont("/fonts/Inter-Italic.ttf"),
+      fetchFontAsDataURI("/fonts/Inter-Regular.ttf"),
+      fetchFontAsDataURI("/fonts/Inter-Bold.ttf"),
+      fetchFontAsDataURI("/fonts/Inter-Italic.ttf"),
     ])
-    regularFont = reg
-    boldFont = bold
-    italicFont = italic
+    regularURI = reg
+    boldURI = bold
+    italicURI = italic
   } catch (err) {
     console.error("[PDF] Failed to load font files:", err)
     throw err
@@ -33,13 +38,13 @@ const URL_FONTS = [
 ]
 
 export function registerFonts(Font: any): void {
-  if (regularFont && boldFont && italicFont) {
+  if (regularURI && boldURI && italicURI) {
     Font.register({
       family: "Inter",
       fonts: [
-        { src: regularFont, fontWeight: 400 },
-        { src: boldFont, fontWeight: 700 },
-        { src: italicFont, fontWeight: 400, fontStyle: "italic" },
+        { src: regularURI, fontWeight: 400 },
+        { src: boldURI, fontWeight: 700 },
+        { src: italicURI, fontWeight: 400, fontStyle: "italic" },
       ],
     })
     return
