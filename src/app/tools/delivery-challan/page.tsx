@@ -109,7 +109,7 @@ export default function DeliveryChallanPage() {
               <div className="flex justify-between items-end mt-24 pt-8">
                 <div className="text-center">
                   <div className="w-48 border-b border-gray-400 mb-2"></div>
-                  <span className="text-gray-500 text-sm uppercase tracking-wider">Receiver's Signature</span>
+                  <span className="text-gray-500 text-sm uppercase tracking-wider">Receiver&apos;s Signature</span>
                 </div>
                 <div className="text-center">
                   <div className="w-48 border-b border-gray-400 mb-2"></div>
