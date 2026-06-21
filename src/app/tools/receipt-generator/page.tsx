@@ -1,49 +1,119 @@
 "use client"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
+import { useReactToPrint } from "react-to-print"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Receipt, Download } from "lucide-react"
-import { generateReceiptPDF } from "@/lib/pdf/generate-receipt"
+import { ArrowLeft, Receipt, Download, Eye, Upload } from "lucide-react"
 
 export default function ReceiptGeneratorPage() {
   const [payer, setPayer] = useState("")
   const [amount, setAmount] = useState("")
   const [purpose, setPurpose] = useState("")
   const [mode, setMode] = useState("Cash")
-  const [generated, setGenerated] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
   const [receiptNo, setReceiptNo] = useState("")
   const [receiptDate, setReceiptDate] = useState("")
-  const [isDownloading, setIsDownloading] = useState(false)
+  const [companyName, setCompanyName] = useState("")
+  const [companyLogo, setCompanyLogo] = useState("")
+  
+  const printRef = useRef<HTMLDivElement>(null)
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2 })
 
-  const handleGenerate = () => {
-    if (payer && amount) {
-      setReceiptNo(String(Math.floor(Math.random() * 10000)).padStart(4, "0"))
-      setReceiptDate(new Date().toLocaleDateString("en-IN"))
-      setGenerated(true)
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current,
+    documentTitle: `Receipt_${receiptNo || "Draft"}`,
+  })
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setCompanyLogo(reader.result as string)
+      }
+      reader.readAsDataURL(file)
     }
   }
 
-  const handleDownloadPDF = async () => {
-    setIsDownloading(true)
-    try {
-      await generateReceiptPDF({
-        receiptNo,
-        date: receiptDate,
-        payer,
-        amount: parseFloat(amount) || 0,
-        purpose,
-        mode,
-      })
-    } catch (error) {
-      console.error("PDF generation failed:", error)
-    } finally {
-      setIsDownloading(false)
+  const handleShowPreview = () => {
+    if (!receiptNo) {
+      setReceiptNo(String(Math.floor(Math.random() * 10000)).padStart(4, "0"))
+      setReceiptDate(new Date().toLocaleDateString("en-IN"))
     }
+    setShowPreview(true)
+  }
+
+  if (showPreview) {
+    return (
+      <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <div className="flex flex-wrap justify-between items-center gap-4 print:hidden">
+            <Button variant="outline" onClick={() => setShowPreview(false)} className="gap-2">
+              <ArrowLeft className="h-4 w-4" /> Edit Receipt
+            </Button>
+            <Button onClick={handlePrint} className="gap-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
+              <Download className="h-4 w-4" /> Download PDF
+            </Button>
+          </div>
+
+          <div className="overflow-x-auto print:overflow-visible">
+            <div 
+              ref={printRef} 
+              className="bg-white text-black p-8 sm:p-12 rounded-2xl shadow-glass print:shadow-none print:p-8 print:rounded-none w-full border border-gray-100"
+              style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box" }}
+            >
+              <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-8">
+                <div className="max-w-[50%]">
+                  {companyLogo && <img src={companyLogo} alt="Company Logo" className="h-16 object-contain mb-3" />}
+                  <h2 className="text-2xl font-display font-bold text-gray-900">{companyName || "Your Company Name"}</h2>
+                </div>
+                <div className="text-right">
+                  <h1 className="text-3xl font-light text-pink-600 uppercase tracking-widest mb-2">Receipt</h1>
+                  <p className="text-gray-500 text-sm">Receipt #: <span className="font-medium text-gray-900">{receiptNo}</span></p>
+                  <p className="text-gray-500 text-sm">Date: <span className="font-medium text-gray-900">{receiptDate}</span></p>
+                </div>
+              </div>
+
+              <div className="space-y-6 mb-12">
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+                  <span className="text-gray-500 uppercase tracking-wider text-xs font-semibold w-32 shrink-0">Received From:</span>
+                  <span className="text-lg font-medium text-gray-900 border-b border-dashed border-gray-300 pb-1 flex-1">{payer || "Payer Name"}</span>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+                  <span className="text-gray-500 uppercase tracking-wider text-xs font-semibold w-32 shrink-0">The Sum Of:</span>
+                  <span className="text-2xl font-bold text-pink-600 border-b border-dashed border-gray-300 pb-1 flex-1">₹{fmt(parseFloat(amount) || 0)}</span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+                  <span className="text-gray-500 uppercase tracking-wider text-xs font-semibold w-32 shrink-0">For Payment Of:</span>
+                  <span className="text-base text-gray-900 border-b border-dashed border-gray-300 pb-1 flex-1">{purpose || "-"}</span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
+                  <span className="text-gray-500 uppercase tracking-wider text-xs font-semibold w-32 shrink-0">Payment Mode:</span>
+                  <span className="text-base text-gray-900 border-b border-dashed border-gray-300 pb-1 flex-1">{mode}</span>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-end mt-16 pt-8">
+                <div className="text-center">
+                  <div className="w-48 border-b border-gray-400 mb-2"></div>
+                  <span className="text-gray-500 text-sm uppercase tracking-wider">Authorized Signature</span>
+                </div>
+                <div className="text-gray-400 text-xs italic">
+                  This is a computer-generated receipt
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -61,57 +131,48 @@ export default function ReceiptGeneratorPage() {
           <p className="text-muted-foreground mt-2">Generate a simple payment receipt</p>
         </div>
 
-        {!generated ? (
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-border p-6 space-y-5 shadow-glass">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Received From</Label>
-              <Input placeholder="Payer name" value={payer} onChange={e => setPayer(e.target.value)} className="h-9 text-sm" />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Amount (₹)</Label>
-              <Input type="number" placeholder="0" value={amount} onChange={e => setAmount(e.target.value)} className="h-9 text-sm" />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Purpose</Label>
-              <Textarea placeholder="Payment for..." value={purpose} onChange={e => setPurpose(e.target.value)} className="text-sm resize-none" rows={2} />
-            </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Payment Mode</Label>
-                <div className="grid grid-cols-2 sm:flex sm:gap-2 gap-2">
-                  {["Cash", "Bank Transfer", "UPI", "Cheque"].map(m => (
-                    <button key={m} onClick={() => setMode(m)}
-                      className={`py-2 rounded-xl text-xs font-medium transition-all ${mode === m ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white" : "border border-border text-muted-foreground hover:text-foreground"}`}
-                    >{m}</button>
-                  ))}
-                </div>
-              </div>
-            <Button onClick={handleGenerate} className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 font-semibold gap-2">
-              <Receipt className="h-4 w-4" /> Generate Receipt
-            </Button>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-border p-6 space-y-5 shadow-glass">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">Company Name</Label>
+            <Input placeholder="Your Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)} className="h-9 text-sm" />
           </div>
-        ) : (
-          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-border p-6 space-y-4 shadow-glass">
-            <div className="text-center border-b border-border pb-4">
-              <h2 className="font-display font-bold text-lg">Payment Receipt</h2>
-              <p className="text-xs text-muted-foreground">Receipt #{receiptNo}</p>
-              <p className="text-xs text-muted-foreground">{receiptDate}</p>
-            </div>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Received From</span><span className="font-medium">{payer}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Amount</span><span className="font-display font-bold text-xl text-pink-600">₹{fmt(parseFloat(amount) || 0)}</span></div>
-              {purpose && <div className="flex justify-between"><span className="text-muted-foreground">Purpose</span><span>{purpose}</span></div>}
-              <div className="flex justify-between"><span className="text-muted-foreground">Payment Mode</span><span>{mode}</span></div>
-            </div>
-            <div className="h-px bg-border" />
-            <p className="text-xs text-muted-foreground text-center">This is a computer-generated receipt</p>
-            <div className="flex gap-3 pt-2">
-              <Button onClick={handleDownloadPDF} disabled={isDownloading} className="flex-1 bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 font-semibold gap-2">
-                <Download className="h-4 w-4" /> {isDownloading ? "Downloading..." : "Download PDF"}
-              </Button>
-              <Button onClick={() => setGenerated(false)} variant="outline" className="flex-1">New Receipt</Button>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">Company Logo</Label>
+            <div className="flex items-center gap-2">
+              <Input type="file" accept="image/*" onChange={handleLogoUpload} className="h-9 text-sm flex-1" />
+              {companyLogo && <div className="h-9 w-9 rounded border border-border overflow-hidden flex-shrink-0"><img src={companyLogo} alt="Logo" className="h-full w-full object-cover" /></div>}
             </div>
           </div>
-        )}
+
+          <div className="h-px bg-border" />
+
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">Received From</Label>
+            <Input placeholder="Payer name" value={payer} onChange={e => setPayer(e.target.value)} className="h-9 text-sm" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">Amount (₹)</Label>
+            <Input type="number" placeholder="0" value={amount} onChange={e => setAmount(e.target.value)} className="h-9 text-sm" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">Purpose</Label>
+            <Textarea placeholder="Payment for..." value={purpose} onChange={e => setPurpose(e.target.value)} className="text-sm resize-none" rows={2} />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">Payment Mode</Label>
+            <div className="grid grid-cols-2 sm:flex sm:gap-2 gap-2">
+              {["Cash", "Bank Transfer", "UPI", "Cheque"].map(m => (
+                <button key={m} onClick={() => setMode(m)}
+                  className={`py-2 rounded-xl text-xs font-medium transition-all ${mode === m ? "bg-gradient-to-r from-pink-500 to-pink-600 text-white" : "border border-border text-muted-foreground hover:text-foreground"}`}
+                >{m}</button>
+              ))}
+            </div>
+          </div>
+          
+          <Button onClick={handleShowPreview} className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white border-0 font-semibold gap-2">
+            <Eye className="h-4 w-4" /> Show Preview
+          </Button>
+        </div>
       </div>
     </div>
   )
