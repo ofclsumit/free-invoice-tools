@@ -10,17 +10,6 @@ interface Props {
   className?: string;
 }
 
-/**
- * TEMPLATE 3 — "Studio"
- * Inspired by: FreshBooks
- * Identity: warm, friendly freelancer-facing design. Coral accent on
- * a soft cream surface, rounded card grouping, generous whitespace,
- * Plus Jakarta Sans throughout for a contemporary, approachable feel.
- * Items render as a card list rather than a dense table.
- *
- * Usage:
- *   <StudioTemplate invoice={myInvoiceData} />
- */
 export default function StudioTemplate({ invoice, className = "" }: Props) {
   const totals = computeInvoiceTotals(invoice);
   const { company, billTo, gstMode } = invoice;
@@ -65,7 +54,7 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
             className="px-5 py-2.5 rounded-2xl text-white text-right"
             style={{ backgroundColor: coral }}
           >
-            <p className="text-[10px] uppercase tracking-widest opacity-90">Invoice</p>
+            <p className="text-[10px] uppercase tracking-widest opacity-90">Quotation</p>
             <p className="font-bold">{invoice.invoiceNumber}</p>
           </div>
         </header>
@@ -73,26 +62,14 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
         {/* ── Hero summary card ─────────────────────────────────── */}
         <section className="bg-white rounded-3xl p-7 mb-6 shadow-sm flex items-center justify-between">
           <div>
-            <p className="text-xs text-stone-400 mb-1">Amount Due</p>
+            <p className="text-xs text-stone-400 mb-1">Quote Amount</p>
             <p className="text-4xl font-extrabold" style={{ color: coral }}>
-              {formatCurrency(totals.balanceDue, invoice.currencySymbol)}
+              {formatCurrency(totals.grandTotal, invoice.currencySymbol)}
             </p>
             {invoice.dueDate && (
-              <p className="text-xs text-stone-500 mt-1">Due {invoice.dueDate}</p>
+              <p className="text-xs text-stone-500 mt-1">Valid until {invoice.dueDate}</p>
             )}
           </div>
-          {invoice.status && (
-            <span
-              className="text-xs font-bold uppercase tracking-wide px-4 py-2 rounded-full"
-              style={{
-                backgroundColor:
-                  invoice.status === "Paid" ? "#DCF5E8" : "#FDEAE2",
-                color: invoice.status === "Paid" ? "#1C7C4F" : coral,
-              }}
-            >
-              {invoice.status}
-            </span>
-          )}
         </section>
 
         {/* ── From / To cards ────────────────────────────────────── */}
@@ -224,9 +201,6 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
                 {formatCurrency(totals.grandTotal, invoice.currencySymbol)}
               </span>
             </div>
-            {totals.amountPaid > 0 && (
-              <Row label="Paid" value={-totals.amountPaid} symbol={invoice.currencySymbol} />
-            )}
           </div>
         </section>
 
@@ -236,7 +210,7 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
             {invoice.notes && (
               <div className="bg-white rounded-2xl p-5 text-xs text-stone-500 leading-relaxed">
                 <p className="font-bold text-stone-700 mb-1 text-[10px] uppercase tracking-widest">
-                  A note for you
+                  Notes
                 </p>
                 {invoice.notes}
               </div>
@@ -244,7 +218,7 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
             {invoice.bankDetails && (
               <div className="bg-white rounded-2xl p-5 text-xs text-stone-500 leading-relaxed">
                 <p className="font-bold text-stone-700 mb-1 text-[10px] uppercase tracking-widest">
-                  How to pay
+                  Payment Details
                 </p>
                 {invoice.bankDetails.upiId && <p>UPI: {invoice.bankDetails.upiId}</p>}
                 {invoice.bankDetails.accountNumber && (
@@ -257,7 +231,7 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
         )}
 
         <footer className="mt-auto pt-8 text-center text-xs text-stone-400">
-          Thanks for working with {company.name} 🙂
+          This quotation is valid until {invoice.dueDate || "15 days from issue"} · Thank you!
         </footer>
       </div>
     </div>

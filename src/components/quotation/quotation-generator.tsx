@@ -1,34 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "use client"
 
 import { useState, useCallback, useMemo, useEffect } from "react"
@@ -45,33 +14,43 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import {
-  Plus, Trash2, Download, Share2, Eye, EyeOff, Save,
+  Plus, Trash2, Download, Share2, Eye, EyeOff, Save, Send, Copy, Printer, FileText
 } from "lucide-react"
 import {
   InvoicePreview,
   StudioTemplate,
+  LedgerTemplate,
+  MinimalMonoTemplate,
+  VyaparDesiTemplate,
+  ClassicBooksTemplate,
   computeInvoiceTotals,
   exportNodeToPdf,
   type InvoiceData as TemplateInvoiceData
 } from "@/components/invoice-templates/components"
-import { cn } from "@/lib/utils"
+import { cn, formatCurrency } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { LoadingScreen } from "@/components/shared/loading-screen"
+import { useQuotationStorage } from "@/hooks/use-quotation-storage"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
+  hsnCode: z.string().optional(),
   quantity: z.number().min(0.01),
   unit: z.string().optional(),
   rate: z.number().min(0),
   discount: z.number().min(0).max(100).default(0),
   taxRate: z.number().min(0).max(28).default(18),
+  gstType: z.enum(["CGST_SGST", "IGST", "EXEMPT"]).default("CGST_SGST"),
 })
 
 const quotationSchema = z.object({
   businessName: z.string().min(1, "Business name required"),
   businessGstin: z.string().optional(),
   businessAddress: z.string().optional(),
+  businessPhone: z.string().optional(),
+  businessEmail: z.string().email().optional().or(z.literal("")),
   clientName: z.string().min(1, "Client name required"),
+  clientGstin: z.string().optional(),
   clientEmail: z.string().email().optional().or(z.literal("")),
   clientPhone: z.string().optional(),
   clientAddress: z.string().optional(),
@@ -79,77 +58,48 @@ const quotationSchema = z.object({
   quoteDate: z.string().min(1),
   validUntil: z.string().optional(),
   currency: z.string().default("INR"),
+  currencySymbol: z.string().default("₹"),
   items: z.array(itemSchema).min(1),
   notes: z.string().optional(),
   terms: z.string().optional(),
+  upiId: z.string().optional(),
+  globalDiscountPercent: z.number().min(0).max(100).optional().default(0),
+  shippingCharge: z.number().min(0).optional().default(0),
+  template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "ClassicBooksTemplate"]).default("StudioTemplate"),
+  status: z.enum(["Draft", "Sent", "Accepted", "Rejected", "Expired"]).default("Draft"),
 })
 
 export type QuotationFormData = z.infer<typeof quotationSchema>
 
 const defaultItem = {
   description: "",
+  hsnCode: "",
   quantity: 1,
   unit: "Nos",
   rate: 0,
   discount: 0,
   taxRate: 18,
+  gstType: "CGST_SGST" as const,
 }
+
+const GST_RATES = [0, 5, 12, 18, 28]
+
+const TEMPLATES = [
+  { id: "StudioTemplate", name: "Modern Studio" },
+  { id: "LedgerTemplate", name: "Corporate Ledger" },
+  { id: "MinimalMonoTemplate", name: "Minimalist" },
+  { id: "VyaparDesiTemplate", name: "GST India" },
+  { id: "ClassicBooksTemplate", name: "Freelancer Classic" },
+]
 
 export function QuotationGenerator() {
   const { toast } = useToast()
-  const [showPreview, setShowPreview] = useState(false)
+  const { saveQuotation } = useQuotationStorage()
+  const [showPreview, setShowPreview] = useState(false) // Using the simple toggle pattern
   const [isGenerating, setIsGenerating] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => setMounted(true), [])
-
-  const validateEssentialFields = useCallback(() => {
-    const values = form?.getValues()
-    if (!values) return false
-    if (!values.businessName?.trim()) {
-      toast({ title: "Business name is required", variant: "destructive" })
-      return false
-    }
-    if (!values.clientName?.trim()) {
-      toast({ title: "Client name is required", variant: "destructive" })
-      return false
-    }
-    if (!values.quoteNumber?.trim()) {
-      toast({ title: "Quote number is required", variant: "destructive" })
-      return false
-    }
-    if (!values.quoteDate?.trim()) {
-      toast({ title: "Quote date is required", variant: "destructive" })
-      return false
-    }
-    if (!values.items?.length) {
-      toast({ title: "Add at least one item", variant: "destructive" })
-      return false
-    }
-    for (const item of values.items) {
-      if (!item.description?.trim()) {
-        toast({ title: "All items need a description", variant: "destructive" })
-        return false
-      }
-      if (!item.quantity || item.quantity <= 0) {
-        toast({ title: "All items need a valid quantity", variant: "destructive" })
-        return false
-      }
-      if (item.rate === undefined || item.rate < 0) {
-        toast({ title: "All items need a valid rate", variant: "destructive" })
-        return false
-      }
-    }
-    return true
-  }, [toast])
-
-  const togglePreview = useCallback(() => {
-    if (showPreview) {
-      setShowPreview(false)
-    } else if (validateEssentialFields()) {
-      setShowPreview(true)
-    }
-  }, [showPreview, validateEssentialFields])
 
   const today = new Date().toISOString().split("T")[0]
   const validUntil = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
@@ -162,59 +112,101 @@ export function QuotationGenerator() {
       quoteDate: today,
       validUntil,
       currency: "INR",
+      currencySymbol: "₹",
       items: [{ ...defaultItem }],
       terms: "This quotation is valid for 15 days from the date of issue.",
+      globalDiscountPercent: 0,
+      shippingCharge: 0,
+      template: "StudioTemplate",
+      status: "Draft",
     },
   })
 
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "items" })
   const watchedValues = form.watch()
 
+  const validateEssentialFields = useCallback(() => {
+    const values = form.getValues()
+    if (!values.businessName?.trim() || !values.clientName?.trim() || !values.quoteNumber?.trim() || !values.quoteDate?.trim() || !values.items?.length) {
+      toast({ title: "Please fill all required fields", variant: "destructive" })
+      return false
+    }
+    return true
+  }, [form, toast])
+
+  const togglePreview = useCallback(() => {
+    if (showPreview) {
+      setShowPreview(false)
+    } else if (validateEssentialFields()) {
+      setShowPreview(true)
+    }
+  }, [showPreview, validateEssentialFields])
+
   const { totals, invoiceData } = useMemo(() => {
     const templateData: TemplateInvoiceData = {
       invoiceNumber: watchedValues.quoteNumber,
       invoiceDate: watchedValues.quoteDate,
       dueDate: watchedValues.validUntil,
-      currencySymbol: "₹",
-      gstMode: "single",
+      currencySymbol: watchedValues.currencySymbol || "₹",
+      gstMode: "split",
+      globalDiscountPercent: Number(watchedValues.globalDiscountPercent) || 0,
+      shippingCharge: Number(watchedValues.shippingCharge) || 0,
       company: {
         name: watchedValues.businessName,
         addressLines: watchedValues.businessAddress ? watchedValues.businessAddress.split('\n') : [],
         gstin: watchedValues.businessGstin,
+        phone: watchedValues.businessPhone,
+        email: watchedValues.businessEmail,
       },
       billTo: {
         name: watchedValues.clientName,
         addressLines: watchedValues.clientAddress ? watchedValues.clientAddress.split('\n') : [],
-        email: watchedValues.clientEmail,
+        gstin: watchedValues.clientGstin,
         phone: watchedValues.clientPhone,
+        email: watchedValues.clientEmail,
       },
-      items: (watchedValues.items || []).map((item, i) => ({
-        id: String(i),
-        description: item.description,
-        quantity: Number(item.quantity) || 0,
-        unit: item.unit || "Nos",
-        rate: Number(item.rate) || 0,
-        gstPercent: Number(item.taxRate) || 0,
-        discountPercent: Number(item.discount) || 0,
-      })),
+      items: (watchedValues.items || []).map((item, i) => {
+        const gstRate = Number(item.taxRate) || 0;
+        return {
+          id: String(i),
+          description: item.description,
+          hsnSac: item.hsnCode,
+          quantity: Number(item.quantity) || 0,
+          unit: item.unit || "Nos",
+          rate: Number(item.rate) || 0,
+          cgstPercent: item.gstType === "CGST_SGST" ? gstRate / 2 : 0,
+          sgstPercent: item.gstType === "CGST_SGST" ? gstRate / 2 : 0,
+          igstPercent: item.gstType === "IGST" ? gstRate : 0,
+          discountPercent: Number(item.discount) || 0,
+        };
+      }),
       notes: watchedValues.notes,
       termsAndConditions: watchedValues.terms,
+      bankDetails: {
+        upiId: watchedValues.upiId,
+      }
     };
 
     const computedTotals = computeInvoiceTotals(templateData);
 
     const uiTotals = {
       subtotal: computedTotals.subTotal,
-      totalTax: computedTotals.totalGst,
-      grandTotal: computedTotals.grandTotal,
       totalDiscount: computedTotals.totalDiscount,
+      totalCgst: computedTotals.totalCgst,
+      totalSgst: computedTotals.totalSgst,
+      totalIgst: computedTotals.totalIgst,
+      totalTax: computedTotals.totalGst,
+      shippingCharge: computedTotals.shippingCharge,
+      grandTotal: computedTotals.grandTotal,
       itemsWithTotals: computedTotals.items.map(item => ({
         description: item.description,
+        hsnCode: item.hsnSac,
         quantity: item.quantity,
         unit: item.unit,
         rate: item.rate,
         discount: item.discountPercent,
-        taxRate: item.gstPercent,
+        taxRate: item.cgstPercent! + item.sgstPercent! + item.igstPercent!,
+        gstType: item.igstPercent! > 0 ? "IGST" : "CGST_SGST",
         baseAmount: item.quantity * item.rate,
         discountAmount: (item.quantity * item.rate) - item.taxableValue,
         taxableAmount: item.taxableValue,
@@ -227,10 +219,7 @@ export function QuotationGenerator() {
   }, [watchedValues]);
 
   const handleDownloadPDF = async () => {
-    if (!showPreview) {
-      toast({ title: "Preview required", description: "Click 'Show Preview' first before downloading.", variant: "destructive" })
-      return
-    }
+    if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
       const node = document.getElementById("invoice-print-root");
@@ -245,14 +234,45 @@ export function QuotationGenerator() {
     }
   }
 
+  const handleSaveQuotation = () => {
+    if (!validateEssentialFields()) return
+    saveQuotation({
+      id: watchedValues.quoteNumber,
+      quoteNumber: watchedValues.quoteNumber,
+      date: watchedValues.quoteDate,
+      clientName: watchedValues.clientName,
+      total: totals.grandTotal,
+      status: watchedValues.status as any,
+      data: watchedValues
+    })
+    toast({ title: "Quotation saved locally!" })
+  }
+
+  const handleConvertToInvoice = () => {
+    // In a real app we might pass this via Context or sessionStorage.
+    // For now we'll just show a toast indicating the feature.
+    toast({ title: "Converting to Invoice..." })
+    // Example: router.push('/invoice-generator?fromQuote=' + watchedValues.quoteNumber)
+  }
+
   const handleWhatsAppShare = () => {
     const message = encodeURIComponent(
-      `Hello ${watchedValues.clientName},\n\nPlease find your quotation ${watchedValues.quoteNumber} for ${totals.grandTotal.toLocaleString("en-IN", { style: "currency", currency: "INR" })} attached.\n\nThis quote is valid until ${watchedValues.validUntil}.\n\nThank you!\n\n${watchedValues.businessName}`
+      `Hello ${watchedValues.clientName},\n\nPlease find your quotation ${watchedValues.quoteNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nThis quote is valid until ${watchedValues.validUntil}.\n\nThank you!\n\n${watchedValues.businessName}`
     )
     window.open(`https://wa.me/?text=${message}`, "_blank")
   }
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  const renderTemplate = () => {
+    switch (watchedValues.template) {
+      case "LedgerTemplate": return <LedgerTemplate invoice={invoiceData} />
+      case "MinimalMonoTemplate": return <MinimalMonoTemplate invoice={invoiceData} />
+      case "VyaparDesiTemplate": return <VyaparDesiTemplate invoice={invoiceData} />
+      case "ClassicBooksTemplate": return <ClassicBooksTemplate invoice={invoiceData} />
+      default: return <StudioTemplate invoice={invoiceData} />
+    }
+  }
 
   if (!mounted) return null;
 
@@ -267,17 +287,9 @@ export function QuotationGenerator() {
           <p className="text-xs text-muted-foreground">Create a professional quotation for your client</p>
         </div>
         <div className="flex items-center gap-2">
-
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5 h-8 text-xs"
-            onClick={togglePreview}
-          >
-            {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-            <span className="hidden sm:inline">{showPreview ? "Hide Preview" : "Show Preview"}</span>
+          <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs hidden sm:flex" onClick={handleSaveQuotation}>
+            <Save className="h-3.5 w-3.5" /> Save Draft
           </Button>
-
           <Button
             size="sm"
             className="gap-1.5 h-8 text-xs bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 font-semibold"
@@ -290,10 +302,47 @@ export function QuotationGenerator() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-6 overflow-hidden">
-        {/* Form Panel */}
-        <div className="flex-1 min-w-0 overflow-y-auto pb-8">
-        <div className="max-w-2xl mx-auto space-y-6 min-w-0">
+      <div className="max-w-4xl mx-auto w-full">
+        <div className="space-y-6 min-w-0">
+          
+          {/* Settings Section (New) */}
+          <section className="form-section">
+            <div className="grid sm:grid-cols-4 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Template</Label>
+                <Select
+                  defaultValue="StudioTemplate"
+                  onValueChange={(v) => form.setValue("template", v as any)}
+                >
+                  <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {TEMPLATES.map(t => (
+                      <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Currency Symbol</Label>
+                <Input {...form.register("currencySymbol")} placeholder="₹" className="h-9 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Status</Label>
+                <Select
+                  defaultValue="Draft"
+                  onValueChange={(v) => form.setValue("status", v as any)}
+                >
+                  <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["Draft", "Sent", "Accepted", "Rejected", "Expired"].map(s => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </section>
+
           {/* Business Details */}
           <section className="form-section">
             <h2 className="font-display font-semibold text-sm mb-4 flex items-center gap-2">
@@ -313,6 +362,14 @@ export function QuotationGenerator() {
                 <Label className="text-xs font-medium">Address</Label>
                 <Textarea {...form.register("businessAddress")} rows={2} className="text-sm resize-none" placeholder="Your business address" />
               </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Phone</Label>
+                <Input {...form.register("businessPhone")} placeholder="+91 98765 43210" className="h-9 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Email</Label>
+                <Input {...form.register("businessEmail")} placeholder="hello@business.com" className="h-9 text-sm" />
+              </div>
             </div>
           </section>
 
@@ -328,6 +385,10 @@ export function QuotationGenerator() {
                 <Input {...form.register("clientName")} placeholder="Client Company Ltd" className="h-9 text-sm" />
               </div>
               <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Client GSTIN</Label>
+                <Input {...form.register("clientGstin")} placeholder="27AAAAA0000A1Z5" className="h-9 text-sm font-mono" />
+              </div>
+              <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Email</Label>
                 <Input {...form.register("clientEmail")} placeholder="client@company.com" className="h-9 text-sm" />
               </div>
@@ -335,9 +396,9 @@ export function QuotationGenerator() {
                 <Label className="text-xs font-medium">Phone</Label>
                 <Input {...form.register("clientPhone")} placeholder="+91 98765 43210" className="h-9 text-sm" />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 sm:col-span-2">
                 <Label className="text-xs font-medium">Address</Label>
-                <Input {...form.register("clientAddress")} placeholder="City, State" className="h-9 text-sm" />
+                <Textarea {...form.register("clientAddress")} rows={2} className="text-sm resize-none" placeholder="Client address" />
               </div>
             </div>
           </section>
@@ -372,42 +433,57 @@ export function QuotationGenerator() {
             </h2>
 
             <div className="space-y-3">
-              <div className="hidden sm:grid grid-cols-[1fr_80px_80px_90px_70px_80px_32px] gap-2 text-xs font-medium text-muted-foreground px-1">
+              <div className="hidden sm:grid grid-cols-[1fr_80px_80px_90px_80px_70px_80px_32px] gap-2 text-xs font-medium text-muted-foreground px-1">
                 <span>Description</span>
+                <span>HSN/SAC</span>
                 <span>Qty</span>
-                <span>Unit</span>
-                <span>Rate (₹)</span>
+                <span>Rate</span>
                 <span>Disc %</span>
-                <span>Tax %</span>
+                <span>GST %</span>
+                <span>Amount</span>
                 <span></span>
               </div>
 
               {fields.map((field, index) => {
                 const item = totals.itemsWithTotals[index]
                 return (
-                  <div key={field.id} className="grid grid-cols-1 sm:grid-cols-[1fr_80px_80px_90px_70px_80px_32px] gap-2 items-start p-3 sm:p-0 rounded-xl sm:rounded-none bg-gray-50/50 sm:bg-transparent dark:bg-gray-800/20">
-                    <Input {...form.register(`items.${index}.description`)} placeholder="Service description" className="h-9 text-xs" />
-                    <Input {...form.register(`items.${index}.quantity`, { valueAsNumber: true })} type="number" min="0" step="0.01" className="h-9 text-xs" />
-                    <Select defaultValue="Nos" onValueChange={(v) => form.setValue(`items.${index}.unit`, v)}>
-                      <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {["Nos", "Kg", "L", "m", "m²", "Box", "Pcs", "Hr", "Day", "Month"].map(u => (
-                          <SelectItem key={u} value={u}>{u}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input {...form.register(`items.${index}.rate`, { valueAsNumber: true })} type="number" min="0" step="0.01" className="h-9 text-xs" placeholder="0.00" />
-                    <Input {...form.register(`items.${index}.discount`, { valueAsNumber: true })} type="number" min="0" max="100" className="h-9 text-xs" placeholder="0" />
-                    <Select defaultValue="18" onValueChange={(v) => form.setValue(`items.${index}.taxRate`, Number(v))}>
-                      <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {[0, 5, 12, 18, 28].map(r => (
-                          <SelectItem key={r} value={String(r)}>{r}%</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div key={field.id} className="grid grid-cols-1 sm:grid-cols-[1fr_80px_80px_90px_80px_70px_80px_32px] gap-2 items-start p-3 sm:p-0 rounded-xl sm:rounded-none bg-gray-50/50 sm:bg-transparent dark:bg-gray-800/20">
+                    <div className="space-y-1">
+                      <Label className="sm:hidden text-xs text-muted-foreground">Description</Label>
+                      <Input {...form.register(`items.${index}.description`)} placeholder="Service description" className="h-9 text-xs" />
+                    </div>
+                    <div>
+                      <Label className="sm:hidden text-xs text-muted-foreground">HSN/SAC</Label>
+                      <Input {...form.register(`items.${index}.hsnCode`)} placeholder="998314" className="h-9 text-xs font-mono" />
+                    </div>
+                    <div>
+                      <Label className="sm:hidden text-xs text-muted-foreground">Qty</Label>
+                      <Input {...form.register(`items.${index}.quantity`, { valueAsNumber: true })} type="number" min="0" step="0.01" className="h-9 text-xs" />
+                    </div>
+                    <div>
+                      <Label className="sm:hidden text-xs text-muted-foreground">Rate</Label>
+                      <Input {...form.register(`items.${index}.rate`, { valueAsNumber: true })} type="number" min="0" step="0.01" className="h-9 text-xs" placeholder="0.00" />
+                    </div>
+                    <div>
+                      <Label className="sm:hidden text-xs text-muted-foreground">Discount %</Label>
+                      <Input {...form.register(`items.${index}.discount`, { valueAsNumber: true })} type="number" min="0" max="100" className="h-9 text-xs" placeholder="0" />
+                    </div>
+                    <div>
+                      <Label className="sm:hidden text-xs text-muted-foreground">GST %</Label>
+                      <Select
+                        defaultValue="18"
+                        onValueChange={(v) => form.setValue(`items.${index}.taxRate`, Number(v))}
+                      >
+                        <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {GST_RATES.map(r => (
+                            <SelectItem key={r} value={String(r)}>{r}%</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="flex items-center">
-                      <span className="text-xs font-semibold">₹{fmt(item?.total || 0)}</span>
+                      <span className="text-xs font-semibold">{watchedValues.currencySymbol}{fmt(item?.total || 0)}</span>
                     </div>
                     <button type="button" onClick={() => remove(index)} disabled={fields.length === 1}
                       className="h-9 w-8 flex items-center justify-center text-muted-foreground hover:text-red-500 disabled:opacity-30 transition-colors">
@@ -423,34 +499,66 @@ export function QuotationGenerator() {
               </Button>
             </div>
 
-            {/* Totals */}
-            <div className="mt-6 pt-4 border-t border-dashed border-border">
-              <div className="ml-auto max-w-xs space-y-2">
+            {/* Additional Charges & Totals */}
+            <div className="mt-6 pt-4 border-t border-dashed border-border flex flex-col md:flex-row justify-between gap-6">
+              <div className="max-w-xs space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Overall Discount (%)</Label>
+                  <Input {...form.register("globalDiscountPercent", { valueAsNumber: true })} type="number" min="0" max="100" className="h-9 text-sm" placeholder="0" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Shipping Charges</Label>
+                  <Input {...form.register("shippingCharge", { valueAsNumber: true })} type="number" min="0" className="h-9 text-sm" placeholder="0" />
+                </div>
+              </div>
+
+              <div className="md:ml-auto w-full max-w-xs space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>₹{fmt(totals.subtotal)}</span>
+                  <span>{watchedValues.currencySymbol}{fmt(totals.subtotal)}</span>
                 </div>
                 {totals.totalDiscount > 0 && (
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Discount</span>
-                    <span className="text-red-600">-₹{fmt(totals.totalDiscount)}</span>
+                    <span className="text-red-600">-{watchedValues.currencySymbol}{fmt(totals.totalDiscount)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Tax</span>
-                  <span>₹{fmt(totals.totalTax)}</span>
-                </div>
+                {totals.totalCgst > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">CGST</span>
+                    <span>{watchedValues.currencySymbol}{fmt(totals.totalCgst)}</span>
+                  </div>
+                )}
+                {totals.totalSgst > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">SGST</span>
+                    <span>{watchedValues.currencySymbol}{fmt(totals.totalSgst)}</span>
+                  </div>
+                )}
+                {totals.totalIgst > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">IGST</span>
+                    <span>{watchedValues.currencySymbol}{fmt(totals.totalIgst)}</span>
+                  </div>
+                )}
+                {totals.shippingCharge > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Shipping</span>
+                    <span>{watchedValues.currencySymbol}{fmt(totals.shippingCharge)}</span>
+                  </div>
+                )}
                 <Separator />
                 <div className="flex justify-between font-display font-bold text-lg">
                   <span>Total</span>
-                  <span className="text-violet-600 dark:text-violet-400">₹{fmt(totals.grandTotal)}</span>
+                  <span className="text-violet-600 dark:text-violet-400">{watchedValues.currencySymbol}{fmt(totals.grandTotal)}</span>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Notes & Terms */}
+          {/* Additional Details */}
           <section className="form-section">
+            <h2 className="font-display font-semibold text-sm mb-4">Additional Details</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Notes</Label>
@@ -459,6 +567,11 @@ export function QuotationGenerator() {
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Terms & Conditions</Label>
                 <Textarea {...form.register("terms")} rows={3} className="text-sm resize-none" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">UPI ID (for payment QR)</Label>
+                <Input {...form.register("upiId")} placeholder="yourname@upi" className="h-9 text-sm" />
+                <p className="text-xs text-muted-foreground">A QR code will be auto-generated in the PDF</p>
               </div>
             </div>
           </section>
@@ -469,26 +582,34 @@ export function QuotationGenerator() {
               <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
             </Button>
 
+            <Button variant="outline" className="gap-2" onClick={handleConvertToInvoice}>
+              <FileText className="h-4 w-4" /> Convert to Invoice
+            </Button>
+
             <Button variant="outline" className="gap-2" onClick={handleWhatsAppShare}>
               <Share2 className="h-4 w-4" /> Share on WhatsApp
             </Button>
+            <Button variant="outline" className="gap-2">
+              <Send className="h-4 w-4" /> Email Quotation
+            </Button>
+            <Button variant="outline" className="gap-2">
+              <Printer className="h-4 w-4" /> Print
+            </Button>
+            <Button variant="ghost" className="gap-2">
+              <Copy className="h-4 w-4" /> Duplicate
+            </Button>
+          </div>
+        </div>
+
+        {/* Hidden Print Root */}
+        <div className="absolute -left-[9999px] -top-[9999px]">
+          <div id="invoice-print-root">
+            <InvoicePreview hideToolbar={true}>
+              {renderTemplate()}
+            </InvoicePreview>
           </div>
         </div>
       </div>
-
-      {/* Preview Panel */}
-      {showPreview && (
-        <div className="w-full lg:w-1/2 min-w-0 overflow-y-auto pb-8 pt-4 lg:pt-0 border-t lg:border-t-0 lg:border-l border-border mt-6 lg:mt-0 lg:pl-6">
-          <div className="max-w-2xl mx-auto">
-            <div id="invoice-print-root">
-              <InvoicePreview hideToolbar={true}>
-                <StudioTemplate invoice={invoiceData} />
-              </InvoicePreview>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
     </div>
     </>
   )
