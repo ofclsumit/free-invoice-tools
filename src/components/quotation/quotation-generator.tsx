@@ -227,14 +227,16 @@ export function QuotationGenerator() {
   }, [watchedValues]);
 
   const handleDownloadPDF = async () => {
+    if (!showPreview) {
+      toast({ title: "Preview required", description: "Click 'Show Preview' first before downloading.", variant: "destructive" })
+      return
+    }
     setIsGenerating(true)
     try {
       const node = document.getElementById("invoice-print-root");
       if (node) {
         await exportNodeToPdf(node, `quotation-${watchedValues.quoteNumber}.pdf`);
         toast({ title: "Quotation PDF downloaded!" })
-      } else {
-        toast({ title: "Preview hidden", description: "Please show preview to download.", variant: "destructive" })
       }
     } catch {
       toast({ title: "Error generating PDF", variant: "destructive" })

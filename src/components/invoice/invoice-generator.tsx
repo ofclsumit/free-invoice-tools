@@ -245,14 +245,16 @@ export function InvoiceGenerator() {
   }, [watchedValues])
 
   const handleDownloadPDF = async () => {
+    if (!showPreview) {
+      toast({ title: "Preview required", description: "Click 'Show Preview' first before downloading.", variant: "destructive" })
+      return
+    }
     setIsGenerating(true)
     try {
       const node = document.getElementById("invoice-print-root");
       if (node) {
         await exportNodeToPdf(node, `invoice-${watchedValues.invoiceNumber}.pdf`);
         toast({ title: "PDF downloaded!", description: "Your invoice has been saved." })
-      } else {
-        toast({ title: "Preview hidden", description: "Please show preview to download.", variant: "destructive" })
       }
     } catch {
       toast({ title: "Error", description: "Could not generate PDF. Please try again.", variant: "destructive" })

@@ -85,6 +85,10 @@ export function DeliveryChallanClient() {
   if (!mounted) return null; // Prevent hydration mismatch
   
 const handleDownloadPDF = async () => {
+    if (!showPreview) {
+      toast({ title: "Preview required", description: "Click 'Show Preview' first before downloading.", variant: "destructive" })
+      return
+    }
     setIsGenerating(true)
     try {
       const node = document.getElementById("invoice-print-root");

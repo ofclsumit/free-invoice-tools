@@ -84,7 +84,7 @@ export function ToolLayout({
       <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12">
         
         {/* Header & Navigation */}
-        <div className="max-w-[1400px] mx-auto mb-10 px-1">
+        <div className="max-w-4xl mx-auto mb-10 px-1">
           <Link href="/" className="inline-flex items-center gap-2.5 font-display font-bold text-xl hover:opacity-90 transition-opacity">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600 shadow-glow-sm shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
@@ -107,7 +107,7 @@ export function ToolLayout({
         </div>
 
         {/* Main Tool Interface */}
-        <div className="w-full max-w-[1400px] mx-auto bg-white dark:bg-gray-900 rounded-2xl border border-border p-4 sm:p-6 shadow-glass mb-16">
+        <div className="w-full max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-2xl border border-border p-4 sm:p-6 shadow-glass mb-16">
           {tool}
         </div>
 

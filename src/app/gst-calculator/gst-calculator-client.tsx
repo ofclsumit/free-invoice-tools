@@ -4,8 +4,9 @@ import { useReactToPrint } from "react-to-print"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RefreshCw, Download, Eye, Upload, ArrowLeft } from "lucide-react"
+import { RefreshCw, Download, Eye, EyeOff } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
+import { useToast } from "@/hooks/use-toast"
 import { numToWords } from "@/lib/pdf/shared"
 import {
   InvoicePreview,
@@ -15,6 +16,7 @@ import {
 const GST_RATES = [0, 5, 12, 18, 28]
 
 export function GstCalculatorClient() {
+  const { toast } = useToast()
   const [amount, setAmount] = useState("")
   const [gstRate, setGstRate] = useState(18)
   const [mode, setMode] = useState<"exclusive" | "inclusive">("exclusive")
@@ -25,6 +27,22 @@ export function GstCalculatorClient() {
   const [companyLogo, setCompanyLogo] = useState("")
 
   const printRef = useRef<HTMLDivElement>(null)
+
+  const validateEssentialFields = () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      toast({ title: "Valid amount is required", variant: "destructive" })
+      return false
+    }
+    return true
+  }
+
+  const togglePreview = () => {
+    if (showPreview) {
+      setShowPreview(false)
+    } else if (validateEssentialFields()) {
+      setShowPreview(true)
+    }
+  }
 
   const numAmount = parseFloat(amount) || 0
 
@@ -56,6 +74,10 @@ export function GstCalculatorClient() {
   }
 
   const handleDownloadPDF = async () => {
+    if (!showPreview) {
+      toast({ title: "Preview required", description: "Click 'Show Preview' first before downloading.", variant: "destructive" })
+      return
+    }
     setIsGenerating(true)
     setIsDownloading(true)
     try {
@@ -69,102 +91,43 @@ export function GstCalculatorClient() {
     }
   }
 
-  const previewContent = (
-      <>
-        {isGenerating && <LoadingScreen message="Generating GST Report PDF..." />}
-        <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
-          <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
-            <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-              <Button variant="outline" onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-white">
-                <ArrowLeft className="h-4 w-4" /> Back to Edit
-              </Button>
-              <Button onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
-                <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-              </Button>
-            </div>
-            
-            <div className="flex-1 overflow-auto rounded-2xl shadow-glass bg-white border border-border pb-8">
-              <InvoicePreview hideToolbar={true}>
-                <div
-                  className="bg-white text-black p-8 sm:p-12 print:shadow-none print:p-8 print:rounded-none w-full border-gray-100"
-                  style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box", minHeight: "297mm" }}
-                >
-                  <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-8">
-                    <div className="max-w-[50%]">
-                      {companyLogo && <img src={companyLogo} alt="Company Logo" className="h-16 object-contain mb-3" />}
-                      <h2 className="text-2xl font-display font-bold text-gray-900">{companyName || "Your Company Name"}</h2>
-                    </div>
-                    <div className="text-right">
-                      <h1 className="text-3xl font-light text-blue-600 uppercase tracking-widest mb-2">GST Report</h1>
-                      <p className="text-gray-500 text-sm">Date: <span className="font-medium text-gray-900">{new Date().toLocaleDateString("en-IN")}</span></p>
-                    </div>
-                  </div>
 
-                  <div className="mb-12 text-center">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">GST Calculation Report</h3>
-                    <p className="text-gray-500 text-sm">Mode: {mode === "exclusive" ? "GST Exclusive" : "GST Inclusive"}</p>
-                  </div>
-
-                  <div className="space-y-6 mb-12">
-                    <div className="grid grid-cols-2 gap-4 border-b border-gray-100 pb-6">
-                      <div className="bg-gray-50 p-4 rounded-xl text-center">
-                        <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Base Amount</p>
-                        <p className="text-2xl font-medium text-gray-900">₹{fmt(baseAmount)}</p>
-                      </div>
-                      <div className="bg-gray-50 p-4 rounded-xl text-center">
-                        <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">GST Rate</p>
-                        <p className="text-2xl font-medium text-gray-900">{gstRate}%</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-blue-50 p-6 rounded-xl text-center col-span-2">
-                        <p className="text-3xl font-display font-bold text-amber-600">₹{fmt(gstAmount)}</p>
-                        <p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">GST Amount</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-6">
-                      <div className="bg-cyan-50 p-4 rounded-xl text-center">
-                        <p className="text-lg font-display font-bold text-cyan-700">₹{fmt(cgst)}</p>
-                        <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">CGST ({gstRate / 2}%)</p>
-                      </div>
-                      <div className="bg-cyan-50 p-4 rounded-xl text-center">
-                        <p className="text-lg font-display font-bold text-cyan-700">₹{fmt(sgst)}</p>
-                        <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">SGST ({gstRate / 2}%)</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl p-6 text-center text-white">
-                      <p className="text-sm uppercase tracking-widest opacity-80 mb-2">Total Amount</p>
-                      <p className="text-4xl font-display font-bold">₹{fmt(totalAmount)}</p>
-                    </div>
-
-                    <div className="text-center pt-2">
-                      <p className="text-gray-500 text-xs">Amount in Words</p>
-                      <p className="text-gray-700 font-medium text-sm mt-1">{numToWords(totalAmount)}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-16 pt-8 border-t border-gray-100 text-center">
-                    <p className="text-gray-400 text-xs italic">
-                      This report was generated using the QuoteFlow GST Calculator.
-                    </p>
-                  </div>
-                </div>
-              </InvoicePreview>
-            </div>
+return (
+    <>
+      {isGenerating && <LoadingScreen message="Generating GST Report PDF..." />}
+      <div className="flex flex-col min-h-[calc(100vh-8rem)]">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-display font-bold">
+            {showPreview ? "GST Report Preview" : "GST Calculator"}
+          </h2>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 h-8 text-xs"
+              onClick={togglePreview}
+            >
+              {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">{showPreview ? "Edit" : "Show Preview"}</span>
+            </Button>
+            <Button
+              size="sm"
+              className="gap-1.5 h-8 text-xs bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold"
+              onClick={handleDownloadPDF}
+              disabled={isGenerating}
+            >
+              <Download className="h-3.5 w-3.5" />
+              {isGenerating ? "Generating..." : "Download PDF"}
+            </Button>
           </div>
         </div>
-      </>
-    )
-  
 
-  return (
-    <>
-      <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
+        <div className="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-6 overflow-hidden">
+          {/* Form Panel */}
+          {!showPreview && (
+            <div className="flex-1 min-w-0 overflow-y-auto pb-8">
+              <div className="max-w-2xl mx-auto space-y-6">
 
-    <div className="space-y-6">
       <div className="space-y-1.5">
         <Label className="text-xs font-medium">Company Name</Label>
         <Input placeholder="Your Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)} className="h-9 text-sm" />
@@ -195,7 +158,7 @@ export function GstCalculatorClient() {
 
       {/* Amount input */}
       <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Amount (₹)</Label>
+        <Label className="text-xs font-medium">Amount (₹) *</Label>
         <Input
           type="number"
           placeholder="Enter amount"
@@ -254,9 +217,6 @@ export function GstCalculatorClient() {
               <span className="font-display font-bold text-xl text-blue-600 dark:text-blue-400">₹{fmt(totalAmount)}</span>
             </div>
           </div>
-          <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold gap-2">
-            <Download className="h-4 w-4" /> Download PDF
-          </Button>
         </div>
       )}
 
@@ -286,7 +246,91 @@ export function GstCalculatorClient() {
           ))}
         </div>
       </div>
-    </div>
-  </>
+
+            </div>
+          </div>
+          )}
+
+          {/* Preview Panel */}
+          {showPreview && (
+            <div className="w-full min-w-0 overflow-y-auto pb-8 pt-4 lg:pt-0 border-t lg:border-t-0 lg:border-l border-border mt-6 lg:mt-0 lg:pl-6">
+              <div className="max-w-2xl mx-auto">
+                <div id="invoice-print-root">
+                  <InvoicePreview hideToolbar={true}>
+                    <div
+                      className="bg-white text-black p-8 sm:p-12 print:shadow-none print:p-8 print:rounded-none w-full border-gray-100"
+                      style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box", minHeight: "297mm" }}
+                    >
+                      <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-8">
+                        <div className="max-w-[50%]">
+                          {companyLogo && <img src={companyLogo} alt="Company Logo" className="h-16 object-contain mb-3" />}
+                          <h2 className="text-2xl font-display font-bold text-gray-900">{companyName || "Your Company Name"}</h2>
+                        </div>
+                        <div className="text-right">
+                          <h1 className="text-3xl font-light text-blue-600 uppercase tracking-widest mb-2">GST Report</h1>
+                          <p className="text-gray-500 text-sm">Date: <span className="font-medium text-gray-900">{new Date().toLocaleDateString("en-IN")}</span></p>
+                        </div>
+                      </div>
+
+                      <div className="mb-12 text-center">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">GST Calculation Report</h3>
+                        <p className="text-gray-500 text-sm">Mode: {mode === "exclusive" ? "GST Exclusive" : "GST Inclusive"}</p>
+                      </div>
+
+                      <div className="space-y-6 mb-12">
+                        <div className="grid grid-cols-2 gap-4 border-b border-gray-100 pb-6">
+                          <div className="bg-gray-50 p-4 rounded-xl text-center">
+                            <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Base Amount</p>
+                            <p className="text-2xl font-medium text-gray-900">₹{fmt(baseAmount)}</p>
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-xl text-center">
+                            <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">GST Rate</p>
+                            <p className="text-2xl font-medium text-gray-900">{gstRate}%</p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-blue-50 p-6 rounded-xl text-center col-span-2">
+                            <p className="text-3xl font-display font-bold text-amber-600">₹{fmt(gstAmount)}</p>
+                            <p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">GST Amount</p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-6">
+                          <div className="bg-cyan-50 p-4 rounded-xl text-center">
+                            <p className="text-lg font-display font-bold text-cyan-700">₹{fmt(cgst)}</p>
+                            <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">CGST ({gstRate / 2}%)</p>
+                          </div>
+                          <div className="bg-cyan-50 p-4 rounded-xl text-center">
+                            <p className="text-lg font-display font-bold text-cyan-700">₹{fmt(sgst)}</p>
+                            <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">SGST ({gstRate / 2}%)</p>
+                          </div>
+                        </div>
+
+                        <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl p-6 text-center text-white">
+                          <p className="text-sm uppercase tracking-widest opacity-80 mb-2">Total Amount</p>
+                          <p className="text-4xl font-display font-bold">₹{fmt(totalAmount)}</p>
+                        </div>
+
+                        <div className="text-center pt-2">
+                          <p className="text-gray-500 text-xs">Amount in Words</p>
+                          <p className="text-gray-700 font-medium text-sm mt-1">{numToWords(totalAmount)}</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-16 pt-8 border-t border-gray-100 text-center">
+                        <p className="text-gray-400 text-xs italic">
+                          This report was generated using the QuoteFlow GST Calculator.
+                        </p>
+                      </div>
+                    </div>
+                  </InvoicePreview>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   )
 }
