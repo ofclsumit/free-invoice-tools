@@ -14,17 +14,7 @@ const nextConfig = {
       allowedOrigins: ['localhost:3000', 'localhost:3001', 'localhost:3002', 'free-invoice-tools.vercel.app'],
     },
   },
-  webpack: (config, { dev }) => {
-    if (dev) {
-      // Use filesystem polling on Windows to avoid stale file-watcher events
-      // that cause white screens and unstyled HTML flashes during HMR
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-      }
-    }
-    return config
-  },
+  turbopack: {},
 }
 
 module.exports = nextConfig

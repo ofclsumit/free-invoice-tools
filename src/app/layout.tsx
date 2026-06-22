@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google"
+import Script from "next/script"
 import "./globals.css"
 import { ThemeProvider } from "@/components/shared/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
@@ -95,7 +96,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
+        <Script
+          id="global-schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify([

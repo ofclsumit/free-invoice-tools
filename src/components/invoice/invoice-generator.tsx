@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback, useMemo, useEffect } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -28,11 +28,16 @@ import {
   Copy,
   Printer,
 } from "lucide-react"
-import { InvoicePreview } from "./invoice-preview"
-import { generateInvoicePDF } from "@/lib/pdf/generate-invoice"
-import type { InvoiceItemTotals, InvoiceData } from "@/lib/pdf/types"
+import {
+  InvoicePreview,
+  LedgerTemplate,
+  computeInvoiceTotals,
+  exportNodeToPdf,
+  type InvoiceData as TemplateInvoiceData
+} from "@/components/invoice-templates/components"
 import { cn, formatCurrency } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { LoadingScreen } from "@/components/shared/loading-screen"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -85,9 +90,13 @@ export function InvoiceGenerator() {
   const { toast } = useToast()
   const [showPreview, setShowPreview] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
 
   const today = new Date().toISOString().split("T")[0]
   const defaultDueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+
 
   const form = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceSchema),
@@ -112,80 +121,91 @@ export function InvoiceGenerator() {
   const watchedValues = form.watch()
 
   const { totals, invoiceData } = useMemo(() => {
-    const items = watchedValues.items || []
-    let subtotal = 0
-    let totalCgst = 0
-    let totalSgst = 0
-    let totalIgst = 0
-    let totalDiscount = 0
-
-    const itemsWithTotals: InvoiceItemTotals[] = items.map((item) => {
-      const qty = Number(item.quantity) || 0
-      const rate = Number(item.rate) || 0
-      const discount = Number(item.discount) || 0
-      const gstRate = Number(item.gstRate) || 0
-
-      const baseAmount = qty * rate
-      const discountAmount = (baseAmount * discount) / 100
-      const taxableAmount = baseAmount - discountAmount
-
-      let cgst = 0, sgst = 0, igst = 0, taxAmount = 0
-
-      if (item.gstType === "CGST_SGST") {
-        cgst = (taxableAmount * gstRate) / 200
-        sgst = cgst
-        taxAmount = cgst + sgst
-      } else if (item.gstType === "IGST") {
-        igst = (taxableAmount * gstRate) / 100
-        taxAmount = igst
+    const templateData: TemplateInvoiceData = {
+      invoiceNumber: watchedValues.invoiceNumber,
+      invoiceDate: watchedValues.invoiceDate,
+      dueDate: watchedValues.dueDate,
+      currencySymbol: "₹",
+      gstMode: "split",
+      company: {
+        name: watchedValues.businessName,
+        addressLines: watchedValues.businessAddress ? watchedValues.businessAddress.split('\n') : [],
+        gstin: watchedValues.businessGstin,
+        phone: watchedValues.businessPhone,
+        email: watchedValues.businessEmail,
+      },
+      billTo: {
+        name: watchedValues.clientName,
+        addressLines: watchedValues.clientAddress ? watchedValues.clientAddress.split('\n') : [],
+        gstin: watchedValues.clientGstin,
+        phone: watchedValues.clientPhone,
+        email: watchedValues.clientEmail,
+      },
+      items: (watchedValues.items || []).map((item, i) => {
+        const gstRate = Number(item.gstRate) || 0;
+        return {
+          id: String(i),
+          description: item.description,
+          hsnSac: item.hsnCode,
+          quantity: Number(item.quantity) || 0,
+          unit: item.unit || "Nos",
+          rate: Number(item.rate) || 0,
+          cgstPercent: item.gstType === "CGST_SGST" ? gstRate / 2 : 0,
+          sgstPercent: item.gstType === "CGST_SGST" ? gstRate / 2 : 0,
+          igstPercent: item.gstType === "IGST" ? gstRate : 0,
+          discountPercent: Number(item.discount) || 0,
+        };
+      }),
+      notes: watchedValues.notes,
+      termsAndConditions: watchedValues.terms,
+      bankDetails: {
+        upiId: watchedValues.upiId,
       }
+    };
 
-      const total = taxableAmount + taxAmount
+    const computedTotals = computeInvoiceTotals(templateData);
 
-      subtotal += taxableAmount
-      totalCgst += cgst
-      totalSgst += sgst
-      totalIgst += igst
-      totalDiscount += discountAmount
-
-      return {
+    // Keep the old totals structure for the UI to display the breakdown correctly
+    const uiTotals = {
+      subtotal: computedTotals.subTotal,
+      totalDiscount: computedTotals.totalDiscount,
+      totalCgst: computedTotals.totalCgst,
+      totalSgst: computedTotals.totalSgst,
+      totalIgst: computedTotals.totalIgst,
+      totalTax: computedTotals.totalGst,
+      grandTotal: computedTotals.grandTotal,
+      itemsWithTotals: computedTotals.items.map(item => ({
         description: item.description,
-        hsnCode: item.hsnCode,
-        quantity: qty,
+        hsnCode: item.hsnSac,
+        quantity: item.quantity,
         unit: item.unit,
-        rate,
-        discount,
-        gstRate,
-        gstType: item.gstType,
-        taxableAmount,
-        cgst,
-        sgst,
-        igst,
-        taxAmount,
-        total,
-        discountAmount,
-      }
-    })
+        rate: item.rate,
+        discount: item.discountPercent,
+        gstRate: item.cgstPercent! + item.sgstPercent! + item.igstPercent!,
+        gstType: item.igstPercent! > 0 ? "IGST" : "CGST_SGST",
+        taxableValue: item.taxableValue,
+        cgst: item.cgstAmount,
+        sgst: item.sgstAmount,
+        igst: item.igstAmount,
+        taxAmount: item.gstAmount,
+        total: item.lineTotal,
+        discountAmount: (item.quantity * item.rate) - item.taxableValue,
+      }))
+    };
 
-    const totalTax = totalCgst + totalSgst + totalIgst
-    const grandTotal = subtotal + totalTax
-
-    const totals = { subtotal, totalCgst, totalSgst, totalIgst, totalTax, grandTotal, totalDiscount, itemsWithTotals }
-
-    const invoiceData: InvoiceData = {
-      ...watchedValues,
-      ...totals,
-      itemsWithTotals,
-    }
-
-    return { totals, invoiceData }
+    return { totals: uiTotals, invoiceData: templateData }
   }, [watchedValues])
 
   const handleDownloadPDF = async () => {
     setIsGenerating(true)
     try {
-      await generateInvoicePDF(invoiceData)
-      toast({ title: "PDF downloaded!", description: "Your invoice has been saved." })
+      const node = document.getElementById("invoice-print-root");
+      if (node) {
+        await exportNodeToPdf(node, `invoice-${watchedValues.invoiceNumber}.pdf`);
+        toast({ title: "PDF downloaded!", description: "Your invoice has been saved." })
+      } else {
+        toast({ title: "Preview hidden", description: "Please show preview to download.", variant: "destructive" })
+      }
     } catch {
       toast({ title: "Error", description: "Could not generate PDF. Please try again.", variant: "destructive" })
     } finally {
@@ -200,8 +220,12 @@ export function InvoiceGenerator() {
     window.open(`https://wa.me/?text=${message}`, "_blank")
   }
 
+  if (!mounted) return null;
+
   return (
-    <div className="flex flex-col h-full">
+    <>
+      {isGenerating && <LoadingScreen message="Generating PDF invoice..." />}
+      <div className="flex flex-col h-full">
       {/* Sticky header */}
       <div className="flex items-center justify-between mb-6 sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-border">
         <div>
@@ -577,15 +601,18 @@ export function InvoiceGenerator() {
                 </Badge>
               </div>
               <div
-                className="rounded-xl shadow-lg border border-border overflow-hidden"
-                style={{ height: "calc(100vh - 180px)" }}
+                className="rounded-xl shadow-lg border border-border overflow-hidden bg-white"
+                style={{ height: "calc(100vh - 180px)", overflowY: "auto" }}
               >
-                <InvoicePreview data={invoiceData} />
+                <InvoicePreview hideToolbar={true}>
+                  <LedgerTemplate invoice={invoiceData} />
+                </InvoicePreview>
               </div>
             </div>
           </div>
         )}
       </div>
     </div>
+    </>
   )
 }

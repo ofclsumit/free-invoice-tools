@@ -11,6 +11,15 @@ interface InvoicePreviewProps {
 export function InvoicePreview({ data }: InvoicePreviewProps) {
   const [RenderedPreview, setRenderedPreview] = useState<React.ReactNode | null>(null)
 
+  const [debouncedData, setDebouncedData] = useState(data)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedData(data)
+    }, 750)
+    return () => clearTimeout(timer)
+  }, [data])
+
   useEffect(() => {
     let mounted = true
 
@@ -36,7 +45,7 @@ export function InvoicePreview({ data }: InvoicePreviewProps) {
             }}
             showToolbar={false}
           >
-            {InvoiceDocument({ data })}
+            {InvoiceDocument({ data: debouncedData })}
           </PDFViewer>,
         )
       } catch (err) {
@@ -49,7 +58,7 @@ export function InvoicePreview({ data }: InvoicePreviewProps) {
     return () => {
       mounted = false
     }
-  }, [data])
+  }, [debouncedData])
 
   if (!RenderedPreview) {
     return (

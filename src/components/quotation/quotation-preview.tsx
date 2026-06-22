@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import type { QuotationFormData } from "./quotation-generator"
 
 interface QuotationPreviewProps {
@@ -31,31 +32,51 @@ function formatDate(dateStr: string) {
 const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 export function QuotationPreview({ data, totals }: QuotationPreviewProps) {
+  const [debouncedData, setDebouncedData] = useState(data)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedData(data)
+    }, 750)
+    return () => clearTimeout(timer)
+  }, [data])
+
   return (
-    <div className="bg-white text-gray-900" style={{ width: "794px", minHeight: "1123px", fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: "12px" }}>
-      <div style={{ padding: "40px" }}>
-        {/* Violet accent bar */}
-        <div style={{ height: "4px", background: "linear-gradient(to right, #7c3aed, #a855f7)", borderRadius: "2px", marginBottom: "28px" }} />
+    <div className="w-full h-full overflow-auto bg-gray-50/50 dark:bg-gray-900/50 rounded-xl border border-border p-4 sm:p-8 custom-scrollbar">
+      <div className="mx-auto" style={{ width: "100%", maxWidth: "794px" }}>
+        <div 
+          className="bg-white text-gray-900 shadow-lg" 
+          style={{ 
+            width: "100%", 
+            aspectRatio: "1 / 1.414",
+            padding: "5%",
+            fontFamily: "'Plus Jakarta Sans', sans-serif", 
+            fontSize: "clamp(8px, 1.5vw, 12px)",
+            containerType: "inline-size"
+          }}
+        >
+          {/* Violet accent bar */}
+          <div style={{ height: "4px", background: "linear-gradient(to right, #7c3aed, #a855f7)", borderRadius: "2px", marginBottom: "4%" }} />
 
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "28px" }}>
           <div>
             <div style={{ fontWeight: 800, fontSize: "20px", color: "#7c3aed", marginBottom: "8px" }}>
-              {data.businessName || "Your Business"}
+              {debouncedData.businessName || "Your Business"}
             </div>
-            {data.businessGstin && (
-              <p style={{ fontSize: "10px", color: "#6b7280", marginBottom: "3px" }}>GSTIN: {data.businessGstin}</p>
+            {debouncedData.businessGstin && (
+              <p style={{ fontSize: "10px", color: "#6b7280", marginBottom: "3px" }}>GSTIN: {debouncedData.businessGstin}</p>
             )}
-            {data.businessAddress && (
-              <p style={{ fontSize: "11px", color: "#374151" }}>{data.businessAddress}</p>
+            {debouncedData.businessAddress && (
+              <p style={{ fontSize: "11px", color: "#374151" }}>{debouncedData.businessAddress}</p>
             )}
           </div>
           <div style={{ textAlign: "right" }}>
             <h1 style={{ fontSize: "32px", fontWeight: 800, color: "#581c87", margin: 0 }}>QUOTATION</h1>
-            <p style={{ fontSize: "13px", color: "#7c3aed", fontWeight: 600, marginTop: "4px" }}>#{data.quoteNumber}</p>
-            <p style={{ fontSize: "10px", color: "#6b7280", marginTop: "8px" }}>Date: <strong>{formatDate(data.quoteDate)}</strong></p>
-            {data.validUntil && (
-              <p style={{ fontSize: "10px", color: "#ef4444", fontWeight: 600 }}>Valid until: {formatDate(data.validUntil)}</p>
+            <p style={{ fontSize: "13px", color: "#7c3aed", fontWeight: 600, marginTop: "4px" }}>#{debouncedData.quoteNumber}</p>
+            <p style={{ fontSize: "10px", color: "#6b7280", marginTop: "8px" }}>Date: <strong>{formatDate(debouncedData.quoteDate)}</strong></p>
+            {debouncedData.validUntil && (
+              <p style={{ fontSize: "10px", color: "#ef4444", fontWeight: 600 }}>Valid until: {formatDate(debouncedData.validUntil)}</p>
             )}
           </div>
         </div>
@@ -63,11 +84,11 @@ export function QuotationPreview({ data, totals }: QuotationPreviewProps) {
         {/* Quote To */}
         <div style={{ background: "#faf5ff", border: "1px solid #e9d5ff", borderRadius: "10px", padding: "16px", marginBottom: "28px" }}>
           <p style={{ fontSize: "9px", fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "6px" }}>QUOTED FOR</p>
-          <p style={{ fontWeight: 700, fontSize: "14px", color: "#111827", marginBottom: "4px" }}>{data.clientName || "Client Name"}</p>
-          {data.clientAddress && <p style={{ fontSize: "11px", color: "#374151" }}>{data.clientAddress}</p>}
-          {(data.clientPhone || data.clientEmail) && (
+          <p style={{ fontWeight: 700, fontSize: "14px", color: "#111827", marginBottom: "4px" }}>{debouncedData.clientName || "Client Name"}</p>
+          {debouncedData.clientAddress && <p style={{ fontSize: "11px", color: "#374151" }}>{debouncedData.clientAddress}</p>}
+          {(debouncedData.clientPhone || debouncedData.clientEmail) && (
             <p style={{ fontSize: "10px", color: "#6b7280", marginTop: "4px" }}>
-              {data.clientPhone}{data.clientPhone && data.clientEmail ? " · " : ""}{data.clientEmail}
+              {debouncedData.clientPhone}{debouncedData.clientPhone && debouncedData.clientEmail ? " · " : ""}{debouncedData.clientEmail}
             </p>
           )}
         </div>
@@ -124,18 +145,18 @@ export function QuotationPreview({ data, totals }: QuotationPreviewProps) {
         </div>
 
         {/* Notes & Terms */}
-        {(data.notes || data.terms) && (
+        {(debouncedData.notes || debouncedData.terms) && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "20px" }}>
-            {data.notes && (
+            {debouncedData.notes && (
               <div>
                 <p style={{ fontSize: "9px", fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "6px" }}>NOTES</p>
-                <p style={{ fontSize: "11px", color: "#374151" }}>{data.notes}</p>
+                <p style={{ fontSize: "11px", color: "#374151" }}>{debouncedData.notes}</p>
               </div>
             )}
-            {data.terms && (
+            {debouncedData.terms && (
               <div>
                 <p style={{ fontSize: "9px", fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "6px" }}>TERMS</p>
-                <p style={{ fontSize: "11px", color: "#374151" }}>{data.terms}</p>
+                <p style={{ fontSize: "11px", color: "#374151" }}>{debouncedData.terms}</p>
               </div>
             )}
           </div>
@@ -147,8 +168,9 @@ export function QuotationPreview({ data, totals }: QuotationPreviewProps) {
           <div style={{ textAlign: "right" }}>
             <p style={{ fontSize: "9px", color: "#6b7280" }}>Authorised Signature</p>
             <div style={{ width: "120px", height: "36px", borderBottom: "1px solid #d1d5db", marginLeft: "auto" }} />
-            <p style={{ fontSize: "9px", color: "#374151", fontWeight: 600, marginTop: "4px" }}>{data.businessName}</p>
+            <p style={{ fontSize: "9px", color: "#374151", fontWeight: 600, marginTop: "4px" }}>{debouncedData.businessName}</p>
           </div>
+        </div>
         </div>
       </div>
     </div>

@@ -31,7 +31,7 @@
 
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo, useEffect } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -47,10 +47,16 @@ import { Badge } from "@/components/ui/badge"
 import {
   Plus, Trash2, Download, Share2, Eye, EyeOff, Save,
 } from "lucide-react"
-import { QuotationPreview } from "./quotation-preview"
-import { generateQuotationPDF } from "@/lib/pdf/generate-quotation"
+import {
+  InvoicePreview,
+  StudioTemplate,
+  computeInvoiceTotals,
+  exportNodeToPdf,
+  type InvoiceData as TemplateInvoiceData
+} from "@/components/invoice-templates/components"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { LoadingScreen } from "@/components/shared/loading-screen"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -93,6 +99,9 @@ export function QuotationGenerator() {
   const { toast } = useToast()
   const [showPreview, setShowPreview] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
 
   const today = new Date().toISOString().split("T")[0]
   const validUntil = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
@@ -113,39 +122,72 @@ export function QuotationGenerator() {
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "items" })
   const watchedValues = form.watch()
 
-  const calculateTotals = useCallback(() => {
-    const items = watchedValues.items || []
-    let subtotal = 0
-    let totalTax = 0
-    let totalDiscount = 0
+  const { totals, invoiceData } = useMemo(() => {
+    const templateData: TemplateInvoiceData = {
+      invoiceNumber: watchedValues.quoteNumber,
+      invoiceDate: watchedValues.quoteDate,
+      dueDate: watchedValues.validUntil,
+      currencySymbol: "₹",
+      gstMode: "single",
+      company: {
+        name: watchedValues.businessName,
+        addressLines: watchedValues.businessAddress ? watchedValues.businessAddress.split('\n') : [],
+        gstin: watchedValues.businessGstin,
+      },
+      billTo: {
+        name: watchedValues.clientName,
+        addressLines: watchedValues.clientAddress ? watchedValues.clientAddress.split('\n') : [],
+        email: watchedValues.clientEmail,
+        phone: watchedValues.clientPhone,
+      },
+      items: (watchedValues.items || []).map((item, i) => ({
+        id: String(i),
+        description: item.description,
+        quantity: Number(item.quantity) || 0,
+        unit: item.unit || "Nos",
+        rate: Number(item.rate) || 0,
+        gstPercent: Number(item.taxRate) || 0,
+        discountPercent: Number(item.discount) || 0,
+      })),
+      notes: watchedValues.notes,
+      termsAndConditions: watchedValues.terms,
+    };
 
-    const itemsWithTotals = items.map((item) => {
-      const qty = Number(item.quantity) || 0
-      const rate = Number(item.rate) || 0
-      const discount = Number(item.discount) || 0
-      const taxRate = Number(item.taxRate) || 0
-      const baseAmount = qty * rate
-      const discountAmount = (baseAmount * discount) / 100
-      const taxableAmount = baseAmount - discountAmount
-      const taxAmount = (taxableAmount * taxRate) / 100
-      const total = taxableAmount + taxAmount
+    const computedTotals = computeInvoiceTotals(templateData);
 
-      subtotal += taxableAmount
-      totalTax += taxAmount
-      totalDiscount += discountAmount
-      return { ...item, baseAmount, discountAmount, taxableAmount, taxAmount, total }
-    })
+    const uiTotals = {
+      subtotal: computedTotals.subTotal,
+      totalTax: computedTotals.totalGst,
+      grandTotal: computedTotals.grandTotal,
+      totalDiscount: computedTotals.totalDiscount,
+      itemsWithTotals: computedTotals.items.map(item => ({
+        description: item.description,
+        quantity: item.quantity,
+        unit: item.unit,
+        rate: item.rate,
+        discount: item.discountPercent,
+        taxRate: item.gstPercent,
+        baseAmount: item.quantity * item.rate,
+        discountAmount: (item.quantity * item.rate) - item.taxableValue,
+        taxableAmount: item.taxableValue,
+        taxAmount: item.gstAmount,
+        total: item.lineTotal,
+      }))
+    };
 
-    return { subtotal, totalTax, grandTotal: subtotal + totalTax, totalDiscount, itemsWithTotals }
-  }, [watchedValues.items])
-
-  const totals = calculateTotals()
+    return { totals: uiTotals, invoiceData: templateData };
+  }, [watchedValues]);
 
   const handleDownloadPDF = async () => {
     setIsGenerating(true)
     try {
-      await generateQuotationPDF({ ...watchedValues, ...totals })
-      toast({ title: "Quotation PDF downloaded!" })
+      const node = document.getElementById("invoice-print-root");
+      if (node) {
+        await exportNodeToPdf(node, `quotation-${watchedValues.quoteNumber}.pdf`);
+        toast({ title: "Quotation PDF downloaded!" })
+      } else {
+        toast({ title: "Preview hidden", description: "Please show preview to download.", variant: "destructive" })
+      }
     } catch {
       toast({ title: "Error generating PDF", variant: "destructive" })
     } finally {
@@ -162,8 +204,12 @@ export function QuotationGenerator() {
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
+  if (!mounted) return null;
+
   return (
-    <div className="flex flex-col h-full">
+    <>
+      {isGenerating && <LoadingScreen message="Generating Quotation PDF..." />}
+      <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-border">
         <div>
@@ -382,15 +428,16 @@ export function QuotationGenerator() {
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Live Preview</p>
                 <Badge variant="outline" className="text-xs bg-violet-50 text-violet-700 border-violet-200">Auto-updating</Badge>
               </div>
-              <div className="overflow-auto max-h-[calc(100vh-160px)] rounded-xl shadow-lg border border-border">
-                <div className="transform scale-[0.65] origin-top-left w-[154%]">
-                  <QuotationPreview data={watchedValues} totals={totals} />
-                </div>
+              <div className="overflow-auto max-h-[calc(100vh-160px)] rounded-xl shadow-lg border border-border bg-white">
+                <InvoicePreview hideToolbar={true}>
+                  <StudioTemplate invoice={invoiceData} />
+                </InvoicePreview>
               </div>
             </div>
           </div>
         )}
       </div>
     </div>
+    </>
   )
 }
