@@ -295,9 +295,13 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
               )}
             </div>
             <div className="text-right">
-              <div className="inline-block text-center">
-                <div className="border-b-2 border-gray-400 w-44 mb-1.5" style={{ height: "36px" }} />
-                <p className="text-[10px] text-gray-500 font-medium">Authorized Signatory</p>
+              <div className="inline-block text-center min-w-[176px]">
+                {company.signatureUrl ? (
+                  <img src={company.signatureUrl} alt="Signature" className="h-12 object-contain mx-auto mb-1" />
+                ) : (
+                  <div className="border-b-2 border-gray-400 w-44 mb-1.5" style={{ height: "36px" }} />
+                )}
+                <p className="text-[10px] text-gray-500 font-medium border-t border-gray-300 pt-1">Authorized Signatory</p>
                 <p className="text-[11px] text-gray-700 font-semibold mt-0.5">{company.name || "Business Name"}</p>
               </div>
             </div>

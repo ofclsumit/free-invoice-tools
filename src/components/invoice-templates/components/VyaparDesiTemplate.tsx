@@ -294,10 +294,14 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
             This is a computer-generated invoice.
           </p>
           <div className="text-center">
-            <p className="text-[11px] font-semibold mb-8" style={{ color: maroon }}>
-              For {company.name}
-            </p>
-            <p className="text-[10px] text-stone-500 border-t border-stone-300 pt-1">
+            {company.signatureUrl ? (
+              <img src={company.signatureUrl} alt="Signature" className="h-10 object-contain mx-auto mb-1" />
+            ) : (
+              <p className="text-[11px] font-semibold mb-8" style={{ color: maroon }}>
+                For {company.name}
+              </p>
+            )}
+            <p className="text-[10px] text-stone-500 border-t border-stone-300 pt-1 px-4 inline-block">
               Authorized Signatory
             </p>
           </div>

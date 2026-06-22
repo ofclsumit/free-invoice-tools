@@ -245,22 +245,32 @@ export default function ClassicBooksTemplate({ invoice, className = "" }: Props)
               </div>
             )}
           </div>
-          {invoice.bankDetails && (
-            <div>
-              <p className="font-semibold text-stone-700 mb-1">Remit Payment To</p>
-              <div className="space-y-0.5">
-                {invoice.bankDetails.accountName && <p>{invoice.bankDetails.accountName}</p>}
-                {invoice.bankDetails.bankName && (
-                  <p>
-                    {invoice.bankDetails.bankName}
-                    {invoice.bankDetails.branch ? `, ${invoice.bankDetails.branch}` : ""}
-                  </p>
-                )}
-                {invoice.bankDetails.accountNumber && <p>A/C: {invoice.bankDetails.accountNumber}</p>}
-                {invoice.bankDetails.ifsc && <p>IFSC: {invoice.bankDetails.ifsc}</p>}
+          <div className="space-y-4">
+            {invoice.bankDetails && (
+              <div>
+                <p className="font-semibold text-stone-700 mb-1">Remit Payment To</p>
+                <div className="space-y-0.5">
+                  {invoice.bankDetails.accountName && <p>{invoice.bankDetails.accountName}</p>}
+                  {invoice.bankDetails.bankName && (
+                    <p>
+                      {invoice.bankDetails.bankName}
+                      {invoice.bankDetails.branch ? `, ${invoice.bankDetails.branch}` : ""}
+                    </p>
+                  )}
+                  {invoice.bankDetails.accountNumber && <p>A/C: {invoice.bankDetails.accountNumber}</p>}
+                  {invoice.bankDetails.ifsc && <p>IFSC: {invoice.bankDetails.ifsc}</p>}
+                </div>
               </div>
+            )}
+            <div>
+              {company.signatureUrl ? (
+                <img src={company.signatureUrl} alt="Signature" className="h-12 object-contain mb-1" />
+              ) : (
+                <div className="h-10"></div>
+              )}
+              <p className="font-semibold text-stone-700 pt-1 border-t border-stone-300 inline-block px-2">Authorized Signatory</p>
             </div>
-          )}
+          </div>
         </section>
 
         <footer className="mt-auto pt-8 text-center text-[10px] text-stone-400">

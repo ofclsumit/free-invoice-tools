@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo, useEffect } from "react"
+import { useState, useCallback, useMemo, useEffect, useRef } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -14,7 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import {
-  Plus, Trash2, Download, Share2, Eye, Save, Send, Copy, Printer, FileText, X
+  Plus, Trash2, Download, Share2, Eye, Save, Send, Copy, Printer, FileText, X, ZoomIn, ZoomOut
 } from "lucide-react"
 import {
   InvoicePreview,
@@ -45,6 +45,7 @@ const itemSchema = z.object({
 
 const quotationSchema = z.object({
   businessLogo: z.string().optional(),
+  businessSignature: z.string().optional(),
   businessName: z.string().min(1, "Business name required"),
   businessGstin: z.string().optional(),
   businessAddress: z.string().optional(),
@@ -99,8 +100,38 @@ export function QuotationGenerator() {
   const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [zoom, setZoom] = useState(1)
+  const previewContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    if (showPreview) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+      setZoom(1)
+    }
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [showPreview])
+
+  // Native wheel handler to strictly prevent scroll and perform zoom
+  useEffect(() => {
+    const container = previewContainerRef.current
+    if (!container || !showPreview) return
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault()
+        setZoom((prev) => Math.min(Math.max(0.3, prev - e.deltaY * 0.002), 3))
+      }
+    }
+
+    container.addEventListener("wheel", handleWheel, { passive: false })
+    return () => container.removeEventListener("wheel", handleWheel)
+  }, [showPreview])
 
   const today = new Date().toISOString().split("T")[0]
   const validUntil = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
@@ -109,6 +140,7 @@ export function QuotationGenerator() {
     resolver: zodResolver(quotationSchema),
     defaultValues: {
       businessLogo: "",
+      businessSignature: "",
       businessName: "",
       quoteNumber: `QUO-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`,
       quoteDate: today,
@@ -156,6 +188,7 @@ export function QuotationGenerator() {
       company: {
         name: watchedValues.businessName,
         logoUrl: watchedValues.businessLogo,
+        signatureUrl: watchedValues.businessSignature,
         addressLines: watchedValues.businessAddress ? watchedValues.businessAddress.split('\n') : [],
         gstin: watchedValues.businessGstin,
         phone: watchedValues.businessPhone,
@@ -281,16 +314,27 @@ export function QuotationGenerator() {
       
       {/* Preview Overlay */}
       {showPreview && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-start bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 p-4 sm:p-6 lg:p-12 overflow-y-auto">
-          <div className="relative w-full max-w-5xl bg-white dark:bg-gray-950 rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 zoom-in-95 duration-500 overflow-hidden flex flex-col">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-start bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="relative w-full h-full flex flex-col max-w-[1200px] mx-auto bg-white/5 dark:bg-black/5 shadow-2xl animate-in slide-in-from-bottom-8 zoom-in-95 duration-500 overflow-hidden">
             
             {/* Header / Actions */}
-            <div className="flex items-center justify-between p-4 border-b bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="icon" onClick={() => setShowPreview(false)} className="h-8 w-8 rounded-full">
+            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white dark:bg-gray-950 sticky top-0 z-10 shadow-sm">
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" size="icon" onClick={() => setShowPreview(false)} className="h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
                   <X className="h-4 w-4" />
                 </Button>
                 <h2 className="text-lg font-display font-semibold hidden sm:block">Quotation Preview</h2>
+                
+                {/* Zoom Controls */}
+                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-900 rounded-lg p-1 ml-4 border border-border">
+                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md hover:bg-white dark:hover:bg-black shadow-sm" onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>
+                    <ZoomOut className="h-3.5 w-3.5" />
+                  </Button>
+                  <span className="text-xs font-medium w-12 text-center select-none">{Math.round(zoom * 100)}%</span>
+                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md hover:bg-white dark:hover:bg-black shadow-sm" onClick={() => setZoom(z => Math.min(3, z + 0.1))}>
+                    <ZoomIn className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={handleSaveQuotation} className="hidden sm:flex gap-2">
@@ -302,10 +346,22 @@ export function QuotationGenerator() {
               </div>
             </div>
 
-            {/* Preview Document */}
-            <div className="p-4 sm:p-8 bg-gray-100/50 dark:bg-gray-900/50 flex justify-center overflow-x-auto">
+            {/* Preview Document Area */}
+            <div 
+              ref={previewContainerRef}
+              className="flex-1 overflow-auto p-8 flex justify-center items-start"
+              style={{ cursor: "grab" }}
+            >
               {/* Visible Preview */}
-              <div className="shadow-lg rounded-sm overflow-hidden border border-border/50 bg-white min-w-[800px] transform origin-top sm:scale-100 scale-[0.4] sm:mb-0 -mb-[60%]">
+              <div 
+                className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white transform origin-top transition-transform duration-75 ease-out"
+                style={{ 
+                  width: "210mm",
+                  minHeight: "297mm",
+                  transform: \`scale(\${zoom})\`,
+                  marginBottom: \`\${Math.max(0, (zoom - 1) * 297)}mm\`
+                }}
+              >
                 <InvoicePreview hideToolbar={true}>
                   {renderTemplate()}
                 </InvoicePreview>
@@ -350,7 +406,7 @@ export function QuotationGenerator() {
       <div className="max-w-4xl mx-auto w-full">
         <div className="space-y-6 min-w-0">
           
-          {/* Settings Section (New) */}
+          {/* Settings Section */}
           <section className="form-section">
             <div className="grid sm:grid-cols-4 gap-4">
               <div className="space-y-1.5">
@@ -641,23 +697,69 @@ export function QuotationGenerator() {
             </div>
           </section>
 
-          {/* Additional Details */}
+          {/* Additional Details & Signature */}
           <section className="form-section">
-            <h2 className="font-display font-semibold text-sm mb-4">Additional Details</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Notes</Label>
-                <Textarea {...form.register("notes")} rows={3} className="text-sm resize-none" placeholder="Any additional notes for the client..." />
+            <h2 className="font-display font-semibold text-sm mb-4">Additional Details & Signature</h2>
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Notes</Label>
+                  <Textarea {...form.register("notes")} rows={3} className="text-sm resize-none" placeholder="Any additional notes for the client..." />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Terms & Conditions</Label>
+                  <Textarea {...form.register("terms")} rows={3} className="text-sm resize-none" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">UPI ID (for payment QR)</Label>
+                  <Input {...form.register("upiId")} placeholder="yourname@upi" className="h-9 text-sm" />
+                  <p className="text-xs text-muted-foreground">A QR code will be auto-generated in the PDF</p>
+                </div>
               </div>
+
+              {/* Signature Box */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Terms & Conditions</Label>
-                <Textarea {...form.register("terms")} rows={3} className="text-sm resize-none" />
+                <Label className="text-xs font-medium">Authorized Signature</Label>
+                <div className="relative h-32 w-full max-w-sm shrink-0 overflow-hidden rounded-xl border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group">
+                  {watchedValues.businessSignature ? (
+                    <>
+                      <img src={watchedValues.businessSignature} alt="Signature" className="h-full w-full object-contain p-2" />
+                      <div 
+                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          form.setValue("businessSignature", "");
+                        }}
+                      >
+                        <Trash2 className="h-5 w-5 text-white" />
+                      </div>
+                    </>
+                  ) : (
+                    <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
+                      <Plus className="h-6 w-6 text-muted-foreground mb-2" />
+                      <span className="text-xs text-muted-foreground font-medium">Upload Signature</span>
+                      <span className="text-[10px] text-muted-foreground mt-1">PNG or JPG</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              form.setValue("businessSignature", reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }} 
+                      />
+                    </label>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">This will be displayed at the bottom of your document</p>
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">UPI ID (for payment QR)</Label>
-                <Input {...form.register("upiId")} placeholder="yourname@upi" className="h-9 text-sm" />
-                <p className="text-xs text-muted-foreground">A QR code will be auto-generated in the PDF</p>
-              </div>
+
             </div>
           </section>
 

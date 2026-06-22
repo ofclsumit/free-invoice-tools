@@ -262,15 +262,25 @@ export default function MinimalMonoTemplate({ invoice, className = "" }: Props) 
         {/* ── Footer ─────────────────────────────────────────────── */}
         <footer className="mt-auto pt-10">
           <div className="h-px bg-black w-full mb-4" />
-          <div className="grid grid-cols-2 gap-10 text-[11px] text-black/60">
-            {invoice.notes && <p>{invoice.notes}</p>}
-            {invoice.bankDetails && (
-              <p style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                {invoice.bankDetails.bankName && `${invoice.bankDetails.bankName} · `}
-                {invoice.bankDetails.accountNumber}
-                {invoice.bankDetails.ifsc && ` · ${invoice.bankDetails.ifsc}`}
-              </p>
-            )}
+          <div className="grid grid-cols-2 gap-10 text-[11px] text-black/60 items-end">
+            <div>
+              {invoice.notes && <p className="mb-2">{invoice.notes}</p>}
+              {invoice.bankDetails && (
+                <p style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                  {invoice.bankDetails.bankName && `${invoice.bankDetails.bankName} · `}
+                  {invoice.bankDetails.accountNumber}
+                  {invoice.bankDetails.ifsc && ` · ${invoice.bankDetails.ifsc}`}
+                </p>
+              )}
+            </div>
+            <div className="text-right flex flex-col items-end justify-end">
+              {company.signatureUrl ? (
+                <img src={company.signatureUrl} alt="Signature" className="h-12 object-contain mb-1" />
+              ) : (
+                <div className="h-10"></div>
+              )}
+              <p className="border-t border-black/20 pt-1 px-4 inline-block">Authorized Signatory</p>
+            </div>
           </div>
         </footer>
       </div>

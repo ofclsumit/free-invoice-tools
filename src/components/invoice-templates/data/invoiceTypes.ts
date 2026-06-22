@@ -8,6 +8,7 @@ export type GstMode = "none" | "single" | "split";
 export interface CompanyInfo {
   name: string;
   logoUrl?: string;
+  signatureUrl?: string;
   addressLines: string[];
   gstin?: string;
   pan?: string;

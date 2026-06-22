@@ -230,6 +230,26 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
           </section>
         )}
 
+        {/* ── Signature ──────────────────────────────────────────── */}
+        {company.signatureUrl ? (
+          <div className="mt-8 flex justify-end">
+            <div className="text-center">
+              <img src={company.signatureUrl} alt="Signature" className="h-16 object-contain mb-1" />
+              <p className="text-[10px] text-stone-500 border-t border-stone-300 pt-1 px-4">
+                Authorized Signatory
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="mt-8 flex justify-end">
+            <div className="text-center pt-8">
+              <p className="text-[10px] text-stone-500 border-t border-stone-300 pt-1 px-4">
+                Authorized Signatory
+              </p>
+            </div>
+          </div>
+        )}
+
         <footer className="mt-auto pt-8 text-center text-xs text-stone-400">
           This quotation is valid until {invoice.dueDate || "15 days from issue"} · Thank you!
         </footer>
