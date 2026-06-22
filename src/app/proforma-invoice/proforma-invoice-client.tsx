@@ -4,8 +4,9 @@ import { useReactToPrint } from "react-to-print"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Plus, Trash2, Download, Eye } from "lucide-react"
+import { ArrowLeft, Plus, Trash2, Download, Eye, EyeOff } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
+import { useToast } from "@/hooks/use-toast"
 import {
   InvoicePreview,
   ClassicBooksTemplate,
@@ -22,6 +23,7 @@ interface LineItem {
 }
 
 export function ProformaInvoiceClient() {
+  const { toast } = useToast()
   const [items, setItems] = useState<LineItem[]>([
     { id: "1", description: "", quantity: 1, rate: 0 },
   ])
@@ -31,6 +33,24 @@ export function ProformaInvoiceClient() {
   const [companyLogo, setCompanyLogo] = useState("")
   const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+
+  const validateEssentialFields = () => {
+    if (!clientName?.trim()) { toast({ title: "Client name is required", variant: "destructive" }); return false }
+    if (!items.length || !items[0].description?.trim()) { toast({ title: "Add at least one item with a description", variant: "destructive" }); return false }
+    for (const item of items) {
+      if (!item.description?.trim()) { toast({ title: "All items need a description", variant: "destructive" }); return false }
+      if (!item.quantity || item.quantity <= 0) { toast({ title: "All items need a valid quantity", variant: "destructive" }); return false }
+    }
+    return true
+  }
+
+  const togglePreview = () => {
+    if (showPreview) {
+      setShowPreview(false)
+    } else if (validateEssentialFields()) {
+      setShowPreview(true)
+    }
+  }
 
   const { totals, invoiceData } = React.useMemo(() => {
     const templateData: TemplateInvoiceData = {
@@ -103,36 +123,42 @@ const handleDownloadPDF = async () => {
   const subtotal = items.reduce((s, i) => s + i.quantity * i.rate, 0)
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2 })
 
-  const previewContent = (
-      <>
-        {isGenerating && <LoadingScreen message="Generating PDF..." />}
-        <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
-          <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
-            <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-              <Button variant="outline" onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-white">
-                <ArrowLeft className="h-4 w-4" /> Edit Proforma
-              </Button>
-              <Button onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
-                <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-              </Button>
-            </div>
-            
-            <div className="flex-1 overflow-auto rounded-2xl shadow-glass bg-white border border-border pb-8">
-              <InvoicePreview hideToolbar={true}>
-                <ClassicBooksTemplate invoice={invoiceData} />
-              </InvoicePreview>
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  
-
   return (
     <>
-      <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
+      {isGenerating && <LoadingScreen message="Generating PDF..." />}
+      <div className="flex flex-col min-h-[calc(100vh-8rem)]">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-display font-bold">
+            {showPreview ? "Proforma Invoice Preview" : "Proforma Invoice Details"}
+          </h2>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 h-8 text-xs"
+              onClick={togglePreview}
+            >
+              {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">{showPreview ? "Edit" : "Show Preview"}</span>
+            </Button>
+            <Button
+              size="sm"
+              className="gap-1.5 h-8 text-xs bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold"
+              onClick={handleDownloadPDF}
+              disabled={isGenerating}
+            >
+              <Download className="h-3.5 w-3.5" />
+              {isGenerating ? "Generating..." : "Download PDF"}
+            </Button>
+          </div>
+        </div>
 
-    <div className="space-y-6">
+        <div className="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-6 overflow-hidden">
+          {/* Form Panel */}
+          {!showPreview && (
+            <div className="flex-1 min-w-0 overflow-y-auto pb-8">
+              <div className="max-w-2xl mx-auto space-y-6">
+
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
           <Label className="text-xs font-medium">Company Name</Label>
@@ -151,7 +177,7 @@ const handleDownloadPDF = async () => {
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label className="text-xs font-medium">Client Name</Label>
+          <Label className="text-xs font-medium">Client Name *</Label>
           <Input placeholder="Enter client name" value={clientName} onChange={e => setClientName(e.target.value)} className="h-9 text-sm" />
         </div>
         <div className="space-y-1.5">
@@ -162,7 +188,7 @@ const handleDownloadPDF = async () => {
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-medium">Line Items</Label>
+          <Label className="text-xs font-medium">Line Items *</Label>
           <Button variant="outline" size="sm" className="gap-1.5 h-7 text-xs" onClick={addItem}>
             <Plus className="h-3 w-3" /> Add Item
           </Button>
@@ -260,10 +286,24 @@ const handleDownloadPDF = async () => {
         </div>
       </div>
 
-      <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold gap-2">
-        <Download className="h-4 w-4" /> Download PDF
-      </Button>
-    </div>
-  </>
+            </div>
+          </div>
+          )}
+
+          {/* Preview Panel */}
+          {showPreview && (
+            <div className="w-full min-w-0 overflow-y-auto pb-8 pt-4 lg:pt-0 border-t lg:border-t-0 lg:border-l border-border mt-6 lg:mt-0 lg:pl-6">
+              <div className="max-w-2xl mx-auto">
+                <div id="invoice-print-root">
+                  <InvoicePreview hideToolbar={true}>
+                    <ClassicBooksTemplate invoice={invoiceData} />
+                  </InvoicePreview>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   )
 }

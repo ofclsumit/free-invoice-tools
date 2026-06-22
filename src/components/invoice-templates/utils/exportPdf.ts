@@ -1,67 +1,71 @@
-/**
- * Print & PDF export helpers.
- *
- * Two supported paths:
- *
- * 1) BROWSER PRINT (recommended, zero dependencies):
- *    Calling `printInvoice()` opens the native print dialog. Combined
- *    with the print stylesheet in `styles/print.css`, the browser's
- *    "Save as PDF" destination produces a pixel-accurate A4 PDF.
- *    This is what Zoho/QuickBooks/FreshBooks effectively do under
- *    the hood for their "Download PDF" buttons.
- *
- * 2) CLIENT-SIDE RASTER EXPORT (no print dialog, e.g. for a one-click
- *    "Download PDF" button): uses html2canvas + jsPDF. Install with:
- *      npm install html2canvas jspdf
- *    Use `exportNodeToPdf()` below.
- */
-
 export function printInvoice() {
-  window.print();
+  window.print()
 }
 
 export async function exportNodeToPdf(
   node: HTMLElement,
-  fileName = "invoice.pdf"
+  fileName = "invoice.pdf",
 ) {
   const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
     import("html2canvas"),
     import("jspdf"),
-  ]);
+  ])
 
-  const canvas = await html2canvas(node, {
-    scale: 2, // higher scale = sharper PDF text/lines
-    useCORS: true, // allow logo images hosted on other domains
-    backgroundColor: "#ffffff",
-  });
+  const originalTransform = node.style.transform
+  const originalTransformOrigin = node.style.transformOrigin
+  const originalHeight = node.style.height
 
-  const imgData = canvas.toDataURL("image/png");
+  node.style.transform = "none"
+  node.style.transformOrigin = "unset"
+  node.style.height = "auto"
 
-  // A4 in mm
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: "a4",
-  });
+  let pdf: any = null
 
-  const pageWidth = 210;
-  const pageHeight = 297;
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  try {
+    const canvas = await html2canvas(node, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      allowTaint: false,
+      logging: false,
+      width: node.scrollWidth,
+      height: node.scrollHeight,
+    })
 
-  let heightLeft = imgHeight;
-  let position = 0;
+    const imgData = canvas.toDataURL("image/jpeg", 0.95)
 
-  pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
+    pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    })
 
-  // Paginate if content overflows a single A4 page
-  while (heightLeft > 0) {
-    position = heightLeft - imgHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+    const pageWidth = 210
+    const pageHeight = 297
+    const margin = 10
+    const usableWidth = pageWidth - margin * 2
+    const usableHeight = pageHeight - margin * 2
+
+    const imgWidth = usableWidth
+    const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+    let heightLeft = imgHeight
+    let position = 0
+
+    pdf.addImage(imgData, "JPEG", margin, position + margin, imgWidth, imgHeight)
+    heightLeft -= usableHeight
+
+    while (heightLeft > 0) {
+      position = position - usableHeight
+      pdf.addPage()
+      pdf.addImage(imgData, "JPEG", margin, position + margin, imgWidth, imgHeight)
+      heightLeft -= usableHeight
+    }
+  } finally {
+    node.style.transform = originalTransform
+    node.style.transformOrigin = originalTransformOrigin
+    node.style.height = originalHeight
   }
 
-  pdf.save(fileName);
+  if (pdf) pdf.save(fileName)
 }

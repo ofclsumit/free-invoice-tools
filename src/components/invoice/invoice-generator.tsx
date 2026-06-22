@@ -88,11 +88,59 @@ const GST_RATES = [0, 5, 12, 18, 28]
 
 export function InvoiceGenerator() {
   const { toast } = useToast()
-  const [showPreview, setShowPreview] = useState(true)
+  const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => setMounted(true), [])
+
+  const validateEssentialFields = useCallback(() => {
+    const values = form?.getValues()
+    if (!values) return false
+    if (!values.businessName?.trim()) {
+      toast({ title: "Business name is required", variant: "destructive" })
+      return false
+    }
+    if (!values.clientName?.trim()) {
+      toast({ title: "Client name is required", variant: "destructive" })
+      return false
+    }
+    if (!values.invoiceNumber?.trim()) {
+      toast({ title: "Invoice number is required", variant: "destructive" })
+      return false
+    }
+    if (!values.invoiceDate?.trim()) {
+      toast({ title: "Invoice date is required", variant: "destructive" })
+      return false
+    }
+    if (!values.items?.length) {
+      toast({ title: "Add at least one item", variant: "destructive" })
+      return false
+    }
+    for (const item of values.items) {
+      if (!item.description?.trim()) {
+        toast({ title: "All items need a description", variant: "destructive" })
+        return false
+      }
+      if (!item.quantity || item.quantity <= 0) {
+        toast({ title: "All items need a valid quantity", variant: "destructive" })
+        return false
+      }
+      if (item.rate === undefined || item.rate < 0) {
+        toast({ title: "All items need a valid rate", variant: "destructive" })
+        return false
+      }
+    }
+    return true
+  }, [toast])
+
+  const togglePreview = useCallback(() => {
+    if (showPreview) {
+      setShowPreview(false)
+    } else if (validateEssentialFields()) {
+      setShowPreview(true)
+    }
+  }, [showPreview, validateEssentialFields])
 
   const today = new Date().toISOString().split("T")[0]
   const defaultDueDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
@@ -225,7 +273,7 @@ export function InvoiceGenerator() {
   return (
     <>
       {isGenerating && <LoadingScreen message="Generating PDF invoice..." />}
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col min-h-[calc(100vh-8rem)]">
       {/* Sticky header */}
       <div className="flex items-center justify-between mb-6 sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-border">
         <div>
@@ -234,10 +282,16 @@ export function InvoiceGenerator() {
         </div>
         <div className="flex items-center gap-2">
 
-          <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs">
-            <Save className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Save Draft</span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5 h-8 text-xs"
+            onClick={togglePreview}
+          >
+            {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            <span className="hidden sm:inline">{showPreview ? "Hide Preview" : "Show Preview"}</span>
           </Button>
+
           <Button
             size="sm"
             className="gap-1.5 h-8 text-xs bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold"
@@ -250,9 +304,10 @@ export function InvoiceGenerator() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto w-full">
-        {/* Form */}
-        <div className="space-y-6 min-w-0">
+      <div className="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-6 overflow-hidden">
+        {/* Form Panel */}
+        <div className="flex-1 min-w-0 overflow-y-auto pb-8">
+        <div className="max-w-2xl mx-auto space-y-6 min-w-0">
           {/* Business Details */}
           <section className="form-section">
             <h2 className="font-display font-semibold text-sm mb-4 flex items-center gap-2">
@@ -581,16 +636,21 @@ export function InvoiceGenerator() {
             </Button>
           </div>
         </div>
+      </div>
 
-        {/* Hidden Print Root */}
-        <div className="absolute -left-[9999px] -top-[9999px]">
-          <div id="invoice-print-root">
-            <InvoicePreview hideToolbar={true}>
-              <LedgerTemplate invoice={invoiceData} />
-            </InvoicePreview>
+      {/* Preview Panel */}
+      {showPreview && (
+        <div className="w-full lg:w-1/2 min-w-0 overflow-y-auto pb-8 pt-4 lg:pt-0 border-t lg:border-t-0 lg:border-l border-border mt-6 lg:mt-0 lg:pl-6">
+          <div className="max-w-2xl mx-auto">
+            <div id="invoice-print-root">
+              <InvoicePreview hideToolbar={true}>
+                <LedgerTemplate invoice={invoiceData} />
+              </InvoicePreview>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+    </div>
     </div>
     </>
   )

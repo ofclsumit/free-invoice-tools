@@ -84,9 +84,9 @@ export function ToolLayout({
       <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12">
         
         {/* Header & Navigation */}
-        <div className="max-w-4xl mx-auto mb-10">
-          <Link href="/" className="inline-flex items-center gap-2.5 font-display font-bold text-xl mb-8 hover:opacity-90 transition-opacity">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600 shadow-glow-sm">
+        <div className="max-w-[1400px] mx-auto mb-10 px-1">
+          <Link href="/" className="inline-flex items-center gap-2.5 font-display font-bold text-xl hover:opacity-90 transition-opacity">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600 shadow-glow-sm shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
               </svg>
@@ -96,7 +96,7 @@ export function ToolLayout({
             </span>
           </Link>
             
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-4 mt-6">
               <h1 className="text-3xl sm:text-5xl font-display font-bold tracking-tight text-gray-900 dark:text-white">
                 {h1}
               </h1>
