@@ -14,7 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import {
-  Plus, Trash2, Download, Share2, Eye, EyeOff, Save, Send, Copy, Printer, FileText
+  Plus, Trash2, Download, Share2, Eye, Save, Send, Copy, Printer, FileText, X
 } from "lucide-react"
 import {
   InvoicePreview,
@@ -44,6 +44,7 @@ const itemSchema = z.object({
 })
 
 const quotationSchema = z.object({
+  businessLogo: z.string().optional(),
   businessName: z.string().min(1, "Business name required"),
   businessGstin: z.string().optional(),
   businessAddress: z.string().optional(),
@@ -95,7 +96,7 @@ const TEMPLATES = [
 export function QuotationGenerator() {
   const { toast } = useToast()
   const { saveQuotation } = useQuotationStorage()
-  const [showPreview, setShowPreview] = useState(false) // Using the simple toggle pattern
+  const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -107,6 +108,7 @@ export function QuotationGenerator() {
   const form = useForm<QuotationFormData>({
     resolver: zodResolver(quotationSchema),
     defaultValues: {
+      businessLogo: "",
       businessName: "",
       quoteNumber: `QUO-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`,
       quoteDate: today,
@@ -153,6 +155,7 @@ export function QuotationGenerator() {
       shippingCharge: Number(watchedValues.shippingCharge) || 0,
       company: {
         name: watchedValues.businessName,
+        logoUrl: watchedValues.businessLogo,
         addressLines: watchedValues.businessAddress ? watchedValues.businessAddress.split('\n') : [],
         gstin: watchedValues.businessGstin,
         phone: watchedValues.businessPhone,
@@ -219,7 +222,6 @@ export function QuotationGenerator() {
   }, [watchedValues]);
 
   const handleDownloadPDF = async () => {
-    if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
       const node = document.getElementById("invoice-print-root");
@@ -249,10 +251,7 @@ export function QuotationGenerator() {
   }
 
   const handleConvertToInvoice = () => {
-    // In a real app we might pass this via Context or sessionStorage.
-    // For now we'll just show a toast indicating the feature.
     toast({ title: "Converting to Invoice..." })
-    // Example: router.push('/invoice-generator?fromQuote=' + watchedValues.quoteNumber)
   }
 
   const handleWhatsAppShare = () => {
@@ -279,6 +278,53 @@ export function QuotationGenerator() {
   return (
     <>
       {isGenerating && <LoadingScreen message="Generating Quotation PDF..." />}
+      
+      {/* Preview Overlay */}
+      {showPreview && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-start bg-black/60 backdrop-blur-sm animate-in fade-in duration-300 p-4 sm:p-6 lg:p-12 overflow-y-auto">
+          <div className="relative w-full max-w-5xl bg-white dark:bg-gray-950 rounded-2xl shadow-2xl animate-in slide-in-from-bottom-8 zoom-in-95 duration-500 overflow-hidden flex flex-col">
+            
+            {/* Header / Actions */}
+            <div className="flex items-center justify-between p-4 border-b bg-gray-50 dark:bg-gray-900 sticky top-0 z-10">
+              <div className="flex items-center gap-3">
+                <Button variant="ghost" size="icon" onClick={() => setShowPreview(false)} className="h-8 w-8 rounded-full">
+                  <X className="h-4 w-4" />
+                </Button>
+                <h2 className="text-lg font-display font-semibold hidden sm:block">Quotation Preview</h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={handleSaveQuotation} className="hidden sm:flex gap-2">
+                  <Save className="h-4 w-4" /> Save
+                </Button>
+                <Button size="sm" className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 font-semibold" onClick={handleDownloadPDF} disabled={isGenerating}>
+                  <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                </Button>
+              </div>
+            </div>
+
+            {/* Preview Document */}
+            <div className="p-4 sm:p-8 bg-gray-100/50 dark:bg-gray-900/50 flex justify-center overflow-x-auto">
+              {/* Visible Preview */}
+              <div className="shadow-lg rounded-sm overflow-hidden border border-border/50 bg-white min-w-[800px] transform origin-top sm:scale-100 scale-[0.4] sm:mb-0 -mb-[60%]">
+                <InvoicePreview hideToolbar={true}>
+                  {renderTemplate()}
+                </InvoicePreview>
+              </div>
+              
+              {/* Hidden Print Root for actual PDF export */}
+              <div className="absolute -left-[9999px] -top-[9999px]">
+                <div id="invoice-print-root">
+                  <InvoicePreview hideToolbar={true}>
+                    {renderTemplate()}
+                  </InvoicePreview>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col min-h-[calc(100vh-8rem)]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-border">
@@ -293,11 +339,10 @@ export function QuotationGenerator() {
           <Button
             size="sm"
             className="gap-1.5 h-8 text-xs bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 font-semibold"
-            onClick={handleDownloadPDF}
-            disabled={isGenerating}
+            onClick={togglePreview}
           >
-            <Download className="h-3.5 w-3.5" />
-            {isGenerating ? "Generating..." : "Download PDF"}
+            <Eye className="h-3.5 w-3.5" />
+            Preview
           </Button>
         </div>
       </div>
@@ -350,23 +395,63 @@ export function QuotationGenerator() {
               Your Business
             </h2>
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Business Name *</Label>
-                <Input {...form.register("businessName")} placeholder="Your Company" className="h-9 text-sm" />
+              <div className="space-y-1.5 sm:col-span-2">
+                <div className="flex items-center gap-4">
+                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group">
+                    {watchedValues.businessLogo ? (
+                      <>
+                        <img src={watchedValues.businessLogo} alt="Logo" className="h-full w-full object-contain p-1" />
+                        <div 
+                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            form.setValue("businessLogo", "");
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
+                        <Plus className="h-5 w-5 text-muted-foreground mb-1" />
+                        <span className="text-[10px] text-muted-foreground font-medium">Add Logo</span>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                form.setValue("businessLogo", reader.result as string);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }} 
+                        />
+                      </label>
+                    )}
+                  </div>
+                  <div className="space-y-1.5 flex-1">
+                    <Label className="text-xs font-medium">Business Name *</Label>
+                    <Input {...form.register("businessName")} placeholder="Your Company" className="h-9 text-sm" />
+                  </div>
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">GSTIN</Label>
                 <Input {...form.register("businessGstin")} placeholder="22AAAAA0000A1Z5" className="h-9 text-sm font-mono" />
               </div>
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label className="text-xs font-medium">Address</Label>
-                <Textarea {...form.register("businessAddress")} rows={2} className="text-sm resize-none" placeholder="Your business address" />
-              </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Phone</Label>
                 <Input {...form.register("businessPhone")} placeholder="+91 98765 43210" className="h-9 text-sm" />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label className="text-xs font-medium">Address</Label>
+                <Textarea {...form.register("businessAddress")} rows={2} className="text-sm resize-none" placeholder="Your business address" />
+              </div>
+              <div className="space-y-1.5 sm:col-span-2">
                 <Label className="text-xs font-medium">Email</Label>
                 <Input {...form.register("businessEmail")} placeholder="hello@business.com" className="h-9 text-sm" />
               </div>
@@ -578,8 +663,8 @@ export function QuotationGenerator() {
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3 pb-8">
-            <Button className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 font-semibold" onClick={handleDownloadPDF} disabled={isGenerating}>
-              <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+            <Button className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 font-semibold" onClick={togglePreview}>
+              <Eye className="h-4 w-4" /> Preview
             </Button>
 
             <Button variant="outline" className="gap-2" onClick={handleConvertToInvoice}>
@@ -598,15 +683,6 @@ export function QuotationGenerator() {
             <Button variant="ghost" className="gap-2">
               <Copy className="h-4 w-4" /> Duplicate
             </Button>
-          </div>
-        </div>
-
-        {/* Hidden Print Root */}
-        <div className="absolute -left-[9999px] -top-[9999px]">
-          <div id="invoice-print-root">
-            <InvoicePreview hideToolbar={true}>
-              {renderTemplate()}
-            </InvoicePreview>
           </div>
         </div>
       </div>
