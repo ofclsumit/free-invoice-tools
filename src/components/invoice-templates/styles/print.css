@@ -1,10 +1,3 @@
-/**
- * Print stylesheet — import once globally (e.g. in your root layout
- * or index.css). Works with all 5 templates since they all share the
- * `.invoice-page` class and 210mm width.
- */
-
-/* Screen preview: centered page with soft shadow so it reads as paper */
 .invoice-page {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
@@ -20,9 +13,10 @@
     margin: 0;
     padding: 0;
     background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  /* Hide everything except the invoice when printing */
   body * {
     visibility: hidden;
   }
@@ -44,15 +38,28 @@
     width: 210mm !important;
     min-height: 297mm !important;
     margin: 0 !important;
+    padding: 0 !important;
     page-break-after: always;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  /* Avoid splitting a line item or totals block across a page break */
-  table,
-  tr,
-  td,
-  th {
+  .invoice-page table {
+    page-break-inside: auto;
+  }
+
+  .invoice-page tr,
+  .invoice-page th,
+  .invoice-page td {
     page-break-inside: avoid;
+  }
+
+  .invoice-page thead {
+    display: table-header-group;
+  }
+
+  .invoice-page tfoot {
+    display: table-footer-group;
   }
 
   .no-print {
@@ -60,8 +67,6 @@
   }
 }
 
-/* Mobile preview: scale the fixed-width A4 sheet down to fit the
-   viewport rather than reflowing it, so what you see is what prints. */
 @media screen and (max-width: 768px) {
   .invoice-page-mobile-scale-wrapper {
     width: 100%;
