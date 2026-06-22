@@ -358,8 +358,8 @@ export function QuotationGenerator() {
                 style={{ 
                   width: "210mm",
                   minHeight: "297mm",
-                  transform: \`scale(\${zoom})\`,
-                  marginBottom: \`\${Math.max(0, (zoom - 1) * 297)}mm\`
+                  transform: `scale(${zoom})`,
+                  marginBottom: `${Math.max(0, (zoom - 1) * 297)}mm`
                 }}
               >
                 <InvoicePreview hideToolbar={true}>
