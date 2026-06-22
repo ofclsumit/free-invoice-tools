@@ -78,14 +78,13 @@ const handleDownloadPDF = async () => {
   const total = items.reduce((s, i) => s + i.quantity * i.rate, 0)
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2 })
 
-  if (showPreview) {
-    return (
+  const previewContent = (
       <>
         {isGenerating && <LoadingScreen message="Generating PDF..." />}
         <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
           <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-              <Button variant="outline" onClick={() => setShowPreview(false)} className="gap-2 bg-white">
+              <Button variant="outline" onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-white">
                 <ArrowLeft className="h-4 w-4" /> Edit Purchase Order
               </Button>
               <Button onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
@@ -102,7 +101,7 @@ const handleDownloadPDF = async () => {
         </div>
       </>
     )
-  }
+  
 
   const addItem = () => setItems([...items, { id: String(Date.now()), description: "", quantity: 1, rate: 0 }])
   const updateItem = (id: string, field: keyof Item, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i))
@@ -120,6 +119,9 @@ const handleDownloadPDF = async () => {
   }
 
   return (
+    <>
+      <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
+
     <div className="space-y-6">
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
@@ -188,13 +190,14 @@ const handleDownloadPDF = async () => {
 
       <div className="h-px bg-border" />
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <Button onClick={() => setShowPreview(true)} className="bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 font-semibold gap-2">
-          <Eye className="h-4 w-4" /> Show Preview
+        <Button onClick={handleDownloadPDF} disabled={isGenerating} className="bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 font-semibold gap-2">
+          <Download className="h-4 w-4" /> Download PDF
         </Button>
         <div className="flex justify-between sm:gap-4 font-display font-bold text-lg">
           <span>Total</span><span className="text-teal-600">₹{fmt(totals.grandTotal)}</span>
         </div>
       </div>
     </div>
+  </>
   )
 }

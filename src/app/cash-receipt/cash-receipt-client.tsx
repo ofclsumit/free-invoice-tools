@@ -90,17 +90,16 @@ const handleDownloadPDF = async () => {
 
   const handleShowPreview = () => {
     if (!receiptNo) setReceiptNo(String(Math.floor(Math.random() * 10000)).padStart(4, "0"))
-    setShowPreview(true)
+    void 0
   }
 
-  if (showPreview) {
-    return (
+  const previewContent = (
       <>
         {isGenerating && <LoadingScreen message="Generating PDF..." />}
         <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
           <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-              <Button variant="outline" onClick={() => setShowPreview(false)} className="gap-2 bg-white">
+              <Button variant="outline" onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-white">
                 <ArrowLeft className="h-4 w-4" /> Edit Receipt
               </Button>
               <Button onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
@@ -117,9 +116,12 @@ const handleDownloadPDF = async () => {
         </div>
       </>
     )
-  }
+  
 
   return (
+    <>
+      <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
+
     <div className="space-y-5">
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
@@ -178,8 +180,9 @@ const handleDownloadPDF = async () => {
       </div>
 
       <Button onClick={handleShowPreview} className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white border-0 font-semibold gap-2">
-        <Eye className="h-4 w-4" /> Show Preview
+        <Download className="h-4 w-4" /> Download PDF
       </Button>
     </div>
+  </>
   )
 }

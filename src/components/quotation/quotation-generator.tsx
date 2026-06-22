@@ -217,10 +217,7 @@ export function QuotationGenerator() {
           <p className="text-xs text-muted-foreground">Create a professional quotation for your client</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs" onClick={() => setShowPreview(!showPreview)}>
-            {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-            <span className="hidden sm:inline">Preview</span>
-          </Button>
+
           <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs hidden sm:flex">
             <Save className="h-3.5 w-3.5" /> Save Draft
           </Button>
@@ -237,7 +234,7 @@ export function QuotationGenerator() {
         </div>
       </div>
 
-      <div className={cn("grid gap-6", showPreview ? "xl:grid-cols-[1fr_420px]" : "")}>
+      <div className="max-w-4xl mx-auto w-full">
         <div className="space-y-6 min-w-0">
           {/* Business Details */}
           <section className="form-section">
@@ -420,22 +417,14 @@ export function QuotationGenerator() {
           </div>
         </div>
 
-        {/* Live Preview */}
-        {showPreview && (
-          <div className="hidden xl:block">
-            <div className="sticky top-24">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Live Preview</p>
-                <Badge variant="outline" className="text-xs bg-violet-50 text-violet-700 border-violet-200">Auto-updating</Badge>
-              </div>
-              <div className="overflow-auto max-h-[calc(100vh-160px)] rounded-xl shadow-lg border border-border bg-white">
-                <InvoicePreview hideToolbar={true}>
-                  <StudioTemplate invoice={invoiceData} />
-                </InvoicePreview>
-              </div>
-            </div>
+        {/* Hidden Print Root */}
+        <div className="absolute -left-[9999px] -top-[9999px]">
+          <div id="invoice-print-root">
+            <InvoicePreview hideToolbar={true}>
+              <StudioTemplate invoice={invoiceData} />
+            </InvoicePreview>
           </div>
-        )}
+        </div>
       </div>
     </div>
     </>

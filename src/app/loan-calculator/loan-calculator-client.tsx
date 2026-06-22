@@ -47,14 +47,13 @@ export function LoanCalculatorClient() {
     }
   }
 
-  if (showPreview) {
-    return (
+  const previewContent = (
       <>
         {isGenerating && <LoadingScreen message="Generating PDF..." />}
         <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
           <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-              <Button variant="outline" onClick={() => setShowPreview(false)} className="gap-2 bg-white">
+              <Button variant="outline" onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-white">
                 <ArrowLeft className="h-4 w-4" /> Edit Analysis
               </Button>
               <Button onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
@@ -122,9 +121,12 @@ export function LoanCalculatorClient() {
         </div>
       </>
     )
-  }
+  
 
   return (
+    <>
+      <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
+
     <div className="space-y-5">
       <div className="space-y-1.5">
         <Label className="text-xs font-medium">Loan Amount (₹)</Label>
@@ -188,8 +190,8 @@ export function LoanCalculatorClient() {
               <p className="text-lg font-display font-bold text-amber-600">{(totalInterest / totalCost * 100).toFixed(1)}%</p>
             </div>
           </div>
-          <Button onClick={() => setShowPreview(true)} className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 font-semibold gap-2">
-            <Eye className="h-4 w-4" /> Show Preview
+          <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 font-semibold gap-2">
+            <Download className="h-4 w-4" /> Download PDF
           </Button>
         </div>
       )}
@@ -200,5 +202,6 @@ export function LoanCalculatorClient() {
         </Button>
       </div>
     </div>
+  </>
   )
 }

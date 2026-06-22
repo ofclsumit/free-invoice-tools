@@ -233,15 +233,7 @@ export function InvoiceGenerator() {
           <p className="text-xs text-muted-foreground">Fill in the details and download your PDF</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5 h-8 text-xs"
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-            <span className="hidden sm:inline">{showPreview ? "Hide" : "Show"} Preview</span>
-          </Button>
+
           <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs">
             <Save className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">Save Draft</span>
@@ -258,7 +250,7 @@ export function InvoiceGenerator() {
         </div>
       </div>
 
-      <div className={cn("grid gap-6", showPreview ? "xl:grid-cols-[1fr_520px]" : "")}>
+      <div className="max-w-4xl mx-auto w-full">
         {/* Form */}
         <div className="space-y-6 min-w-0">
           {/* Business Details */}
@@ -590,27 +582,14 @@ export function InvoiceGenerator() {
           </div>
         </div>
 
-        {/* Live Preview */}
-        {showPreview && (
-          <div className="hidden xl:block">
-            <div className="sticky top-24">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Live Preview</p>
-                <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-700 border-emerald-200">
-                  Auto-updating
-                </Badge>
-              </div>
-              <div
-                className="rounded-xl shadow-lg border border-border overflow-hidden bg-white"
-                style={{ height: "calc(100vh - 180px)", overflowY: "auto" }}
-              >
-                <InvoicePreview hideToolbar={true}>
-                  <LedgerTemplate invoice={invoiceData} />
-                </InvoicePreview>
-              </div>
-            </div>
+        {/* Hidden Print Root */}
+        <div className="absolute -left-[9999px] -top-[9999px]">
+          <div id="invoice-print-root">
+            <InvoicePreview hideToolbar={true}>
+              <LedgerTemplate invoice={invoiceData} />
+            </InvoicePreview>
           </div>
-        )}
+        </div>
       </div>
     </div>
     </>

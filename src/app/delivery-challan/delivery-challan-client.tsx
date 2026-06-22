@@ -76,14 +76,13 @@ const handleDownloadPDF = async () => {
     }
   }
 
-  if (showPreview) {
-    return (
+  const previewContent = (
       <>
         {isGenerating && <LoadingScreen message="Generating PDF..." />}
         <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
           <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-              <Button variant="outline" onClick={() => setShowPreview(false)} className="gap-2 bg-white">
+              <Button variant="outline" onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-white">
                 <ArrowLeft className="h-4 w-4" /> Edit Challan
               </Button>
               <Button onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
@@ -100,7 +99,7 @@ const handleDownloadPDF = async () => {
         </div>
       </>
     )
-  }
+  
 
   const addItem = () => setItems([...items, { id: String(Date.now()), description: "", quantity: 1 }])
   const updateItem = (id: string, field: keyof Item, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i))
@@ -118,6 +117,9 @@ const handleDownloadPDF = async () => {
   }
 
   return (
+    <>
+      <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
+
     <div className="space-y-5">
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
@@ -193,9 +195,10 @@ const handleDownloadPDF = async () => {
       </div>
 
       <div className="h-px bg-border pt-2" />
-      <Button onClick={() => setShowPreview(true)} className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 text-white border-0 font-semibold gap-2">
-        <Eye className="h-4 w-4" /> Show Preview
+      <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 text-white border-0 font-semibold gap-2">
+        <Download className="h-4 w-4" /> Download PDF
       </Button>
     </div>
+  </>
   )
 }
