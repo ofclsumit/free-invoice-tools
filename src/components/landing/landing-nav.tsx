@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/shared/theme-toggle"
-import { Menu, X, Zap } from "lucide-react"
+import { Menu, X, Zap, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function LandingNav() {
@@ -59,6 +59,12 @@ export function LandingNav() {
           {/* Right actions */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
+            <Link href="/invoice-generator" className="hidden md:inline-flex">
+              <Button size="sm" className="h-9 px-5 text-sm font-semibold gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white shadow-md shadow-blue-500/20">
+                Get Started
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </Link>
             {/* Mobile menu */}
             <button
               className="md:hidden p-2 rounded-lg hover:bg-accent transition-colors"
@@ -83,7 +89,14 @@ export function LandingNav() {
                 {link.label}
               </a>
             ))}
-
+            <Link
+              href="/invoice-generator"
+              className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-violet-600 rounded-lg mt-2"
+              onClick={() => setIsMobileOpen(false)}
+            >
+              Get Started
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         )}
       </div>
