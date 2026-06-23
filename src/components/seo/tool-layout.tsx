@@ -85,16 +85,22 @@ export function ToolLayout({
         
         {/* Header & Navigation */}
         <div className="max-w-4xl mx-auto mb-10 px-1">
-          <Link href="/" className="inline-flex items-center gap-2.5 font-display font-bold text-xl hover:opacity-90 transition-opacity">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600 shadow-glow-sm shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-              </svg>
-            </div>
-            <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-              QuoteFlow
-            </span>
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link href="/" className="inline-flex items-center gap-2.5 font-display font-bold text-xl hover:opacity-90 transition-opacity">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600 shadow-glow-sm shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+              </div>
+              <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+                QuoteFlow
+              </span>
+            </Link>
+            <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+              Back to Home
+            </Link>
+          </div>
             
             <div className="text-center space-y-4 mt-6">
               <h1 className="text-3xl sm:text-5xl font-display font-bold tracking-tight text-gray-900 dark:text-white">

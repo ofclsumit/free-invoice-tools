@@ -35,9 +35,9 @@ import { LoadingScreen } from "@/components/shared/loading-screen"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
-  quantity: z.number().min(0.01),
+  quantity: z.number().min(0.01, "Quantity is required"),
   unit: z.string().optional(),
-  rate: z.coerce.number().min(0).optional().default(0),
+  rate: z.coerce.number({ invalid_type_error: "Rate is required" }).min(0, "Rate is required"),
 })
 
 const proformaSchema = z.object({
@@ -83,7 +83,7 @@ const defaultItem = {
   description: "",
   quantity: 1,
   unit: "Nos",
-  rate: undefined as unknown as number,
+  rate: "" as unknown as number,
 }
 
 const TEMPLATES = [
@@ -418,6 +418,15 @@ export function ProformaInvoiceClient() {
           </div>
         </div>
       )}
+
+      {/* Hidden print root - always rendered so window.print() works */}
+      <div className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
+        <div id="invoice-print-root">
+          <InvoicePreview hideToolbar={true}>
+            {renderTemplate()}
+          </InvoicePreview>
+        </div>
+      </div>
 
       <div className="flex flex-col min-h-[calc(100vh-8rem)]">
         {/* Header */}

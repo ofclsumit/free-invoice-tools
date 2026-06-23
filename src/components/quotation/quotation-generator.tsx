@@ -37,11 +37,11 @@ import { useQuotationStorage } from "@/hooks/use-quotation-storage"
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
   hsnCode: z.string().optional(),
-  quantity: z.number().min(0.01),
+  quantity: z.number().min(0.01, "Quantity is required"),
   unit: z.string().optional(),
-  rate: z.coerce.number().min(0).optional().default(0),
+  rate: z.coerce.number({ invalid_type_error: "Rate is required" }).min(0, "Rate is required"),
   discount: z.coerce.number().min(0).max(100).optional().default(0),
-  taxRate: z.number().min(0).max(28).default(18),
+  taxRate: z.number().min(0, "GST % is required").max(28).default(18),
   gstType: z.enum(["CGST_SGST", "IGST", "EXEMPT"]).default("CGST_SGST"),
 })
 
@@ -91,7 +91,7 @@ const defaultItem = {
   hsnCode: "",
   quantity: 1,
   unit: "Nos",
-  rate: undefined as unknown as number,
+  rate: "" as unknown as number,
   discount: undefined as unknown as number,
   taxRate: 18,
   gstType: "CGST_SGST" as const,
@@ -463,6 +463,15 @@ export function QuotationGenerator() {
           </div>
         </div>
       )}
+
+      {/* Hidden print root - always rendered so window.print() works */}
+      <div className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
+        <div id="invoice-print-root">
+          <InvoicePreview hideToolbar={true}>
+            {renderTemplate()}
+          </InvoicePreview>
+        </div>
+      </div>
 
       <div className="flex flex-col min-h-[calc(100vh-8rem)]">
         {/* Header - Preview button removed from top as requested */}
