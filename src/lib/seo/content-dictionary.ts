@@ -146,6 +146,48 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
     ],
     relatedTools: allTools.filter(t => ["/gst-calculator", "/quotation-generator", "/discount-calculator", "/profit-margin", "/receipt-generator"].includes(t.href)),
   },
+  "gst-invoice": {
+    slug: "gst-invoice-generator",
+    title: "Free GST Invoice Generator India | QuoteStream",
+    metaDescription: "Free online GST invoice generator for India. Create and download compliant GST invoices with CGST, SGST, IGST, and HSN codes.",
+    h1: "GST Invoice Generator",
+    heroDescription: "Create 100% compliant GST invoices in seconds. Auto-calculates CGST, SGST, IGST, and supports HSN/SAC codes.",
+    howToUse: {
+      title: "How to Generate a GST Invoice",
+      steps: [
+        "Enter your GSTIN and business details.",
+        "Add client details and their GSTIN for B2B billing.",
+        "Add items with HSN/SAC codes, select GST rate, and download PDF."
+      ],
+    },
+    features: ["CGST, SGST, IGST auto-calculation", "HSN/SAC code support", "B2B and B2C billing", "Reverse charge support"],
+    benefits: ["Stay 100% compliant", "Help clients claim ITC easily", "Free forever"],
+    faqs: [
+      { question: "Is HSN mandatory?", answer: "Yes, 6-digit HSN is mandatory for turnover > ₹5Cr, and 4-digit for < ₹5Cr for B2B." }
+    ],
+    relatedTools: defaultRelatedTools,
+  },
+  "tax-invoice": {
+    slug: "tax-invoice-generator",
+    title: "Free Tax Invoice Generator | QuoteStream",
+    metaDescription: "Generate professional tax invoices for your business. Compliant with Indian tax laws. Free PDF download.",
+    h1: "Tax Invoice Generator",
+    heroDescription: "Generate legally compliant tax invoices for your clients. Easy to use, no signup required.",
+    howToUse: {
+      title: "How to Generate a Tax Invoice",
+      steps: [
+        "Enter your business and tax registration details.",
+        "Add client information and line items with tax rates.",
+        "Download your compliant Tax Invoice as PDF."
+      ],
+    },
+    features: ["Tax calculation", "Professional templates", "PDF export"],
+    benefits: ["Legal compliance", "Fast billing", "Zero cost"],
+    faqs: [
+      { question: "What is a Tax Invoice?", answer: "A commercial document issued by a registered dealer to a purchaser showing the amount of tax payable." }
+    ],
+    relatedTools: defaultRelatedTools,
+  },
   "consultant": {
     slug: "consultant-invoice-generator",
     title: "Consultant Invoice Generator | QuickInvoicePro",

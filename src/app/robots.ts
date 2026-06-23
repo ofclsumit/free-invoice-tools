@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/"],
     },
-    sitemap: "https://quoteflow.in/sitemap.xml",
+    sitemap: "https://quotestream.com/sitemap.xml",
   }
 }

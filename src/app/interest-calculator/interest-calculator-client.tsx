@@ -66,7 +66,7 @@ export function InterestCalculatorClient() {
               <Button variant="outline" onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-white">
                 <ArrowLeft className="h-4 w-4" /> Edit Analysis
               </Button>
-              <Button onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
+              <Button onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
                 <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
               </Button>
             </div>
@@ -79,7 +79,7 @@ export function InterestCalculatorClient() {
                 >
                   <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-8">
                     <div className="text-right w-full">
-                      <h1 className="text-3xl font-light text-purple-600 uppercase tracking-widest mb-2">Interest Report</h1>
+                      <h1 className="text-3xl font-light text-blue-600 uppercase tracking-widest mb-2">Interest Report</h1>
                       <p className="text-gray-500 text-sm">Date: <span className="font-medium text-gray-900">{new Date().toLocaleDateString("en-IN")}</span></p>
                     </div>
                   </div>
@@ -105,8 +105,8 @@ export function InterestCalculatorClient() {
                         <p className="text-3xl font-display font-bold text-emerald-600">₹{fmt(interest)}</p>
                         <p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">Total Interest</p>
                       </div>
-                      <div className="bg-purple-50 p-6 rounded-xl text-center sm:col-span-1">
-                        <p className="text-3xl font-display font-bold text-purple-600">₹{fmt(maturity)}</p>
+                      <div className="bg-blue-50 p-6 rounded-xl text-center sm:col-span-1">
+                        <p className="text-3xl font-display font-bold text-blue-600">₹{fmt(maturity)}</p>
                         <p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">Maturity Amount</p>
                       </div>
                     </div>
@@ -137,7 +137,7 @@ export function InterestCalculatorClient() {
             key={m}
             onClick={() => setMode(m)}
             className={`flex-1 py-2.5 text-sm font-medium transition-all ${
-              mode === m ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white" : "text-muted-foreground hover:text-foreground"
+              mode === m ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {m === "simple" ? "Simple" : "Compound"}
@@ -190,7 +190,7 @@ export function InterestCalculatorClient() {
                 onClick={() => setFrequency(f.value)}
                 className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                   frequency === f.value
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-glow-sm"
+                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-glow-sm"
                     : "border border-border text-muted-foreground hover:border-purple-300 hover:text-foreground"
                 }`}
               >
@@ -207,7 +207,7 @@ export function InterestCalculatorClient() {
           <div className="space-y-2.5">
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Maturity Amount</span>
-              <span className="font-display font-bold text-xl text-purple-600 dark:text-purple-400">₹{fmt(maturity)}</span>
+              <span className="font-display font-bold text-xl text-blue-600 dark:text-blue-400">₹{fmt(maturity)}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Total Interest Earned</span>
@@ -219,7 +219,7 @@ export function InterestCalculatorClient() {
               <span className="font-display font-bold text-blue-600 dark:text-blue-400">₹{fmt(P)}</span>
             </div>
           </div>
-          <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 font-semibold gap-2">
+          <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 font-semibold gap-2">
             <Download className="h-4 w-4" /> Download PDF
           </Button>
         </div>

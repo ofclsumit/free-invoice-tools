@@ -112,8 +112,8 @@ const config = {
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-brand": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        "gradient-mesh": "radial-gradient(at 40% 20%, hsla(228,100%,74%,1) 0px, transparent 50%), radial-gradient(at 80% 0%, hsla(189,100%,56%,1) 0px, transparent 50%), radial-gradient(at 0% 50%, hsla(355,100%,93%,1) 0px, transparent 50%)",
+        "gradient-brand": "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
+        "gradient-mesh": "radial-gradient(at 40% 20%, hsla(217,100%,74%,1) 0px, transparent 50%), radial-gradient(at 80% 0%, hsla(210,100%,56%,1) 0px, transparent 50%), radial-gradient(at 0% 50%, hsla(220,100%,93%,1) 0px, transparent 50%)",
       },
       boxShadow: {
         glass: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
@@ -123,7 +123,10 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography")
+  ],
 } satisfies Config
 
 export default config

@@ -436,7 +436,7 @@ export function QuotationGenerator() {
                 <Button variant="outline" size="sm" onClick={handleSaveQuotation} className="hidden sm:flex gap-2">
                   <Save className="h-4 w-4" /> Save
                 </Button>
-                <Button size="sm" className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 font-semibold" onClick={handleDownloadPDF} disabled={isGenerating}>
+                <Button size="sm" className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-semibold" onClick={handleDownloadPDF} disabled={isGenerating}>
                   <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
                 </Button>
               </div>
@@ -644,7 +644,7 @@ export function QuotationGenerator() {
             {/* Client Details */}
             <section className="form-section">
               <h2 className="font-display font-semibold text-sm mb-4 flex items-center gap-2">
-                <span className="h-5 w-5 rounded-md bg-purple-600 flex items-center justify-center text-white text-xs font-bold">C</span>
+                <span className="h-5 w-5 rounded-md bg-blue-600 flex items-center justify-center text-white text-xs font-bold">C</span>
                 Client Details
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
@@ -998,7 +998,7 @@ export function QuotationGenerator() {
 
             {/* Actions */}
             <div className="flex flex-wrap gap-3 pb-4">
-              <Button className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 font-semibold" onClick={togglePreview}>
+              <Button className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-semibold" onClick={togglePreview}>
                 <Eye className="h-4 w-4" /> Preview & Download
               </Button>
               <button onClick={handleWhatsAppShare} disabled={!savedOnce} title={savedOnce ? "Share on WhatsApp" : "Save draft first"} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors ${savedOnce ? "hover:bg-accent cursor-pointer" : "opacity-40 cursor-not-allowed"}`}>

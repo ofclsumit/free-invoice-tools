@@ -1,7 +1,7 @@
 {
-  "name": "QuoteFlow - GST Invoice & Quotation Generator",
-  "short_name": "QuoteFlow",
-  "description": "Create professional GST invoices and quotations in seconds",
+  "name": "QuoteStream - Free Invoice & Quotation Generator",
+  "short_name": "QuoteStream",
+  "description": "Create professional invoices, quotations, and GST bills in seconds",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

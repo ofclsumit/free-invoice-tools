@@ -26,14 +26,15 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://quoteflow.in"),
+  metadataBase: new URL("https://quotestream.com"),
   title: {
-    default: "QuoteFlow — GST Invoice & Quotation Generator for Indian Businesses",
-    template: "%s | QuoteFlow",
+    default: "QuoteStream — Free Professional Invoice & Quotation Generator",
+    template: "%s | QuoteStream",
   },
   description:
-    "Create professional GST invoices and quotations in seconds. Free forever. No signup needed. Instant PDF download. Perfect for Indian freelancers and businesses.",
+    "Create professional invoices, quotations, and GST bills in seconds. The best free online platform for generating business documents in India. Fast, mobile-friendly, and SEO-optimized.",
   keywords: [
+    "QuoteStream",
     "GST invoice generator",
     "quotation generator India",
     "free invoice maker",
@@ -45,25 +46,25 @@ export const metadata: Metadata = {
     "Indian invoice software",
     "free GST billing",
   ],
-  authors: [{ name: "QuoteFlow" }],
-  creator: "QuoteFlow",
-  publisher: "QuoteFlow",
+  authors: [{ name: "QuoteStream" }],
+  creator: "QuoteStream",
+  publisher: "QuoteStream",
   alternates: {
-    canonical: "https://quoteflow.in",
+    canonical: "https://quotestream.com",
   },
   openGraph: {
     type: "website",
     locale: "en_IN",
-    siteName: "QuoteFlow",
-    title: "QuoteFlow — Fastest GST Invoice Generator for India",
+    siteName: "QuoteStream",
+    title: "QuoteStream — Create Professional Invoices & Quotations in Seconds",
     description:
-      "Create professional GST invoices in seconds. Free forever. Instant PDF download. No signup needed.",
-    url: "https://quoteflow.in",
+      "Create professional GST invoices and quotations in seconds. Free forever. Instant PDF download. No signup needed.",
+    url: "https://quotestream.com",
   },
   twitter: {
     card: "summary_large_image",
-    title: "QuoteFlow — GST Invoice Generator",
-    description: "Create professional GST invoices in seconds. Free forever. No signup needed.",
+    title: "QuoteStream — Free Professional Invoice Generator",
+    description: "Create professional GST invoices and quotations in seconds. Free forever. No signup needed.",
   },
   manifest: "/manifest.json",
   robots: {
@@ -105,22 +106,22 @@ export default function RootLayout({
               {
                 "@context": "https://schema.org",
                 "@type": "Organization",
-                name: "QuoteFlow",
-                url: "https://quoteflow.in",
+                name: "QuoteStream",
+                url: "https://quotestream.com",
                 description:
-                  "Create professional GST invoices and quotations in seconds. Free forever.",
+                  "Create professional GST invoices and quotations in seconds. The best free online platform for generating business documents in India.",
                 foundingDate: "2024",
               },
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                name: "QuoteFlow",
-                url: "https://quoteflow.in",
+                name: "QuoteStream",
+                url: "https://quotestream.com",
                 description:
-                  "Free GST invoice generator for Indian businesses. Create invoices, quotations, and more.",
+                  "Free GST invoice generator for Indian businesses. Create invoices, quotations, receipts, and more.",
                 potentialAction: {
                   "@type": "SearchAction",
-                  target: "https://quoteflow.in/search?q={search_term_string}",
+                  target: "https://quotestream.com/search?q={search_term_string}",
                   "query-input": "required name=search_term_string",
                 },
               },

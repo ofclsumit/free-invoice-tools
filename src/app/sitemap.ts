@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 import { invoiceGeneratorDictionary, quotationGeneratorDictionary, toolContentDictionary } from "@/lib/seo/content-dictionary"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://quoteflow.in"
+  const baseUrl = "https://quotestream.com"
 
   const routes: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
