@@ -1053,13 +1053,13 @@ export function PurchaseOrderClient() {
               <Button className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-semibold" onClick={togglePreview}>
                 <Eye className="h-4 w-4" /> Preview & Download
               </Button>
-              <button onClick={handleWhatsAppShare} disabled={!savedOnce} title={savedOnce ? "Share on WhatsApp" : "Save draft first"} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors ${savedOnce ? "hover:bg-accent cursor-pointer" : "opacity-40 cursor-not-allowed"}`}>
+              <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
                 <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />
               </button>
-              <button onClick={handleEmailPO} disabled={!savedOnce} title={savedOnce ? "Email Purchase Order" : "Save draft first"} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors ${savedOnce ? "hover:bg-accent cursor-pointer" : "opacity-40 cursor-not-allowed"}`}>
+              <button onClick={handleEmailPO} title="Email Purchase Order" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
                 <img src="/email.svg" alt="Email" className="h-5 w-5" />
               </button>
-              <ShareButton invoiceData={invoiceData} template={watchedValues.template} title={`Purchase Order ${watchedValues.poNumber}`} disabled={!savedOnce} />
+              <ShareButton invoiceData={invoiceData} template={watchedValues.template} title={`Purchase Order ${watchedValues.poNumber}`} />
               <Button variant="outline" className="gap-2" onClick={handlePrint}>
                 <Printer className="h-4 w-4" /> Print
               </Button>

@@ -1001,13 +1001,13 @@ export function QuotationGenerator() {
               <Button className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-semibold" onClick={togglePreview}>
                 <Eye className="h-4 w-4" /> Preview & Download
               </Button>
-              <button onClick={handleWhatsAppShare} disabled={!savedOnce} title={savedOnce ? "Share on WhatsApp" : "Save draft first"} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors ${savedOnce ? "hover:bg-accent cursor-pointer" : "opacity-40 cursor-not-allowed"}`}>
+              <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
                 <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />
               </button>
-              <button onClick={handleEmailQuotation} disabled={!savedOnce} title={savedOnce ? "Email Quotation" : "Save draft first"} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors ${savedOnce ? "hover:bg-accent cursor-pointer" : "opacity-40 cursor-not-allowed"}`}>
+              <button onClick={handleEmailQuotation} title="Email Quotation" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
                 <img src="/email.svg" alt="Email" className="h-5 w-5" />
               </button>
-              <ShareButton invoiceData={invoiceData} template={watchedValues.template} title={`Quotation ${watchedValues.quoteNumber}`} disabled={!savedOnce} />
+              <ShareButton invoiceData={invoiceData} template={watchedValues.template} title={`Quotation ${watchedValues.quoteNumber}`} />
               <Button variant="outline" className="gap-2" onClick={handleConvertToInvoice}>
                 <FileText className="h-4 w-4" /> Convert to Invoice
               </Button>
