@@ -94,6 +94,24 @@ export function InvoiceGenerator() {
 
   useEffect(() => setMounted(true), [])
 
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams(window.location.search)
+    const businessName = params.get("businessName")
+    if (businessName) {
+      form.setValue("businessName", businessName)
+      form.setValue("businessGstin", params.get("businessGstin") || "")
+      form.setValue("businessAddress", params.get("businessAddress") || "")
+      form.setValue("businessPhone", params.get("businessPhone") || "")
+      form.setValue("businessEmail", params.get("businessEmail") || "")
+      form.setValue("clientName", params.get("clientName") || "")
+      form.setValue("clientGstin", params.get("clientGstin") || "")
+      form.setValue("clientAddress", params.get("clientAddress") || "")
+      form.setValue("clientPhone", params.get("clientPhone") || "")
+      form.setValue("clientEmail", params.get("clientEmail") || "")
+    }
+  }, [])
+
   const validateEssentialFields = useCallback(() => {
     const values = form?.getValues()
     if (!values) return false

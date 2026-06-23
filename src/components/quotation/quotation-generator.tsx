@@ -371,6 +371,10 @@ export function QuotationGenerator() {
     window.open(`https://wa.me/?text=${message}`, "_blank")
   }
 
+  const handlePrint = () => {
+    window.print()
+  }
+
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
   const renderTemplate = () => {
@@ -422,7 +426,7 @@ export function QuotationGenerator() {
 
             <div
               ref={previewContainerRef}
-              className="flex-1 overflow-auto p-8 flex justify-center items-start"
+              className="flex-1 overflow-auto p-2 sm:p-4 md:p-8 flex justify-center items-start"
               style={{ cursor: "grab" }}
             >
               <div 
@@ -549,7 +553,7 @@ export function QuotationGenerator() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5 sm:col-span-2">
                   <div className="flex items-center gap-4">
-                    <div className="relative min-h-[80px] min-w-[80px] max-w-[160px] max-h-[160px] shrink-0 overflow-hidden rounded-xl border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group">
+                    <div className="relative shrink-0 border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group" style={{ minWidth: "80px", minHeight: "80px", maxWidth: "200px", maxHeight: "200px", borderRadius: "8px" }}>
                       {watchedValues.businessLogo ? (
                         <>
                           <img src={watchedValues.businessLogo} alt="Logo" className="max-h-[150px] max-w-full object-contain p-1" />
@@ -911,16 +915,16 @@ export function QuotationGenerator() {
               <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleRevertLastSaved} title="Revert to last saved">
                 <RotateCcw className="h-4 w-4 text-muted-foreground" />
               </Button>
-              <Button variant="outline" size="icon" className="h-9 w-9" onClick={handleWhatsAppShare} title="Share on WhatsApp">
-                <MessageCircle className="h-4 w-4 text-emerald-500" />
-              </Button>
-              <Button variant="outline" size="icon" className="h-9 w-9" onClick={handleEmailQuotation} title="Email Quotation">
-                <Mail className="h-4 w-4 text-blue-500" />
-              </Button>
+              <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm hover:bg-accent transition-colors">
+                <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />
+              </button>
+              <button onClick={handleEmailQuotation} title="Email Quotation" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm hover:bg-accent transition-colors">
+                <img src="/email.svg" alt="Email" className="h-5 w-5" />
+              </button>
               <Button variant="outline" className="gap-2" onClick={handleConvertToInvoice}>
                 <FileText className="h-4 w-4" /> Convert to Invoice
               </Button>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" className="gap-2" onClick={handlePrint}>
                 <Printer className="h-4 w-4" /> Print
               </Button>
             </div>
