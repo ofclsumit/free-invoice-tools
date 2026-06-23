@@ -28,14 +28,19 @@ export default function ClassicBooksTemplate({ invoice, className = "" }: Props)
 
   return (
     <div
-      className={`invoice-page bg-white text-stone-900 mx-auto ${className}`}
+      className={`invoice-page bg-white text-stone-900 mx-auto relative overflow-hidden ${className}`}
       style={{
         width: "210mm",
         minHeight: "297mm",
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
     >
-      <div className="flex flex-col h-full px-12 py-10">
+      {invoice.watermarkUrl && (
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.08] z-0">
+          <img src={invoice.watermarkUrl} alt="" className="max-w-[70%] max-h-[70%] object-contain" />
+        </div>
+      )}
+      <div className="flex flex-col h-full px-12 py-10 relative z-[1]">
         {/* ── Header ─────────────────────────────────────────────── */}
         <header className="flex items-start justify-between pb-6">
           <div className="flex items-center gap-4">
@@ -98,6 +103,9 @@ export default function ClassicBooksTemplate({ invoice, className = "" }: Props)
             <DetailLine label="Due Date" value={invoice.dueDate || "—"} green={green} />
             {company.gstin && (
               <DetailLine label="Seller GSTIN" value={company.gstin} green={green} />
+            )}
+            {company.pan && (
+              <DetailLine label="PAN" value={company.pan} green={green} />
             )}
             {billTo.gstin && gstMode !== "none" && (
               <DetailLine label="Buyer GSTIN" value={billTo.gstin} green={green} />
@@ -259,6 +267,7 @@ export default function ClassicBooksTemplate({ invoice, className = "" }: Props)
                   )}
                   {invoice.bankDetails.accountNumber && <p>A/C: {invoice.bankDetails.accountNumber}</p>}
                   {invoice.bankDetails.ifsc && <p>IFSC: {invoice.bankDetails.ifsc}</p>}
+                  {invoice.bankDetails.upiId && <p>UPI: {invoice.bankDetails.upiId}</p>}
                 </div>
               </div>
             )}

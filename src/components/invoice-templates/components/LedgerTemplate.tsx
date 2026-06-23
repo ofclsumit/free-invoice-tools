@@ -17,14 +17,19 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
 
   return (
     <div
-      className={`invoice-page bg-white text-gray-900 mx-auto ${className}`}
+      className={`invoice-page bg-white text-gray-900 mx-auto relative overflow-hidden ${className}`}
       style={{
         width: "210mm",
         minHeight: "297mm",
         fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
       }}
     >
-      <div className="flex flex-col min-h-[297mm]" style={{ padding: "8mm 10mm" }}>
+      {invoice.watermarkUrl && (
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.08] z-0">
+          <img src={invoice.watermarkUrl} alt="" className="max-w-[70%] max-h-[70%] object-contain" />
+        </div>
+      )}
+      <div className="flex flex-col min-h-[297mm] relative z-[1]" style={{ padding: "8mm 10mm" }}>
         {/* ── Header ─────────────────────────────────────────────── */}
         <header className="flex items-start justify-between pb-5">
           <div className="flex items-start gap-4 max-w-[65%]">
@@ -46,6 +51,11 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
               {company.gstin && (
                 <p className="text-[10px] text-gray-500 mt-0.5 font-medium">
                   GSTIN: {company.gstin}
+                </p>
+              )}
+              {company.pan && (
+                <p className="text-[10px] text-gray-500 font-medium">
+                  PAN: {company.pan}
                 </p>
               )}
               {company.addressLines.length > 0 && (
@@ -286,8 +296,9 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
                     Payment Details
                   </p>
                   <div className="text-[10px] text-gray-600 grid grid-cols-2 gap-x-4 gap-y-0.5" style={{ fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }}>
-                    {invoice.bankDetails.accountName && <span>A/C: {invoice.bankDetails.accountName}</span>}
-                    {invoice.bankDetails.accountNumber && <span>A/C No: {invoice.bankDetails.accountNumber}</span>}
+                    {invoice.bankDetails.accountName && <span>{invoice.bankDetails.accountName}</span>}
+                    {invoice.bankDetails.bankName && <span>{invoice.bankDetails.bankName}{invoice.bankDetails.branch ? `, ${invoice.bankDetails.branch}` : ""}</span>}
+                    {invoice.bankDetails.accountNumber && <span>A/C: {invoice.bankDetails.accountNumber}</span>}
                     {invoice.bankDetails.ifsc && <span>IFSC: {invoice.bankDetails.ifsc}</span>}
                     {invoice.bankDetails.upiId && <span>UPI: {invoice.bankDetails.upiId}</span>}
                   </div>

@@ -74,6 +74,7 @@ export interface InvoiceData {
   notes?: string;
   termsAndConditions?: string;
   bankDetails?: BankDetails;
+  watermarkUrl?: string;
 
   amountPaid?: number;
   /** Whether to render reverse-charge note (Indian GST requirement) */

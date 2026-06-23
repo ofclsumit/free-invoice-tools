@@ -31,7 +31,7 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
 
   return (
     <div
-      className={`invoice-page bg-white text-stone-900 mx-auto ${className}`}
+      className={`invoice-page bg-white text-stone-900 mx-auto relative overflow-hidden ${className}`}
       style={{
         width: "210mm",
         minHeight: "297mm",
@@ -39,8 +39,13 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
         fontSize: "12px",
       }}
     >
+      {invoice.watermarkUrl && (
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.08] z-0">
+          <img src={invoice.watermarkUrl} alt="" className="max-w-[70%] max-h-[70%] object-contain" />
+        </div>
+      )}
       <div
-        className="flex flex-col h-full m-4"
+        className="flex flex-col h-full m-4 relative z-[1]"
         style={{ border: `1.5px solid ${maroon}` }}
       >
         {/* ── Header ─────────────────────────────────────────────── */}
@@ -83,6 +88,11 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
             {company.gstin && (
               <p className="text-[10px] font-semibold text-stone-700">
                 GSTIN: {company.gstin}
+              </p>
+            )}
+            {company.pan && (
+              <p className="text-[10px] text-stone-600">
+                PAN: {company.pan}
               </p>
             )}
           </div>
@@ -222,9 +232,14 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
                 <p className="font-bold" style={{ color: maroon }}>
                   Bank Details
                 </p>
+                {invoice.bankDetails.accountName && <p className="text-stone-600">{invoice.bankDetails.accountName}</p>}
+                {invoice.bankDetails.bankName && (
+                  <p className="text-stone-600">
+                    {invoice.bankDetails.bankName}{invoice.bankDetails.branch ? `, ${invoice.bankDetails.branch}` : ""}
+                  </p>
+                )}
                 <p className="text-stone-600">
-                  {invoice.bankDetails.bankName}, A/C: {invoice.bankDetails.accountNumber}, IFSC:{" "}
-                  {invoice.bankDetails.ifsc}
+                  A/C: {invoice.bankDetails.accountNumber}, IFSC: {invoice.bankDetails.ifsc}
                 </p>
                 {invoice.bankDetails.upiId && (
                   <p className="text-stone-600">UPI: {invoice.bankDetails.upiId}</p>

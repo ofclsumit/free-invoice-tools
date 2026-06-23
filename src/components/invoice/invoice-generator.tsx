@@ -47,8 +47,10 @@ const itemSchema = z.object({
 const invoiceSchema = z.object({
   businessLogo: z.string().optional(),
   businessSignature: z.string().optional(),
+  watermarkUrl: z.string().optional(),
   businessName: z.string().min(1, "Business name required"),
   businessGstin: z.string().optional(),
+  businessPan: z.string().optional(),
   businessAddress: z.string().optional(),
   businessPincode: z.string().optional(),
   businessPhone: z.string().optional(),
@@ -70,6 +72,11 @@ const invoiceSchema = z.object({
   attachments: z.string().optional(),
   additionalInfo: z.string().optional(),
   upiId: z.string().optional(),
+  bankAccountName: z.string().optional(),
+  bankAccountNumber: z.string().optional(),
+  bankIfsc: z.string().optional(),
+  bankName: z.string().optional(),
+  bankBranch: z.string().optional(),
   globalDiscountPercent: z.coerce.number().min(0).max(100).optional().default(0),
   shippingCharge: z.coerce.number().min(0).optional().default(0),
   template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "ClassicBooksTemplate"]).default("StudioTemplate"),
@@ -191,6 +198,7 @@ export function InvoiceGenerator() {
     if (businessName) {
       form.setValue("businessName", businessName)
       form.setValue("businessGstin", params.get("businessGstin") || "")
+      form.setValue("businessPan", params.get("businessPan") || "")
       form.setValue("businessAddress", params.get("businessAddress") || "")
       form.setValue("businessPhone", params.get("businessPhone") || "")
       form.setValue("businessEmail", params.get("businessEmail") || "")
@@ -259,12 +267,14 @@ export function InvoiceGenerator() {
       gstMode: "split",
       globalDiscountPercent: Number(watchedValues.globalDiscountPercent) || 0,
       shippingCharge: Number(watchedValues.shippingCharge) || 0,
+      watermarkUrl: watchedValues.watermarkUrl,
       company: {
         name: watchedValues.businessName,
         logoUrl: watchedValues.businessLogo,
         signatureUrl: watchedValues.businessSignature,
         addressLines: watchedValues.businessAddress ? watchedValues.businessAddress.split('\n') : [],
         gstin: watchedValues.businessGstin,
+        pan: watchedValues.businessPan,
         phone: watchedValues.businessPhone,
         email: watchedValues.businessEmail,
       },
@@ -293,6 +303,11 @@ export function InvoiceGenerator() {
       notes: watchedValues.notes,
       termsAndConditions: watchedValues.terms,
       bankDetails: {
+        accountName: watchedValues.bankAccountName,
+        accountNumber: watchedValues.bankAccountNumber,
+        ifsc: watchedValues.bankIfsc,
+        bankName: watchedValues.bankName,
+        branch: watchedValues.bankBranch,
         upiId: watchedValues.upiId,
       }
     };
@@ -595,6 +610,10 @@ export function InvoiceGenerator() {
                   <Input {...form.register("businessGstin")} placeholder="e.g. 22AAAAA0000A1Z5" className="h-9 text-sm font-mono" />
                 </div>
                 <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">PAN (optional)</Label>
+                  <Input {...form.register("businessPan")} placeholder="e.g. AAAAA0000A" className="h-9 text-sm font-mono uppercase" onChange={(e) => form.setValue("businessPan", e.target.value.toUpperCase())} />
+                </div>
+                <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Phone</Label>
                   <Input {...form.register("businessPhone")} type="tel" inputMode="numeric" placeholder="e.g. 9876543210" className="h-9 text-sm" />
                 </div>
@@ -845,10 +864,79 @@ export function InvoiceGenerator() {
                     <Textarea {...form.register("additionalInfo")} rows={2} className="text-sm resize-none" placeholder="e.g. Delivery timeline: 2 weeks from payment confirmation. Warranty: 1 year." />
                     <p className="text-[11px] text-muted-foreground">Any other details the client should know about this invoice.</p>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">UPI ID (for payment QR)</Label>
-                    <Input {...form.register("upiId")} placeholder="e.g. yourname@upi" className="h-9 text-sm" />
-                    <p className="text-[11px] text-muted-foreground">A QR code will be auto-generated in the PDF for easy payment.</p>
+                  <div className="border-t border-border pt-4">
+                    <p className="text-xs font-semibold mb-3 flex items-center gap-1.5">
+                      <span className="h-4 w-4 rounded bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">$</span>
+                      Bank Details (for payment)
+                    </p>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium">Account Holder Name</Label>
+                        <Input {...form.register("bankAccountName")} placeholder="e.g. John Doe" className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium">Account Number</Label>
+                        <Input {...form.register("bankAccountNumber")} placeholder="e.g. 12345678901" className="h-9 text-sm font-mono" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium">IFSC Code</Label>
+                        <Input {...form.register("bankIfsc")} placeholder="e.g. SBIN0001234" className="h-9 text-sm font-mono uppercase" onChange={(e) => form.setValue("bankIfsc", e.target.value.toUpperCase())} />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium">Bank Name</Label>
+                        <Input {...form.register("bankName")} placeholder="e.g. State Bank of India" className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium">Branch</Label>
+                        <Input {...form.register("bankBranch")} placeholder="e.g. Andheri East" className="h-9 text-sm" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-medium">UPI ID</Label>
+                        <Input {...form.register("upiId")} placeholder="e.g. yourname@upi" className="h-9 text-sm" />
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-2">Bank details appear in the PDF for client payment reference.</p>
+                  </div>
+                  <div className="border-t border-border pt-4">
+                    <p className="text-xs font-semibold mb-3 flex items-center gap-1.5">
+                      <span className="h-4 w-4 rounded bg-emerald-600 flex items-center justify-center text-white text-[10px] font-bold">W</span>
+                      Watermark (optional)
+                    </p>
+                    <div className="relative h-24 w-full max-w-sm shrink-0 overflow-hidden rounded-xl border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group">
+                      {watchedValues.watermarkUrl ? (
+                        <>
+                          <img src={watchedValues.watermarkUrl} alt="Watermark" className="h-full w-full object-contain p-2 opacity-50" />
+                          <div
+                            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                            onClick={(e) => { e.preventDefault(); form.setValue("watermarkUrl", "") }}
+                          >
+                            <Trash2 className="h-5 w-5 text-white" />
+                          </div>
+                        </>
+                      ) : (
+                        <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
+                          <FileUp className="h-5 w-5 text-muted-foreground mb-1" />
+                          <span className="text-xs text-muted-foreground font-medium">Upload Watermark Image</span>
+                          <span className="text-[10px] text-muted-foreground mt-0.5">PNG with transparency works best</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  form.setValue("watermarkUrl", reader.result as string);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-2">A faint watermark will appear across the document background. Best with a transparent PNG logo or text.</p>
                   </div>
                 </div>
               )}

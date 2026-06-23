@@ -28,13 +28,18 @@ export default function MinimalMonoTemplate({ invoice, className = "" }: Props) 
 
   return (
     <div
-      className={`invoice-page bg-white text-black mx-auto relative ${className}`}
+      className={`invoice-page bg-white text-black mx-auto relative overflow-hidden ${className}`}
       style={{
         width: "210mm",
         minHeight: "297mm",
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
     >
+      {invoice.watermarkUrl && (
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.08] z-0">
+          <img src={invoice.watermarkUrl} alt="" className="max-w-[70%] max-h-[70%] object-contain" />
+        </div>
+      )}
       {invoice.status && (
         <div
           className="absolute top-16 right-16 border-2 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em]"
@@ -87,6 +92,14 @@ export default function MinimalMonoTemplate({ invoice, className = "" }: Props) 
                 style={{ fontFamily: "'JetBrains Mono', monospace" }}
               >
                 GSTIN {company.gstin}
+              </p>
+            )}
+            {company.pan && (
+              <p
+                className="text-black/60"
+                style={{ fontFamily: "'JetBrains Mono', monospace" }}
+              >
+                PAN {company.pan}
               </p>
             )}
           </div>
@@ -266,11 +279,15 @@ export default function MinimalMonoTemplate({ invoice, className = "" }: Props) 
             <div>
               {invoice.notes && <p className="mb-2">{invoice.notes}</p>}
               {invoice.bankDetails && (
-                <p style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                  {invoice.bankDetails.bankName && `${invoice.bankDetails.bankName} · `}
-                  {invoice.bankDetails.accountNumber}
-                  {invoice.bankDetails.ifsc && ` · ${invoice.bankDetails.ifsc}`}
-                </p>
+                <div>
+                  {invoice.bankDetails.accountName && <p>{invoice.bankDetails.accountName}</p>}
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                    {invoice.bankDetails.bankName && `${invoice.bankDetails.bankName}${invoice.bankDetails.branch ? `, ${invoice.bankDetails.branch}` : ""} · `}
+                    {invoice.bankDetails.accountNumber && `A/C: ${invoice.bankDetails.accountNumber}`}
+                    {invoice.bankDetails.ifsc && ` · IFSC: ${invoice.bankDetails.ifsc}`}
+                  </p>
+                  {invoice.bankDetails.upiId && <p style={{ fontFamily: "'JetBrains Mono', monospace" }}>UPI: {invoice.bankDetails.upiId}</p>}
+                </div>
               )}
             </div>
             <div className="text-right flex flex-col items-end justify-end">

@@ -18,7 +18,7 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
 
   return (
     <div
-      className={`invoice-page mx-auto ${className}`}
+      className={`invoice-page mx-auto relative overflow-hidden ${className}`}
       style={{
         width: "210mm",
         minHeight: "297mm",
@@ -27,7 +27,12 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
         color: "#2A2622",
       }}
     >
-      <div className="flex flex-col h-full px-12 py-10">
+      {invoice.watermarkUrl && (
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.08] z-0">
+          <img src={invoice.watermarkUrl} alt="" className="max-w-[70%] max-h-[70%] object-contain" />
+        </div>
+      )}
+      <div className="flex flex-col h-full px-12 py-10 relative z-[1]">
         {/* ── Header ─────────────────────────────────────────────── */}
         <header className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
@@ -84,6 +89,9 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
             </p>
             {company.gstin && (
               <p className="text-xs text-stone-500 mt-1">GSTIN {company.gstin}</p>
+            )}
+            {company.pan && (
+              <p className="text-xs text-stone-500">PAN {company.pan}</p>
             )}
           </div>
           <div className="bg-white rounded-2xl p-5">
@@ -220,11 +228,11 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
                 <p className="font-bold text-stone-700 mb-1 text-[10px] uppercase tracking-widest">
                   Payment Details
                 </p>
-                {invoice.bankDetails.upiId && <p>UPI: {invoice.bankDetails.upiId}</p>}
-                {invoice.bankDetails.accountNumber && (
-                  <p>A/C: {invoice.bankDetails.accountNumber}</p>
-                )}
+                {invoice.bankDetails.accountName && <p>{invoice.bankDetails.accountName}</p>}
+                {invoice.bankDetails.bankName && <p>{invoice.bankDetails.bankName}{invoice.bankDetails.branch ? `, ${invoice.bankDetails.branch}` : ""}</p>}
+                {invoice.bankDetails.accountNumber && <p>A/C: {invoice.bankDetails.accountNumber}</p>}
                 {invoice.bankDetails.ifsc && <p>IFSC: {invoice.bankDetails.ifsc}</p>}
+                {invoice.bankDetails.upiId && <p>UPI: {invoice.bankDetails.upiId}</p>}
               </div>
             )}
           </section>
