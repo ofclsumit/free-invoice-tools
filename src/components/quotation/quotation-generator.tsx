@@ -15,7 +15,8 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import {
   Plus, Trash2, Download, Share2, Eye, Save, Send, Copy, Printer, FileText,
-  X, ZoomIn, ZoomOut, ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2
+  X, ZoomIn, ZoomOut, ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
+  HelpCircle, RotateCcw, MessageCircle, Mail
 } from "lucide-react"
 import {
   InvoicePreview,
@@ -38,8 +39,8 @@ const itemSchema = z.object({
   hsnCode: z.string().optional(),
   quantity: z.number().min(0.01),
   unit: z.string().optional(),
-  rate: z.number().min(0),
-  discount: z.number().min(0).max(100).default(0),
+  rate: z.coerce.number().min(0).optional().default(0),
+  discount: z.coerce.number().min(0).max(100).optional().default(0),
   taxRate: z.number().min(0).max(28).default(18),
   gstType: z.enum(["CGST_SGST", "IGST", "EXEMPT"]).default("CGST_SGST"),
 })
@@ -70,8 +71,8 @@ const quotationSchema = z.object({
   attachments: z.string().optional(),
   additionalInfo: z.string().optional(),
   upiId: z.string().optional(),
-  globalDiscountPercent: z.number().min(0).max(100).optional().default(0),
-  shippingCharge: z.number().min(0).optional().default(0),
+  globalDiscountPercent: z.coerce.number().min(0).max(100).optional().default(0),
+  shippingCharge: z.coerce.number().min(0).optional().default(0),
   template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "ClassicBooksTemplate"]).default("StudioTemplate"),
   status: z.enum(["Draft", "Sent", "Accepted", "Rejected", "Expired"]).default("Draft"),
 })
@@ -83,8 +84,8 @@ const defaultItem = {
   hsnCode: "",
   quantity: 1,
   unit: "Nos",
-  rate: 0,
-  discount: 0,
+  rate: undefined as unknown as number,
+  discount: undefined as unknown as number,
   taxRate: 18,
   gstType: "CGST_SGST" as const,
 }
@@ -123,7 +124,7 @@ const CURRENCIES = [
 
 export function QuotationGenerator() {
   const { toast } = useToast()
-  const { saveQuotation } = useQuotationStorage()
+  const { saveQuotation, quotations } = useQuotationStorage()
   const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -174,8 +175,8 @@ export function QuotationGenerator() {
       currencySymbol: "₹",
       items: [{ ...defaultItem }],
       terms: "This quotation is valid for 15 days from the date of issue.",
-      globalDiscountPercent: 0,
-      shippingCharge: 0,
+      globalDiscountPercent: undefined,
+      shippingCharge: undefined,
       template: "StudioTemplate",
       status: "Draft",
     },
@@ -308,6 +309,18 @@ export function QuotationGenerator() {
       title: "Quotation saved as draft!",
       description: `"${watchedValues.quoteNumber}" saved locally. Your data persists even if you close the browser.`,
     })
+  }
+
+  const handleRevertLastSaved = () => {
+    if (!quotations.length) {
+      toast({ title: "No saved quotations found", variant: "destructive" })
+      return
+    }
+    const last = quotations[0]
+    if (last.data) {
+      form.reset(last.data)
+      toast({ title: `Reverted to "${last.quoteNumber}"` })
+    }
   }
 
   const handleUseCurrency = (code: string) => {
@@ -448,6 +461,9 @@ export function QuotationGenerator() {
             <p className="text-xs text-muted-foreground">Create a professional quotation for your client</p>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs hidden sm:flex" onClick={handleRevertLastSaved} title="Revert to last saved">
+              <RotateCcw className="h-3.5 w-3.5" /> Revert
+            </Button>
             <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs hidden sm:flex" onClick={handleSaveQuotation}>
               <Save className="h-3.5 w-3.5" /> Save Draft
             </Button>
@@ -495,7 +511,20 @@ export function QuotationGenerator() {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Status</Label>
+                  <Label className="text-xs font-medium flex items-center gap-1">
+                    Status
+                    <span className="group relative inline-flex">
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-48 p-2 text-[11px] leading-relaxed bg-gray-900 text-white rounded-lg shadow-lg z-50">
+                        <strong className="block mb-1">Status Guide:</strong>
+                        <span className="block"><strong>Draft</strong> — Work in progress, not yet shared.</span>
+                        <span className="block"><strong>Sent</strong> — Sent to the client for review.</span>
+                        <span className="block"><strong>Accepted</strong> — Client has approved the quote.</span>
+                        <span className="block"><strong>Rejected</strong> — Client declined the quote.</span>
+                        <span className="block"><strong>Expired</strong> — Validity period has passed.</span>
+                      </span>
+                    </span>
+                  </Label>
                   <Select
                     defaultValue="Draft"
                     onValueChange={(v) => form.setValue("status", v as any)}
@@ -520,10 +549,10 @@ export function QuotationGenerator() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5 sm:col-span-2">
                   <div className="flex items-center gap-4">
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group">
+                    <div className="relative min-h-[80px] min-w-[80px] max-w-[160px] max-h-[160px] shrink-0 overflow-hidden rounded-xl border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group">
                       {watchedValues.businessLogo ? (
                         <>
-                          <img src={watchedValues.businessLogo} alt="Logo" className="h-full w-full object-contain p-1" />
+                          <img src={watchedValues.businessLogo} alt="Logo" className="max-h-[150px] max-w-full object-contain p-1" />
                           <div
                             className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                             onClick={(e) => {
@@ -568,7 +597,7 @@ export function QuotationGenerator() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Phone</Label>
-                  <Input {...form.register("businessPhone")} placeholder="e.g. +91 98765 43210" className="h-9 text-sm" />
+                  <Input {...form.register("businessPhone")} type="tel" inputMode="numeric" placeholder="e.g. 9876543210" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label className="text-xs font-medium">Address</Label>
@@ -576,7 +605,7 @@ export function QuotationGenerator() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Pincode</Label>
-                  <Input {...form.register("businessPincode")} placeholder="e.g. 400001" className="h-9 text-sm" />
+                  <Input {...form.register("businessPincode")} inputMode="numeric" pattern="[0-9]*" placeholder="e.g. 400001" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Email</Label>
@@ -606,7 +635,7 @@ export function QuotationGenerator() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Phone</Label>
-                  <Input {...form.register("clientPhone")} placeholder="e.g. +91 98765 43210" className="h-9 text-sm" />
+                  <Input {...form.register("clientPhone")} type="tel" inputMode="numeric" placeholder="e.g. 9876543210" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label className="text-xs font-medium">Address</Label>
@@ -614,7 +643,7 @@ export function QuotationGenerator() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Pincode</Label>
-                  <Input {...form.register("clientPincode")} placeholder="e.g. 400051" className="h-9 text-sm" />
+                  <Input {...form.register("clientPincode")} inputMode="numeric" pattern="[0-9]*" placeholder="e.g. 400051" className="h-9 text-sm" />
                 </div>
               </div>
             </section>
@@ -879,11 +908,14 @@ export function QuotationGenerator() {
               <Button variant="outline" className="gap-2" onClick={handleSaveQuotation}>
                 <Save className="h-4 w-4" /> Save Draft
               </Button>
-              <Button variant="outline" className="gap-2" onClick={handleWhatsAppShare}>
-                <Share2 className="h-4 w-4" /> Share on WhatsApp
+              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleRevertLastSaved} title="Revert to last saved">
+                <RotateCcw className="h-4 w-4 text-muted-foreground" />
               </Button>
-              <Button variant="outline" className="gap-2" onClick={handleEmailQuotation}>
-                <Send className="h-4 w-4" /> Email Quotation
+              <Button variant="outline" size="icon" className="h-9 w-9" onClick={handleWhatsAppShare} title="Share on WhatsApp">
+                <MessageCircle className="h-4 w-4 text-emerald-500" />
+              </Button>
+              <Button variant="outline" size="icon" className="h-9 w-9" onClick={handleEmailQuotation} title="Email Quotation">
+                <Mail className="h-4 w-4 text-blue-500" />
               </Button>
               <Button variant="outline" className="gap-2" onClick={handleConvertToInvoice}>
                 <FileText className="h-4 w-4" /> Convert to Invoice
@@ -902,11 +934,6 @@ export function QuotationGenerator() {
                 Live Preview — <span className="text-muted-foreground font-normal text-xs">{TEMPLATES.find(t => t.id === watchedValues.template)?.name}</span>
               </h2>
               <div className="relative rounded-xl border border-border/50 bg-white dark:bg-gray-900 overflow-hidden shadow-inner">
-                <div className="absolute top-2 right-2 z-10">
-                  <Badge variant="secondary" className="text-[10px] bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-                    Scrollable preview
-                  </Badge>
-                </div>
                 <div className="max-h-[500px] overflow-auto p-2 sm:p-4">
                   <div className="transform origin-top scale-[0.45] sm:scale-[0.6] lg:scale-[0.7] origin-top-left w-[calc(100%_/_0.45)] sm:w-[calc(100%_/_0.6)] lg:w-[calc(100%_/_0.7)]">
                     <InvoicePreview hideToolbar={true}>
