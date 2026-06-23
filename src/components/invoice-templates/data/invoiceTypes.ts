@@ -55,7 +55,7 @@ export interface InvoiceData {
   invoiceNumber: string;
   invoiceDate: string; // ISO or display string
   dueDate?: string;
-  documentType?: "INVOICE" | "QUOTATION" | "PROFORMA" | "RECEIPT";
+  documentType?: "INVOICE" | "QUOTATION" | "PROFORMA" | "RECEIPT" | "PURCHASE_ORDER";
   status?: "Paid" | "Unpaid" | "Overdue" | "Draft" | "Partially Paid";
   currencySymbol: string; // "₹", "$", "€"
   gstMode: GstMode;

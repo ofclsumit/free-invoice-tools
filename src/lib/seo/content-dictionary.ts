@@ -524,9 +524,12 @@ export const toolContentDictionary: Record<string, SeoContent> = {
     features: [
       "Custom company logo and name",
       "Automatic PO number generation",
-      "Unlimited line items with total calculation",
-      "Professional print-optimized layout",
+      "Unlimited line items with GST calculation",
+      "Multi-template support with live preview",
       "Authorized signature section",
+      "Bank details and watermark support",
+      "Intra-state / Inter-state GST toggle",
+      "Save drafts locally in your browser",
     ],
     benefits: [
       "Free to use with no account creation",
