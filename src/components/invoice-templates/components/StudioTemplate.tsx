@@ -35,11 +35,11 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
               <img
                 src={company.logoUrl}
                 alt={`${company.name} logo`}
-                className="h-12 w-12 object-contain rounded-full"
+                className="h-12 w-12 object-contain"
               />
             ) : (
               <div
-                className="h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                className="h-12 w-12 flex items-center justify-center text-white font-bold text-lg rounded-2xl"
                 style={{ backgroundColor: coral }}
               >
                 {company.name.charAt(0)}

@@ -426,17 +426,18 @@ export function QuotationGenerator() {
 
             <div
               ref={previewContainerRef}
-              className="flex-1 overflow-auto p-2 sm:p-4 md:p-8 flex justify-center items-start"
+              className="flex-1 overflow-auto p-0 sm:p-2 md:p-4 flex flex-col items-center"
               style={{ cursor: "grab" }}
             >
               <div 
-                className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white transform origin-center transition-transform duration-75 ease-out mx-auto"
+                className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white"
                 style={{ 
                   width: "210mm",
                   minHeight: "297mm",
                   transform: `scale(${zoom})`,
-                  marginBottom: `${Math.max(0, (zoom - 1) * 148.5)}mm`,
-                  marginTop: `${Math.max(0, (zoom - 1) * 148.5)}mm`
+                  transformOrigin: "top center",
+                  margin: "auto",
+                  maxWidth: "100vw"
                 }}
               >
                 <InvoicePreview hideToolbar={true}>
@@ -553,7 +554,7 @@ export function QuotationGenerator() {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5 sm:col-span-2">
                   <div className="flex items-center gap-4">
-                    <div className="relative shrink-0 border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group" style={{ minWidth: "80px", minHeight: "80px", maxWidth: "200px", maxHeight: "200px", borderRadius: "8px" }}>
+                    <div className="relative shrink-0 border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group" style={{ minWidth: "80px", minHeight: "80px", maxWidth: "200px", maxHeight: "200px" }}>
                       {watchedValues.businessLogo ? (
                         <>
                           <img src={watchedValues.businessLogo} alt="Logo" className="max-h-[150px] max-w-full object-contain p-1" />

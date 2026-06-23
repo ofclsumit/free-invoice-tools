@@ -53,9 +53,9 @@ export default function MinimalMonoTemplate({ invoice, className = "" }: Props) 
         <header className="flex items-start justify-between pb-8">
           <div className="flex items-center gap-3">
             {company.logoUrl ? (
-              <img src={company.logoUrl} alt="logo" className="h-10 w-10 object-contain grayscale rounded-full" />
+              <img src={company.logoUrl} alt="logo" className="h-10 w-10 object-contain grayscale" />
             ) : (
-              <div className="h-10 w-10 border-2 border-black rounded-full flex items-center justify-center font-bold">
+              <div className="h-10 w-10 border-2 border-black flex items-center justify-center font-bold">
                 {company.name.charAt(0)}
               </div>
             )}

@@ -32,10 +32,10 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
               <img
                 src={company.logoUrl}
                 alt={`${company.name} logo`}
-                className="h-20 w-20 object-contain rounded-full shrink-0"
+                className="h-20 w-20 object-contain shrink-0"
               />
             ) : company.name ? (
-              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-700 to-blue-500 text-white flex items-center justify-center font-bold shrink-0" style={{ fontSize: "32px" }}>
+              <div className="h-20 w-20 rounded-xl bg-gradient-to-br from-blue-700 to-blue-500 text-white flex items-center justify-center font-bold shrink-0" style={{ fontSize: "32px" }}>
                 {company.name.charAt(0).toUpperCase()}
               </div>
             ) : null}

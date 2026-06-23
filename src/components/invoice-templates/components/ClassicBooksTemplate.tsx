@@ -43,11 +43,11 @@ export default function ClassicBooksTemplate({ invoice, className = "" }: Props)
               <img
                 src={company.logoUrl}
                 alt={`${company.name} logo`}
-                className="h-16 w-16 object-contain rounded-full"
+                className="h-16 w-16 object-contain"
               />
             ) : (
               <div
-                className="h-16 w-16 rounded-full flex items-center justify-center text-white text-2xl font-serif"
+                className="h-16 w-16 flex items-center justify-center text-white text-2xl font-serif rounded-lg"
                 style={{ backgroundColor: green }}
               >
                 {company.name.charAt(0)}

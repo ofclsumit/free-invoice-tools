@@ -50,10 +50,10 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
         >
           <div className="flex items-center gap-3">
             {company.logoUrl ? (
-              <img src={company.logoUrl} alt="logo" className="h-12 w-12 object-contain rounded-full" />
+              <img src={company.logoUrl} alt="logo" className="h-12 w-12 object-contain" />
             ) : (
               <div
-                className="h-12 w-12 flex items-center justify-center text-white font-bold rounded-full"
+                className="h-12 w-12 flex items-center justify-center text-white font-bold rounded"
                 style={{ backgroundColor: maroon }}
               >
                 {company.name.charAt(0)}
