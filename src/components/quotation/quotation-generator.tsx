@@ -748,7 +748,7 @@ export function QuotationGenerator() {
                     <Input {...form.register("globalDiscountPercent", { valueAsNumber: true })} type="number" min="0" max="100" className="h-9 text-sm" placeholder="e.g. 5" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">Shipping Charges</Label>
+                    <Label className="text-xs font-medium">Processing Charge</Label>
                     <Input {...form.register("shippingCharge", { valueAsNumber: true })} type="number" min="0" className="h-9 text-sm" placeholder="e.g. 500" />
                   </div>
                 </div>
