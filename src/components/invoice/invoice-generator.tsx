@@ -398,34 +398,37 @@ export function InvoiceGenerator() {
     }
   }
 
-  const createShareLink = async () => {
-    const res = await fetch("/api/share", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ invoiceData, template: watchedValues.template, title: `Invoice ${watchedValues.invoiceNumber}` }),
-    })
-    if (!res.ok) throw new Error("Failed to create share link")
-    const { id } = await res.json()
-    return `${window.location.origin}/view/${id}`
-  }
-
   const handleEmailInvoice = async () => {
     if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
-      const link = await createShareLink()
-      const subject = encodeURIComponent(`Invoice ${watchedValues.invoiceNumber} from ${watchedValues.businessName}`)
-      const body = encodeURIComponent(
-        `Dear ${watchedValues.clientName},\n\n` +
-        `Please find your invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n` +
-        `${link}\n\n` +
-        `Payment is due by ${watchedValues.dueDate || "the specified date"}.\n\n` +
-        `Best regards,\n${watchedValues.businessName}`
-      )
-      window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${subject}&body=${body}`, "_blank")
-      toast({ title: "Email client opened with invoice details" })
+      const node = document.getElementById("invoice-print-root")
+      if (!node) throw new Error("Invoice not found")
+      const fileName = `invoice-${watchedValues.invoiceNumber}.pdf`
+      const blob = await exportNodeToPdf(node, fileName, true)
+      
+      const file = new File([blob], fileName, { type: "application/pdf" })
+      const subject = `Invoice ${watchedValues.invoiceNumber} from ${watchedValues.businessName}`
+      const body = `Dear ${watchedValues.clientName},\n\nPlease find attached the invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\nPayment is due by ${watchedValues.dueDate || "the specified date"}.\n\nBest regards,\n${watchedValues.businessName}`
+      
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: subject,
+          text: body,
+          files: [file]
+        })
+      } else {
+        // Fallback: download PDF and open mailto
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+        window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      }
     } catch (e) {
-      toast({ title: "Failed to generate link", variant: "destructive" })
+      toast({ title: "Failed to share invoice", variant: "destructive" })
     } finally {
       setIsGenerating(false)
     }
@@ -435,13 +438,32 @@ export function InvoiceGenerator() {
     if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
-      const link = await createShareLink()
-      const message = encodeURIComponent(
-        `Hello ${watchedValues.clientName},\n\nPlease find your invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n${link}\n\nPayment due by ${watchedValues.dueDate}.\n\nThank you!\n\n${watchedValues.businessName}`
-      )
-      window.open(`https://wa.me/?text=${message}`, "_blank")
+      const node = document.getElementById("invoice-print-root")
+      if (!node) throw new Error("Invoice not found")
+      const fileName = `invoice-${watchedValues.invoiceNumber}.pdf`
+      const blob = await exportNodeToPdf(node, fileName, true)
+      
+      const file = new File([blob], fileName, { type: "application/pdf" })
+      const message = `Hello ${watchedValues.clientName},\n\nPlease find your invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nPayment due by ${watchedValues.dueDate}.\n\nThank you!\n\n${watchedValues.businessName}`
+      
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: `Invoice ${watchedValues.invoiceNumber}`,
+          text: message,
+          files: [file]
+        })
+      } else {
+        // Fallback: download PDF and open wa.me
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+        window.open(`https://wa.me/?text=${encodeURIComponent(message + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      }
     } catch (e) {
-      toast({ title: "Failed to generate link", variant: "destructive" })
+      toast({ title: "Failed to share via WhatsApp", variant: "destructive" })
     } finally {
       setIsGenerating(false)
     }

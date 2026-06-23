@@ -379,34 +379,36 @@ export function PurchaseOrderClient() {
     }
   }
 
-  const createShareLink = async () => {
-    const res = await fetch("/api/share", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ invoiceData, template: watchedValues.template, title: `Purchase Order ${watchedValues.poNumber}` }),
-    })
-    if (!res.ok) throw new Error("Failed to create share link")
-    const { id } = await res.json()
-    return `${window.location.origin}/view/${id}`
-  }
-
   const handleEmailPO = async () => {
     if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
-      const link = await createShareLink()
-      const subject = encodeURIComponent(`Purchase Order ${watchedValues.poNumber} from ${watchedValues.businessName}`)
-      const body = encodeURIComponent(
-        `Dear ${watchedValues.supplierName},\n\n` +
-        `Please find your purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n` +
-        `${link}\n\n` +
-        `Delivery is expected by ${watchedValues.deliveryDate || "the specified date"}.\n\n` +
-        `Best regards,\n${watchedValues.businessName}`
-      )
-      window.open(`mailto:${watchedValues.supplierEmail || ""}?subject=${subject}&body=${body}`, "_blank")
-      toast({ title: "Email client opened with PO details" })
+      const node = document.getElementById("po-print-root")
+      if (!node) throw new Error("Purchase order not found")
+      const fileName = `purchase-order-${watchedValues.poNumber}.pdf`
+      const blob = await exportNodeToPdf(node, fileName, true)
+      
+      const file = new File([blob], fileName, { type: "application/pdf" })
+      const subject = `Purchase Order ${watchedValues.poNumber} from ${watchedValues.businessName}`
+      const body = `Dear ${watchedValues.supplierName || "Supplier"},\n\nPlease find attached the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\nDelivery requested by ${watchedValues.deliveryDate || "the specified date"}.\n\nBest regards,\n${watchedValues.businessName}`
+      
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: subject,
+          text: body,
+          files: [file]
+        })
+      } else {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+        window.open(`mailto:${watchedValues.supplierEmail || ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      }
     } catch (e) {
-      toast({ title: "Failed to generate link", variant: "destructive" })
+      toast({ title: "Failed to share purchase order", variant: "destructive" })
     } finally {
       setIsGenerating(false)
     }
@@ -416,13 +418,31 @@ export function PurchaseOrderClient() {
     if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
-      const link = await createShareLink()
-      const message = encodeURIComponent(
-        `Hello,\n\nPlease find the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n${link}\n\nThank you!\n\n${watchedValues.businessName}`
-      )
-      window.open(`https://wa.me/?text=${message}`, "_blank")
+      const node = document.getElementById("po-print-root")
+      if (!node) throw new Error("Purchase order not found")
+      const fileName = `purchase-order-${watchedValues.poNumber}.pdf`
+      const blob = await exportNodeToPdf(node, fileName, true)
+      
+      const file = new File([blob], fileName, { type: "application/pdf" })
+      const message = `Hello,\n\nPlease find the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nThank you!\n\n${watchedValues.businessName}`
+      
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: `Purchase Order ${watchedValues.poNumber}`,
+          text: message,
+          files: [file]
+        })
+      } else {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+        window.open(`https://wa.me/?text=${encodeURIComponent(message + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      }
     } catch (e) {
-      toast({ title: "Failed to generate link", variant: "destructive" })
+      toast({ title: "Failed to share via WhatsApp", variant: "destructive" })
     } finally {
       setIsGenerating(false)
     }

@@ -368,34 +368,37 @@ export function QuotationGenerator() {
     toast({ title: "Opening Invoice Generator with your data..." })
   }
 
-  const createShareLink = async () => {
-    const res = await fetch("/api/share", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ invoiceData, template: watchedValues.template, title: `Quotation ${watchedValues.quoteNumber}` }),
-    })
-    if (!res.ok) throw new Error("Failed to create share link")
-    const { id } = await res.json()
-    return `${window.location.origin}/view/${id}`
-  }
-
   const handleEmailQuotation = async () => {
     if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
-      const link = await createShareLink()
-      const subject = encodeURIComponent(`Quotation ${watchedValues.quoteNumber} from ${watchedValues.businessName}`)
-      const body = encodeURIComponent(
-        `Dear ${watchedValues.clientName},\n\n` +
-        `Please find your quotation ${watchedValues.quoteNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n` +
-        `${link}\n\n` +
-        `This quote is valid until ${watchedValues.validUntil || "the specified date"}.\n\n` +
-        `Best regards,\n${watchedValues.businessName}`
-      )
-      window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${subject}&body=${body}`, "_blank")
-      toast({ title: "Email client opened with quotation details" })
+      const node = document.getElementById("quotation-print-root")
+      if (!node) throw new Error("Quotation not found")
+      const fileName = `quotation-${watchedValues.quoteNumber}.pdf`
+      const blob = await exportNodeToPdf(node, fileName, true)
+      
+      const file = new File([blob], fileName, { type: "application/pdf" })
+      const subject = `Quotation ${watchedValues.quoteNumber} from ${watchedValues.businessName}`
+      const body = `Dear ${watchedValues.clientName},\n\nPlease find attached the quotation ${watchedValues.quoteNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\nThis quote is valid until ${watchedValues.validUntil || "the specified date"}.\n\nBest regards,\n${watchedValues.businessName}`
+      
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: subject,
+          text: body,
+          files: [file]
+        })
+      } else {
+        // Fallback
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+        window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      }
     } catch (e) {
-      toast({ title: "Failed to generate link", variant: "destructive" })
+      toast({ title: "Failed to share quotation", variant: "destructive" })
     } finally {
       setIsGenerating(false)
     }
@@ -405,13 +408,32 @@ export function QuotationGenerator() {
     if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
-      const link = await createShareLink()
-      const message = encodeURIComponent(
-        `Hello ${watchedValues.clientName},\n\nPlease find your quotation ${watchedValues.quoteNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n${link}\n\nThis quote is valid until ${watchedValues.validUntil}.\n\nThank you!\n\n${watchedValues.businessName}`
-      )
-      window.open(`https://wa.me/?text=${message}`, "_blank")
+      const node = document.getElementById("quotation-print-root")
+      if (!node) throw new Error("Quotation not found")
+      const fileName = `quotation-${watchedValues.quoteNumber}.pdf`
+      const blob = await exportNodeToPdf(node, fileName, true)
+      
+      const file = new File([blob], fileName, { type: "application/pdf" })
+      const message = `Hello ${watchedValues.clientName},\n\nPlease find your quotation ${watchedValues.quoteNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nThis quote is valid until ${watchedValues.validUntil}.\n\nThank you!\n\n${watchedValues.businessName}`
+      
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          title: `Quotation ${watchedValues.quoteNumber}`,
+          text: message,
+          files: [file]
+        })
+      } else {
+        // Fallback
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = fileName
+        a.click()
+        URL.revokeObjectURL(url)
+        window.open(`https://wa.me/?text=${encodeURIComponent(message + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      }
     } catch (e) {
-      toast({ title: "Failed to generate link", variant: "destructive" })
+      toast({ title: "Failed to share via WhatsApp", variant: "destructive" })
     } finally {
       setIsGenerating(false)
     }

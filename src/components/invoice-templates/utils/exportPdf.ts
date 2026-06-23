@@ -5,6 +5,7 @@ export function printInvoice() {
 export async function exportNodeToPdf(
   node: HTMLElement,
   fileName = "invoice.pdf",
+  returnBlob = false
 ) {
   const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
     import("html2canvas"),
@@ -67,5 +68,11 @@ export async function exportNodeToPdf(
     node.style.height = originalHeight
   }
 
-  if (pdf) pdf.save(fileName)
+  if (pdf) {
+    if (returnBlob) {
+      return pdf.output('blob');
+    }
+    pdf.save(fileName)
+  }
+  return null;
 }
