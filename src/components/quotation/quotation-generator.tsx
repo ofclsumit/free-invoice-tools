@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Plus, Trash2, Download, Eye, Save, Printer, FileText,
   X, ZoomIn, ZoomOut, ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
-  HelpCircle, RotateCcw
+  HelpCircle, RotateCcw, Share2, Loader2
 } from "lucide-react"
 import {
   InvoicePreview,
@@ -33,6 +33,7 @@ import { cn, formatCurrency } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { useQuotationStorage } from "@/hooks/use-quotation-storage"
+import { ShareButton } from "@/components/shared/share-button"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -137,6 +138,7 @@ export function QuotationGenerator() {
   const [mounted, setMounted] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [showExtras, setShowExtras] = useState(false)
+  const [savedOnce, setSavedOnce] = useState(false)
   const previewContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => setMounted(true), [])
@@ -310,6 +312,7 @@ export function QuotationGenerator() {
 
   const handleSaveQuotation = () => {
     if (!validateEssentialFields()) return
+    setSavedOnce(true)
     saveQuotation({
       id: watchedValues.quoteNumber,
       quoteNumber: watchedValues.quoteNumber,
@@ -465,7 +468,7 @@ export function QuotationGenerator() {
       )}
 
       {/* Hidden print root - always rendered so window.print() works */}
-      <div className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
+      <div id="invoice-print-wrapper" className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
         <div id="invoice-print-root">
           <InvoicePreview hideToolbar={true}>
             {renderTemplate()}
@@ -481,11 +484,11 @@ export function QuotationGenerator() {
             <p className="text-xs text-muted-foreground">Create a professional quotation for your client</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs hidden sm:flex" onClick={handleRevertLastSaved} title="Revert to last saved">
-              <RotateCcw className="h-3.5 w-3.5" /> Revert
+            <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleRevertLastSaved} title="Revert to last saved">
+              <RotateCcw className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Revert</span>
             </Button>
-            <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs hidden sm:flex" onClick={handleSaveQuotation}>
-              <Save className="h-3.5 w-3.5" /> Save Draft
+            <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleSaveQuotation}>
+              <Save className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Save Draft</span>
             </Button>
           </div>
         </div>
@@ -998,12 +1001,13 @@ export function QuotationGenerator() {
               <Button className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 font-semibold" onClick={togglePreview}>
                 <Eye className="h-4 w-4" /> Preview & Download
               </Button>
-              <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm hover:bg-accent transition-colors">
+              <button onClick={handleWhatsAppShare} disabled={!savedOnce} title={savedOnce ? "Share on WhatsApp" : "Save draft first"} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors ${savedOnce ? "hover:bg-accent cursor-pointer" : "opacity-40 cursor-not-allowed"}`}>
                 <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />
               </button>
-              <button onClick={handleEmailQuotation} title="Email Quotation" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm hover:bg-accent transition-colors">
+              <button onClick={handleEmailQuotation} disabled={!savedOnce} title={savedOnce ? "Email Quotation" : "Save draft first"} className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors ${savedOnce ? "hover:bg-accent cursor-pointer" : "opacity-40 cursor-not-allowed"}`}>
                 <img src="/email.svg" alt="Email" className="h-5 w-5" />
               </button>
+              <ShareButton invoiceData={invoiceData} template={watchedValues.template} title={`Quotation ${watchedValues.quoteNumber}`} disabled={!savedOnce} />
               <Button variant="outline" className="gap-2" onClick={handleConvertToInvoice}>
                 <FileText className="h-4 w-4" /> Convert to Invoice
               </Button>

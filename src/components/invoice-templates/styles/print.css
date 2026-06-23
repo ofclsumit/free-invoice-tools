@@ -26,6 +26,12 @@
     visibility: visible;
   }
 
+  #invoice-print-wrapper {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+  }
+
   #invoice-print-root {
     position: absolute !important;
     left: 0 !important;

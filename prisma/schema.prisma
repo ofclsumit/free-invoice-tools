@@ -294,6 +294,16 @@ model Settings {
   @@map("settings")
 }
 
+model ShareLink {
+  id        String   @id @default(cuid())
+  data      String   // JSON string of full InvoiceData
+  title     String?
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@map("share_links")
+}
+
 // Enums mapped as strings for SQLite compatibility
 // InvoiceStatus: DRAFT, SENT, VIEWED, PAID, OVERDUE, CANCELLED
 // QuotationStatus: DRAFT, SENT, VIEWED, ACCEPTED, REJECTED, EXPIRED, CONVERTED
