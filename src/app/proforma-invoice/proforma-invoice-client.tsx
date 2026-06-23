@@ -339,24 +339,53 @@ export function ProformaInvoiceClient() {
     }
   }
 
-  const handleEmailProforma = () => {
-    if (!validateEssentialFields()) return
-    const subject = encodeURIComponent(`Proforma Invoice ${watchedValues.proformaNumber} from ${watchedValues.businessName}`)
-    const body = encodeURIComponent(
-      `Dear ${watchedValues.clientName},\n\n` +
-      `Please find attached the proforma invoice ${watchedValues.proformaNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\n` +
-      `This is valid until ${watchedValues.validUntil || "the specified date"}.\n\n` +
-      `Best regards,\n${watchedValues.businessName}`
-    )
-    window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${subject}&body=${body}`, "_blank")
-    toast({ title: "Email client opened with proforma details" })
+  const createShareLink = async () => {
+    const res = await fetch("/api/share", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ invoiceData, template: watchedValues.template, title: `Proforma Invoice ${watchedValues.proformaNumber}` }),
+    })
+    if (!res.ok) throw new Error("Failed to create share link")
+    const { id } = await res.json()
+    return `${window.location.origin}/view/${id}`
   }
 
-  const handleWhatsAppShare = () => {
-    const message = encodeURIComponent(
-      `Hello ${watchedValues.clientName},\n\nPlease find your proforma invoice ${watchedValues.proformaNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\nValid until ${watchedValues.validUntil}.\n\nThank you!\n\n${watchedValues.businessName}`
-    )
-    window.open(`https://wa.me/?text=${message}`, "_blank")
+  const handleEmailProforma = async () => {
+    if (!validateEssentialFields()) return
+    setIsGenerating(true)
+    try {
+      const link = await createShareLink()
+      const subject = encodeURIComponent(`Proforma Invoice ${watchedValues.proformaNumber} from ${watchedValues.businessName}`)
+      const body = encodeURIComponent(
+        `Dear ${watchedValues.clientName},\n\n` +
+        `Please find your proforma invoice ${watchedValues.proformaNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n` +
+        `${link}\n\n` +
+        `This is valid until ${watchedValues.validUntil || "the specified date"}.\n\n` +
+        `Best regards,\n${watchedValues.businessName}`
+      )
+      window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${subject}&body=${body}`, "_blank")
+      toast({ title: "Email client opened with proforma details" })
+    } catch (e) {
+      toast({ title: "Failed to generate link", variant: "destructive" })
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const handleWhatsAppShare = async () => {
+    if (!validateEssentialFields()) return
+    setIsGenerating(true)
+    try {
+      const link = await createShareLink()
+      const message = encodeURIComponent(
+        `Hello ${watchedValues.clientName},\n\nPlease find your proforma invoice ${watchedValues.proformaNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n${link}\n\nValid until ${watchedValues.validUntil}.\n\nThank you!\n\n${watchedValues.businessName}`
+      )
+      window.open(`https://wa.me/?text=${message}`, "_blank")
+    } catch (e) {
+      toast({ title: "Failed to generate link", variant: "destructive" })
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   const handlePrint = () => { window.print() }

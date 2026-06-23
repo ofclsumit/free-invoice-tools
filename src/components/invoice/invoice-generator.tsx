@@ -398,25 +398,53 @@ export function InvoiceGenerator() {
     }
   }
 
-  const handleEmailInvoice = () => {
-    if (!validateEssentialFields()) return
-    const subject = encodeURIComponent(`Invoice ${watchedValues.invoiceNumber} from ${watchedValues.businessName}`)
-    const body = encodeURIComponent(
-      `Dear ${watchedValues.clientName},\n\n` +
-      `Please find attached the invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\n` +
-      `Payment is due by ${watchedValues.dueDate || "the specified date"}.\n\n` +
-      `You can download the PDF by clicking Preview & Download on our platform.\n\n` +
-      `Best regards,\n${watchedValues.businessName}`
-    )
-    window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${subject}&body=${body}`, "_blank")
-    toast({ title: "Email client opened with invoice details" })
+  const createShareLink = async () => {
+    const res = await fetch("/api/share", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ invoiceData, template: watchedValues.template, title: `Invoice ${watchedValues.invoiceNumber}` }),
+    })
+    if (!res.ok) throw new Error("Failed to create share link")
+    const { id } = await res.json()
+    return `${window.location.origin}/view/${id}`
   }
 
-  const handleWhatsAppShare = () => {
-    const message = encodeURIComponent(
-      `Hello ${watchedValues.clientName},\n\nPlease find your invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nPayment due by ${watchedValues.dueDate}.\n\nThank you!\n\n${watchedValues.businessName}`
-    )
-    window.open(`https://wa.me/?text=${message}`, "_blank")
+  const handleEmailInvoice = async () => {
+    if (!validateEssentialFields()) return
+    setIsGenerating(true)
+    try {
+      const link = await createShareLink()
+      const subject = encodeURIComponent(`Invoice ${watchedValues.invoiceNumber} from ${watchedValues.businessName}`)
+      const body = encodeURIComponent(
+        `Dear ${watchedValues.clientName},\n\n` +
+        `Please find your invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n` +
+        `${link}\n\n` +
+        `Payment is due by ${watchedValues.dueDate || "the specified date"}.\n\n` +
+        `Best regards,\n${watchedValues.businessName}`
+      )
+      window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${subject}&body=${body}`, "_blank")
+      toast({ title: "Email client opened with invoice details" })
+    } catch (e) {
+      toast({ title: "Failed to generate link", variant: "destructive" })
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const handleWhatsAppShare = async () => {
+    if (!validateEssentialFields()) return
+    setIsGenerating(true)
+    try {
+      const link = await createShareLink()
+      const message = encodeURIComponent(
+        `Hello ${watchedValues.clientName},\n\nPlease find your invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n${link}\n\nPayment due by ${watchedValues.dueDate}.\n\nThank you!\n\n${watchedValues.businessName}`
+      )
+      window.open(`https://wa.me/?text=${message}`, "_blank")
+    } catch (e) {
+      toast({ title: "Failed to generate link", variant: "destructive" })
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   const handlePrint = () => {

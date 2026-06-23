@@ -379,24 +379,53 @@ export function PurchaseOrderClient() {
     }
   }
 
-  const handleEmailPO = () => {
-    if (!validateEssentialFields()) return
-    const subject = encodeURIComponent(`Purchase Order ${watchedValues.poNumber} from ${watchedValues.businessName}`)
-    const body = encodeURIComponent(
-      `Dear Supplier,\n\n` +
-      `Please find attached the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\n` +
-      `Delivery requested by ${watchedValues.deliveryDate || "the specified date"}.\n\n` +
-      `Best regards,\n${watchedValues.businessName}`
-    )
-    window.open(`mailto:${watchedValues.supplierEmail || ""}?subject=${subject}&body=${body}`, "_blank")
-    toast({ title: "Email client opened with purchase order details" })
+  const createShareLink = async () => {
+    const res = await fetch("/api/share", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ invoiceData, template: watchedValues.template, title: `Purchase Order ${watchedValues.poNumber}` }),
+    })
+    if (!res.ok) throw new Error("Failed to create share link")
+    const { id } = await res.json()
+    return `${window.location.origin}/view/${id}`
   }
 
-  const handleWhatsAppShare = () => {
-    const message = encodeURIComponent(
-      `Hello,\n\nPlease find the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\nThank you!\n\n${watchedValues.businessName}`
-    )
-    window.open(`https://wa.me/?text=${message}`, "_blank")
+  const handleEmailPO = async () => {
+    if (!validateEssentialFields()) return
+    setIsGenerating(true)
+    try {
+      const link = await createShareLink()
+      const subject = encodeURIComponent(`Purchase Order ${watchedValues.poNumber} from ${watchedValues.businessName}`)
+      const body = encodeURIComponent(
+        `Dear ${watchedValues.supplierName},\n\n` +
+        `Please find your purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n` +
+        `${link}\n\n` +
+        `Delivery is expected by ${watchedValues.deliveryDate || "the specified date"}.\n\n` +
+        `Best regards,\n${watchedValues.businessName}`
+      )
+      window.open(`mailto:${watchedValues.supplierEmail || ""}?subject=${subject}&body=${body}`, "_blank")
+      toast({ title: "Email client opened with PO details" })
+    } catch (e) {
+      toast({ title: "Failed to generate link", variant: "destructive" })
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const handleWhatsAppShare = async () => {
+    if (!validateEssentialFields()) return
+    setIsGenerating(true)
+    try {
+      const link = await createShareLink()
+      const message = encodeURIComponent(
+        `Hello,\n\nPlease find the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} at the following link:\n\n${link}\n\nThank you!\n\n${watchedValues.businessName}`
+      )
+      window.open(`https://wa.me/?text=${message}`, "_blank")
+    } catch (e) {
+      toast({ title: "Failed to generate link", variant: "destructive" })
+    } finally {
+      setIsGenerating(false)
+    }
   }
 
   const handlePrint = () => { window.print() }
