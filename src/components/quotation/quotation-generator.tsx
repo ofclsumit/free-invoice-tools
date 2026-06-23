@@ -14,9 +14,9 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import {
-  Plus, Trash2, Download, Share2, Eye, Save, Send, Copy, Printer, FileText,
+  Plus, Trash2, Download, Eye, Save, Printer, FileText,
   X, ZoomIn, ZoomOut, ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
-  HelpCircle, RotateCcw, MessageCircle, Mail
+  HelpCircle, RotateCcw
 } from "lucide-react"
 import {
   InvoicePreview,
@@ -432,25 +432,16 @@ export function QuotationGenerator() {
               <div 
                 className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white"
                 style={{ 
-                  width: "210mm",
-                  minHeight: "297mm",
+                  width: "100%",
+                  maxWidth: "210mm",
                   transform: `scale(${zoom})`,
                   transformOrigin: "top center",
-                  margin: "auto",
-                  maxWidth: "100vw"
+                  margin: "0 auto"
                 }}
               >
                 <InvoicePreview hideToolbar={true}>
                   {renderTemplate()}
                 </InvoicePreview>
-              </div>
-
-              <div className="absolute -left-[9999px] -top-[9999px]">
-                <div id="invoice-print-root">
-                  <InvoicePreview hideToolbar={true}>
-                    {renderTemplate()}
-                  </InvoicePreview>
-                </div>
               </div>
             </div>
 
@@ -909,12 +900,6 @@ export function QuotationGenerator() {
             <div className="flex flex-wrap gap-3 pb-4">
               <Button className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white border-0 font-semibold" onClick={togglePreview}>
                 <Eye className="h-4 w-4" /> Preview & Download
-              </Button>
-              <Button variant="outline" className="gap-2" onClick={handleSaveQuotation}>
-                <Save className="h-4 w-4" /> Save Draft
-              </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleRevertLastSaved} title="Revert to last saved">
-                <RotateCcw className="h-4 w-4 text-muted-foreground" />
               </Button>
               <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm hover:bg-accent transition-colors">
                 <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />

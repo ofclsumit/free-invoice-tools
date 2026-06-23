@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google"
 import Script from "next/script"
 import "./globals.css"
+import "@/components/invoice-templates/styles/print.css"
 import { ThemeProvider } from "@/components/shared/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 
