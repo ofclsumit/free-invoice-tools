@@ -5,13 +5,28 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number, currency = "INR"): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
+export function formatCurrency(amount: number, currencyOrSymbol = "INR"): string {
+  try {
+    // If it's a 3-letter code (like INR, USD), use native currency formatting
+    if (currencyOrSymbol.length === 3 && /^[A-Z]{3}$/i.test(currencyOrSymbol)) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: currencyOrSymbol,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount)
+    }
+  } catch (e) {
+    // Ignore error and fall through to manual formatting
+  }
+
+  // Fallback: format as number and prepend the symbol (e.g. ₹)
+  const formattedNumber = new Intl.NumberFormat("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount)
+  
+  return `${currencyOrSymbol}${formattedNumber}`
 }
 
 export function formatDate(dateStr: string, format = "short"): string {
