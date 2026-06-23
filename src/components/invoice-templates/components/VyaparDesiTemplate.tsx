@@ -35,7 +35,7 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
       style={{
         width: "210mm",
         minHeight: "297mm",
-        fontFamily: "'Noto Sans', system-ui, sans-serif",
+        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
         fontSize: "12px",
       }}
     >
@@ -50,10 +50,10 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
         >
           <div className="flex items-center gap-3">
             {company.logoUrl ? (
-              <img src={company.logoUrl} alt="logo" className="h-12 w-12 object-contain" />
+              <img src={company.logoUrl} alt="logo" className="h-12 w-12 object-contain rounded-full" />
             ) : (
               <div
-                className="h-12 w-12 flex items-center justify-center text-white font-bold rounded"
+                className="h-12 w-12 flex items-center justify-center text-white font-bold rounded-full"
                 style={{ backgroundColor: maroon }}
               >
                 {company.name.charAt(0)}
@@ -78,7 +78,7 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
               className="text-lg font-extrabold uppercase tracking-wide"
               style={{ color: saffron }}
             >
-              Tax Invoice
+              {invoice.documentType || "TAX INVOICE"}
             </h2>
             {company.gstin && (
               <p className="text-[10px] font-semibold text-stone-700">

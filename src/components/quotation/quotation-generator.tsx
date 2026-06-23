@@ -206,6 +206,7 @@ export function QuotationGenerator() {
       invoiceNumber: watchedValues.quoteNumber,
       invoiceDate: watchedValues.quoteDate,
       dueDate: watchedValues.validUntil,
+      documentType: "QUOTATION",
       currencySymbol: watchedValues.currencySymbol || "₹",
       gstMode: "split",
       globalDiscountPercent: Number(watchedValues.globalDiscountPercent) || 0,
@@ -318,7 +319,36 @@ export function QuotationGenerator() {
   }
 
   const handleConvertToInvoice = () => {
-    toast({ title: "Converting to Invoice..." })
+    if (!validateEssentialFields()) return
+    const params = new URLSearchParams()
+    params.set("businessName", watchedValues.businessName)
+    params.set("businessGstin", watchedValues.businessGstin || "")
+    params.set("businessAddress", watchedValues.businessAddress || "")
+    params.set("businessPhone", watchedValues.businessPhone || "")
+    params.set("businessEmail", watchedValues.businessEmail || "")
+    params.set("clientName", watchedValues.clientName)
+    params.set("clientGstin", watchedValues.clientGstin || "")
+    params.set("clientAddress", watchedValues.clientAddress || "")
+    params.set("clientPhone", watchedValues.clientPhone || "")
+    params.set("clientEmail", watchedValues.clientEmail || "")
+    params.set("currencySymbol", watchedValues.currencySymbol)
+    params.set("template", watchedValues.template)
+    window.open(`/invoice-generator?${params.toString()}`, "_blank")
+    toast({ title: "Opening Invoice Generator with your data..." })
+  }
+
+  const handleEmailQuotation = () => {
+    if (!validateEssentialFields()) return
+    const subject = encodeURIComponent(`Quotation ${watchedValues.quoteNumber} from ${watchedValues.businessName}`)
+    const body = encodeURIComponent(
+      `Dear ${watchedValues.clientName},\n\n` +
+      `Please find attached the quotation ${watchedValues.quoteNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\n` +
+      `This quotation is valid until ${watchedValues.validUntil || "the specified date"}.\n\n` +
+      `You can download the PDF by clicking Preview & Download on our platform.\n\n` +
+      `Best regards,\n${watchedValues.businessName}`
+    )
+    window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${subject}&body=${body}`, "_blank")
+    toast({ title: "Email client opened with quotation details" })
   }
 
   const handleWhatsAppShare = () => {
@@ -382,13 +412,14 @@ export function QuotationGenerator() {
               className="flex-1 overflow-auto p-8 flex justify-center items-start"
               style={{ cursor: "grab" }}
             >
-              <div
-                className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white transform origin-top transition-transform duration-75 ease-out"
-                style={{
+              <div 
+                className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white transform origin-center transition-transform duration-75 ease-out mx-auto"
+                style={{ 
                   width: "210mm",
                   minHeight: "297mm",
                   transform: `scale(${zoom})`,
-                  marginBottom: `${Math.max(0, (zoom - 1) * 297)}mm`
+                  marginBottom: `${Math.max(0, (zoom - 1) * 148.5)}mm`,
+                  marginTop: `${Math.max(0, (zoom - 1) * 148.5)}mm`
                 }}
               >
                 <InvoicePreview hideToolbar={true}>
@@ -850,6 +881,9 @@ export function QuotationGenerator() {
               </Button>
               <Button variant="outline" className="gap-2" onClick={handleWhatsAppShare}>
                 <Share2 className="h-4 w-4" /> Share on WhatsApp
+              </Button>
+              <Button variant="outline" className="gap-2" onClick={handleEmailQuotation}>
+                <Send className="h-4 w-4" /> Email Quotation
               </Button>
               <Button variant="outline" className="gap-2" onClick={handleConvertToInvoice}>
                 <FileText className="h-4 w-4" /> Convert to Invoice

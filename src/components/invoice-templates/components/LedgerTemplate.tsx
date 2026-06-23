@@ -21,7 +21,7 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
       style={{
         width: "210mm",
         minHeight: "297mm",
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
       }}
     >
       <div className="flex flex-col min-h-[297mm]" style={{ padding: "8mm 10mm" }}>
@@ -32,10 +32,10 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
               <img
                 src={company.logoUrl}
                 alt={`${company.name} logo`}
-                className="h-20 w-20 object-contain rounded-lg shrink-0"
+                className="h-20 w-20 object-contain rounded-full shrink-0"
               />
             ) : company.name ? (
-              <div className="h-20 w-20 rounded-xl bg-gradient-to-br from-blue-700 to-blue-500 text-white flex items-center justify-center font-bold shrink-0" style={{ fontSize: "32px" }}>
+              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-700 to-blue-500 text-white flex items-center justify-center font-bold shrink-0" style={{ fontSize: "32px" }}>
                 {company.name.charAt(0).toUpperCase()}
               </div>
             ) : null}
@@ -66,7 +66,7 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
 
           <div className="text-right shrink-0">
             <h2 className="font-extrabold tracking-tight text-blue-700 leading-none" style={{ fontSize: "32px" }}>
-              INVOICE
+              {invoice.documentType || "INVOICE"}
             </h2>
             <p className="mt-1.5 font-semibold text-gray-800" style={{ fontSize: "13px", fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }}>
               {invoice.invoiceNumber || "INV-001"}

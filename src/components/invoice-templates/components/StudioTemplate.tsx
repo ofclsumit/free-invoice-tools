@@ -35,11 +35,11 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
               <img
                 src={company.logoUrl}
                 alt={`${company.name} logo`}
-                className="h-12 w-12 object-contain rounded-2xl"
+                className="h-12 w-12 object-contain rounded-full"
               />
             ) : (
               <div
-                className="h-12 w-12 rounded-2xl flex items-center justify-center text-white font-bold text-lg"
+                className="h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
                 style={{ backgroundColor: coral }}
               >
                 {company.name.charAt(0)}
@@ -54,7 +54,7 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
             className="px-5 py-2.5 rounded-2xl text-white text-right"
             style={{ backgroundColor: coral }}
           >
-            <p className="text-[10px] uppercase tracking-widest opacity-90">Quotation</p>
+            <p className="text-[10px] uppercase tracking-widest opacity-90">{invoice.documentType || "QUOTATION"}</p>
             <p className="font-bold">{invoice.invoiceNumber}</p>
           </div>
         </header>
