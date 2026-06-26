@@ -6,18 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select"
-import {
-  Download, Eye, X, ZoomIn, ZoomOut, RotateCcw, Plus, Trash2
+  Download, Eye, X, ZoomIn, ZoomOut, RotateCcw, Plus, Trash2, LayoutTemplate
 } from "lucide-react"
 import {
   InvoicePreview,
-  StudioTemplate,
-  LedgerTemplate,
-  MinimalMonoTemplate,
-  VyaparDesiTemplate,
-  ClassicBooksTemplate,
   computeInvoiceTotals,
   exportNodeToPdf,
   type InvoiceData as TemplateInvoiceData
@@ -26,14 +18,15 @@ import { formatCurrency } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { ShareButton } from "@/components/shared/share-button"
-
-const TEMPLATES = [
-  { id: "StudioTemplate", name: "Modern Studio" },
-  { id: "LedgerTemplate", name: "Corporate Ledger" },
-  { id: "MinimalMonoTemplate", name: "Minimalist" },
-  { id: "VyaparDesiTemplate", name: "GST India" },
-  { id: "ClassicBooksTemplate", name: "Freelancer Classic" },
-]
+import {
+  VelvetReceipt,
+  SageReceipt,
+  CarbonReceipt,
+  SaffronReceipt,
+  TEMPLATES,
+  TemplateSelectorDialog,
+} from "@/components/cash-receipt-templates"
+import type { CashReceiptTemplateId } from "@/components/cash-receipt-templates"
 
 const PAYMENT_MODES = ["Cash", "Cheque", "UPI", "Bank Transfer"]
 
@@ -42,6 +35,7 @@ export function CashReceiptClient() {
   const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [zoom, setZoom] = useState(1)
+  const [showTemplateDialog, setShowTemplateDialog] = useState(false)
   const previewContainerRef = useRef<HTMLDivElement>(null)
 
   const [companyName, setCompanyName] = useState("")
@@ -53,11 +47,20 @@ export function CashReceiptClient() {
   const [paymentMode, setPaymentMode] = useState("Cash")
   const [receiptNo, setReceiptNo] = useState(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`)
   const [receiptDate, setReceiptDate] = useState(new Date().toISOString().split("T")[0])
-  const [template, setTemplate] = useState("StudioTemplate")
+  const [template, setTemplate] = useState<CashReceiptTemplateId>("VelvetReceipt")
   const [notes, setNotes] = useState("")
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2 })
   const numAmount = parseFloat(amount) || 0
+
+  const notesPayload = useMemo(() => {
+    const parts: string[] = []
+    parts.push(`Payment Method: ${paymentMode}`)
+    if (purpose) parts.push(`Purpose: ${purpose}`)
+    parts.push(`Received By: ${companyName || "Your Company"}`)
+    if (notes) parts.push(notes)
+    return parts.join(" | ")
+  }, [paymentMode, purpose, companyName, notes])
 
   const invoiceData: TemplateInvoiceData = useMemo(() => ({
     invoiceNumber: receiptNo,
@@ -79,24 +82,23 @@ export function CashReceiptClient() {
     items: [
       {
         id: "1",
-        description: purpose ? `Purpose: ${purpose}` : "Payment Received",
+        description: purpose || "Payment Received",
         quantity: 1,
         rate: numAmount,
       },
     ],
-    notes: notes || undefined,
+    notes: notesPayload,
     amountPaid: numAmount,
-  }), [receiptNo, receiptDate, companyName, companyLogo, businessSignature, receivedFrom, numAmount, purpose, notes])
+  }), [receiptNo, receiptDate, companyName, companyLogo, businessSignature, receivedFrom, numAmount, notesPayload])
 
   const totals = useMemo(() => computeInvoiceTotals(invoiceData), [invoiceData])
 
   const renderTemplate = () => {
     switch (template) {
-      case "LedgerTemplate": return <LedgerTemplate invoice={invoiceData} />
-      case "MinimalMonoTemplate": return <MinimalMonoTemplate invoice={invoiceData} />
-      case "VyaparDesiTemplate": return <VyaparDesiTemplate invoice={invoiceData} />
-      case "ClassicBooksTemplate": return <ClassicBooksTemplate invoice={invoiceData} />
-      default: return <StudioTemplate invoice={invoiceData} />
+      case "SageReceipt": return <SageReceipt invoice={invoiceData} />
+      case "CarbonReceipt": return <CarbonReceipt invoice={invoiceData} />
+      case "SaffronReceipt": return <SaffronReceipt invoice={invoiceData} />
+      default: return <VelvetReceipt invoice={invoiceData} />
     }
   }
 
@@ -306,6 +308,15 @@ export function CashReceiptClient() {
         </div>
       )}
 
+      {/* Template Selector Dialog */}
+      {showTemplateDialog && (
+        <TemplateSelectorDialog
+          selected={template}
+          onSelect={(id) => setTemplate(id)}
+          onClose={() => setShowTemplateDialog(false)}
+        />
+      )}
+
       {/* Main Form */}
       <div className="space-y-6">
 
@@ -329,21 +340,13 @@ export function CashReceiptClient() {
             <div className="h-5 w-1 rounded-full bg-amber-500" />
             Template
           </h3>
-          <div className="flex flex-wrap gap-2">
-            {TEMPLATES.map(t => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setTemplate(t.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
-                  template === t.id
-                    ? "bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-sm"
-                    : "border border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
-                }`}
-              >
-                {t.name}
-              </button>
-            ))}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              Current: <span className="font-semibold text-foreground">{TEMPLATES.find(t => t.id === template)?.name}</span>
+            </span>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setShowTemplateDialog(true)}>
+              <LayoutTemplate className="h-4 w-4" /> Change Template
+            </Button>
           </div>
         </section>
 
@@ -413,7 +416,7 @@ export function CashReceiptClient() {
           </div>
         </section>
 
-        {/* Amount & Purpose */}
+        {/* Payment Details */}
         <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
           <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
             <div className="h-5 w-1 rounded-full bg-blue-500" />
@@ -486,7 +489,7 @@ export function CashReceiptClient() {
             <Eye className="h-4 w-4" /> SHOW PREVIEW
           </Button>
           <Button type="button" variant="outline" className="gap-2" onClick={() => {
-            setCompanyName(""); setCompanyLogo(""); setBusinessSignature(""); setReceivedFrom(""); setAmount(""); setPurpose(""); setPaymentMode("Cash"); setReceiptNo(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(new Date().toISOString().split("T")[0]); setTemplate("StudioTemplate"); setNotes("")
+            setCompanyName(""); setCompanyLogo(""); setBusinessSignature(""); setReceivedFrom(""); setAmount(""); setPurpose(""); setPaymentMode("Cash"); setReceiptNo(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(new Date().toISOString().split("T")[0]); setTemplate("VelvetReceipt"); setNotes("")
           }}>
             <RotateCcw className="h-4 w-4" /> Reset
           </Button>

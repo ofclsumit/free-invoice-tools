@@ -1,0 +1,760 @@
+/* ─── Shared ─────────────────────────────────── */
+.receipt {
+  width: 750px;
+  height: 320px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.watermarkSvg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ═══════════════════════════════════════════════ */
+/* VELVET — Navy + Gold · Luxury Banking          */
+/* ═══════════════════════════════════════════════ */
+.velvet {
+  background: #0D1B3E;
+  border-radius: 12px;
+  font-family: 'Playfair Display', serif;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+
+.velvetWatermark {
+  position: absolute;
+  left: -60px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 300px;
+  height: 300px;
+}
+
+.velvetLeftStripe {
+  width: 6px;
+  background: linear-gradient(180deg, #C9A84C 0%, #E8C97A 50%, #C9A84C 100%);
+  border-radius: 12px 0 0 12px;
+  flex-shrink: 0;
+}
+
+.velvetBody {
+  display: flex;
+  flex: 1;
+  padding: 32px 36px 28px;
+  position: relative;
+  z-index: 2;
+}
+
+.velvetColLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.velvetTitleRow {
+  margin-bottom: 22px;
+}
+
+.velvetReceiptTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: #E8C97A;
+  text-transform: uppercase;
+}
+
+.velvetCompanyName {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-top: 3px;
+}
+
+.velvetSectionLabel {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #C9A84C;
+  margin-bottom: 4px;
+}
+
+.velvetSectionValue {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.45;
+}
+
+.velvetReceivedFrom {
+  margin-bottom: 18px;
+}
+
+.velvetBottomFields {
+  display: flex;
+  gap: 48px;
+  margin-top: auto;
+}
+
+.velvetFieldValue {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  border-bottom: 1px solid rgba(201,168,76,0.35);
+  padding-bottom: 4px;
+  min-width: 140px;
+}
+
+.velvetColRight {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid rgba(201,168,76,0.18);
+  padding-left: 28px;
+  gap: 16px;
+}
+
+.velvetMetaLabel {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(201,168,76,0.7);
+  margin-bottom: 2px;
+}
+
+.velvetMetaValue {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.9);
+}
+
+.velvetMetaAmount .velvetMetaValue {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #E8C97A;
+}
+
+.velvetSigArea {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 28px;
+  padding-right: 32px;
+  padding-left: 8px;
+}
+
+.velvetSigLine {
+  width: 100%;
+  border-bottom: 1px solid rgba(201,168,76,0.4);
+  padding-bottom: 4px;
+}
+
+.velvetSigLabel {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(201,168,76,0.6);
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════ */
+/* SAGE — Soft Green + Cream · Modern Fintech      */
+/* ═══════════════════════════════════════════════ */
+.sage {
+  background: #FAFAF7;
+  border-radius: 16px;
+  font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+  border: 1px solid #E8EDE6;
+}
+
+.sageWatermark {
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 260px;
+  height: 260px;
+  opacity: 0.08;
+}
+
+.sageLeftAccent {
+  width: 200px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #3D7A5C 0%, #5BA882 100%);
+  border-radius: 16px 0 0 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 28px 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sageLeftAccent::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+
+.sageLeftAccent::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+
+.sageCompanyBlock {
+  position: relative;
+  z-index: 2;
+}
+
+.sageCompanyName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.sageCompanyTagline {
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.65);
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+
+.sageBody {
+  flex: 1;
+  display: flex;
+  padding: 28px 32px 24px;
+  position: relative;
+  z-index: 2;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sageTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.sageReceiptTitle {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #3D7A5C;
+  padding: 5px 10px;
+  background: #EBF5EE;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.sageMetaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  text-align: right;
+}
+
+.sageMetaLabel {
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9BB59A;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.sageMetaValue {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #2A3D2F;
+}
+
+.sageAmountValue {
+  font-size: 18px !important;
+  color: #3D7A5C !important;
+}
+
+.sageDivider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #D4E4D8, transparent);
+}
+
+.sageMiddleRow {
+  display: flex;
+  gap: 32px;
+}
+
+.sageFieldLabel {
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9BB59A;
+  margin-bottom: 3px;
+  display: block;
+}
+
+.sageFieldValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: #2A3D2F;
+  line-height: 1.4;
+}
+
+.sageBottomRow {
+  display: flex;
+  gap: 32px;
+  align-items: flex-end;
+}
+
+.sageForField {
+  flex: 1;
+}
+
+.sageForValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: #2A3D2F;
+  border-bottom: 1px solid #D4E4D8;
+  padding-bottom: 4px;
+}
+
+.sageSigBlock {
+  text-align: right;
+  margin-left: auto;
+}
+
+.sageSigLine {
+  width: 160px;
+  border-bottom: 1px solid #C5D9C8;
+  margin-bottom: 4px;
+  height: 24px;
+}
+
+.sageSigLabel {
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9BB59A;
+}
+
+/* ═══════════════════════════════════════════════ */
+/* CARBON — Near-black + Teal · Tech/SaaS         */
+/* ═══════════════════════════════════════════════ */
+.carbon {
+  background: #111318;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,224,192,0.15);
+}
+
+.carbonWatermark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.carbonContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.carbonLeftPanel {
+  width: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid rgba(0,224,192,0.12);
+}
+
+.carbonVerticalText {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(0,224,192,0.5);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.carbonMainBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 32px 24px;
+}
+
+.carbonHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.carbonReceiptTitle {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.carbonReceiptTitleAccent {
+  color: #00E0C0;
+}
+
+.carbonMetaStrip {
+  display: flex;
+  gap: 0;
+}
+
+.carbonMetaCell {
+  text-align: right;
+  padding-left: 24px;
+  border-left: 1px solid rgba(0,224,192,0.12);
+  margin-left: 24px;
+}
+
+.carbonMetaCell:first-child {
+  border-left: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.carbonMetaLabel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0,224,192,0.55);
+  display: block;
+  margin-bottom: 3px;
+}
+
+.carbonMetaValue {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+}
+
+.carbonAmountValue {
+  font-size: 17px !important;
+  color: #00E0C0 !important;
+}
+
+.carbonDivider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0,224,192,0.3), rgba(0,224,192,0.08), transparent);
+  margin-bottom: 18px;
+}
+
+.carbonFieldsRow {
+  display: flex;
+  gap: 32px;
+  flex: 1;
+}
+
+.carbonFieldLabel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0,224,192,0.5);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.carbonFieldValue {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.5;
+}
+
+.carbonBottomRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 32px;
+  margin-top: auto;
+}
+
+.carbonForBlock {
+  flex: 1;
+}
+
+.carbonForValue {
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  border-bottom: 1px solid rgba(0,224,192,0.2);
+  padding-bottom: 4px;
+}
+
+.carbonSigBlock {
+  text-align: right;
+}
+
+.carbonSigLine {
+  width: 150px;
+  border-bottom: 1px solid rgba(0,224,192,0.25);
+  margin-left: auto;
+  margin-bottom: 4px;
+  height: 24px;
+}
+
+.carbonSigLabel {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0,224,192,0.45);
+}
+
+/* ═══════════════════════════════════════════════ */
+/* SAFFRON — Warm White + Orange · Indian Premium  */
+/* ═══════════════════════════════════════════════ */
+.saffron {
+  background: #FFFDF8;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 8px 40px rgba(211,120,20,0.12);
+  border: 1px solid #F5E8D0;
+}
+
+.saffronWatermark {
+  position: absolute;
+  right: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 280px;
+  height: 280px;
+  opacity: 0.06;
+}
+
+.saffronTopBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #D37814 0%, #F0A835 40%, #D37814 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.saffronBottomBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #D37814 0%, #F0A835 50%, #D37814 100%);
+  border-radius: 0 0 12px 12px;
+  opacity: 0.5;
+}
+
+.saffronContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  height: 100%;
+  padding: 28px 0;
+}
+
+.saffronLeftBand {
+  width: 180px;
+  flex-shrink: 0;
+  padding: 0 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 2px solid #F5E8D0;
+  position: relative;
+}
+
+.saffronReceiptTitle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #D37814;
+  margin-bottom: 10px;
+}
+
+.saffronCompanyName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2C1A06;
+  line-height: 1.2;
+}
+
+.saffronCompanySub {
+  font-size: 10px;
+  font-weight: 400;
+  color: #B08050;
+  margin-top: 3px;
+}
+
+.saffronOrnament {
+  position: absolute;
+  bottom: 20px;
+  left: 28px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.saffronOrnamentDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #D37814;
+  opacity: 0.4;
+}
+
+.saffronOrnamentMid {
+  opacity: 0.7;
+  width: 8px;
+  height: 8px;
+}
+
+.saffronBody {
+  flex: 1;
+  padding: 0 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.saffronTopMeta {
+  display: flex;
+  justify-content: flex-end;
+  gap: 28px;
+}
+
+.saffronMetaLabel {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #D37814;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.saffronMetaValue {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #2C1A06;
+  text-align: right;
+}
+
+.saffronAmountValue {
+  font-size: 18px !important;
+  color: #D37814 !important;
+}
+
+.saffronDivider {
+  height: 1px;
+  background: linear-gradient(90deg, #F5E8D0, #D37814 30%, #D37814 70%, #F5E8D0);
+  opacity: 0.5;
+}
+
+.saffronFieldLabel {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #D37814;
+  margin-bottom: 3px;
+  display: block;
+}
+
+.saffronFieldValue {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: #3A2510;
+  line-height: 1.5;
+}
+
+.saffronBottomRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+}
+
+.saffronForBlock {
+  flex: 1;
+}
+
+.saffronForValue {
+  font-size: 13px;
+  color: #3A2510;
+  border-bottom: 1.5px solid #F0D8B0;
+  padding-bottom: 4px;
+}
+
+.saffronSigBlock {
+  text-align: right;
+}
+
+.saffronSigLine {
+  width: 150px;
+  border-bottom: 1.5px solid #F0D8B0;
+  margin-left: auto;
+  margin-bottom: 4px;
+  height: 28px;
+}
+
+.saffronSigLabel {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #D37814;
+  opacity: 0.7;
+}
