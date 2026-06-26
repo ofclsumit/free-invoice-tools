@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import {
-  Download, Eye, X, ZoomIn, ZoomOut, RotateCcw, Plus, Trash2, LayoutTemplate
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select"
+import {
+  Download, Eye, X, ZoomIn, ZoomOut, RotateCcw, LayoutTemplate, Printer, Plus, Trash2
 } from "lucide-react"
 import {
   InvoicePreview,
@@ -28,6 +31,7 @@ import {
 } from "@/components/cash-receipt-templates"
 import type { CashReceiptTemplateId } from "@/components/cash-receipt-templates"
 
+const PHONE_CODES = ["+91", "+1", "+44", "+61", "+971", "+65", "+60", "+94", "+977", "+880"]
 const PAYMENT_MODES = ["Cash", "Cheque", "UPI", "Bank Transfer"]
 
 export function CashReceiptClient() {
@@ -41,10 +45,22 @@ export function CashReceiptClient() {
   const [companyName, setCompanyName] = useState("")
   const [companyLogo, setCompanyLogo] = useState("")
   const [businessSignature, setBusinessSignature] = useState("")
+  const [businessEmail, setBusinessEmail] = useState("")
+  const [businessPhoneCode, setBusinessPhoneCode] = useState("+91")
+  const [businessPhone, setBusinessPhone] = useState("")
+  const [businessAddress, setBusinessAddress] = useState("")
+  const [businessGstin, setBusinessGstin] = useState("")
+  const [businessPan, setBusinessPan] = useState("")
   const [receivedFrom, setReceivedFrom] = useState("")
+  const [payerEmail, setPayerEmail] = useState("")
+  const [payerPhoneCode, setPayerPhoneCode] = useState("+91")
+  const [payerPhone, setPayerPhone] = useState("")
+  const [payerAddress, setPayerAddress] = useState("")
   const [amount, setAmount] = useState("")
   const [purpose, setPurpose] = useState("")
   const [paymentMode, setPaymentMode] = useState("Cash")
+  const [transactionId, setTransactionId] = useState("")
+  const [invoiceReference, setInvoiceReference] = useState("")
   const [receiptNo, setReceiptNo] = useState(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`)
   const [receiptDate, setReceiptDate] = useState(new Date().toISOString().split("T")[0])
   const [template, setTemplate] = useState<CashReceiptTemplateId>("VelvetReceipt")
@@ -58,9 +74,11 @@ export function CashReceiptClient() {
     parts.push(`Payment Method: ${paymentMode}`)
     if (purpose) parts.push(`Purpose: ${purpose}`)
     parts.push(`Received By: ${companyName || "Your Company"}`)
+    if (transactionId) parts.push(`Transaction ID: ${transactionId}`)
+    if (invoiceReference) parts.push(`Reference: ${invoiceReference}`)
     if (notes) parts.push(notes)
     return parts.join(" | ")
-  }, [paymentMode, purpose, companyName, notes])
+  }, [paymentMode, purpose, companyName, transactionId, invoiceReference, notes])
 
   const invoiceData: TemplateInvoiceData = useMemo(() => ({
     invoiceNumber: receiptNo,
@@ -73,11 +91,17 @@ export function CashReceiptClient() {
       name: companyName || "Your Company",
       logoUrl: companyLogo,
       signatureUrl: businessSignature,
-      addressLines: [],
+      addressLines: businessAddress ? businessAddress.split("\n") : [],
+      gstin: businessGstin,
+      pan: businessPan,
+      email: businessEmail,
+      phone: businessPhone ? `${businessPhoneCode} ${businessPhone}` : undefined,
     },
     billTo: {
       name: receivedFrom || "Received From",
-      addressLines: [],
+      addressLines: payerAddress ? payerAddress.split("\n") : [],
+      email: payerEmail,
+      phone: payerPhone ? `${payerPhoneCode} ${payerPhone}` : undefined,
     },
     items: [
       {
@@ -89,7 +113,7 @@ export function CashReceiptClient() {
     ],
     notes: notesPayload,
     amountPaid: numAmount,
-  }), [receiptNo, receiptDate, companyName, companyLogo, businessSignature, receivedFrom, numAmount, notesPayload])
+  }), [receiptNo, receiptDate, companyName, companyLogo, businessSignature, businessEmail, businessPhoneCode, businessPhone, businessAddress, businessGstin, businessPan, receivedFrom, payerEmail, payerPhoneCode, payerPhone, payerAddress, numAmount, purpose, notesPayload])
 
   const totals = useMemo(() => computeInvoiceTotals(invoiceData), [invoiceData])
 
@@ -127,8 +151,9 @@ export function CashReceiptClient() {
     if (!receivedFrom) { toast({ title: "Received From is required", variant: "destructive" }); return false }
     if (!numAmount || numAmount <= 0) { toast({ title: "Valid amount is required", variant: "destructive" }); return false }
     if (!receiptNo) { toast({ title: "Receipt number is required", variant: "destructive" }); return false }
+    if (!receiptDate) { toast({ title: "Receipt date is required", variant: "destructive" }); return false }
     return true
-  }, [receivedFrom, numAmount, receiptNo, toast])
+  }, [receivedFrom, numAmount, receiptNo, receiptDate, toast])
 
   const togglePreview = useCallback(() => {
     if (showPreview) {
@@ -153,6 +178,10 @@ export function CashReceiptClient() {
     }
   }
 
+  const handlePrint = () => {
+    window.print()
+  }
+
   const handleWhatsAppShare = async () => {
     if (!validateEssentialFields()) return
     setIsGenerating(true)
@@ -163,7 +192,7 @@ export function CashReceiptClient() {
       const blob = await exportNodeToPdf(node, fileName, true)
 
       const file = new File([blob], fileName, { type: "application/pdf" })
-      const message = `Hello ${receivedFrom},\n\nPlease find your cash receipt ${receiptNo} for ${formatCurrency(totals.grandTotal, "\u20B9")} attached.\n\nThank you!\n\n${companyName}`
+      const message = `Hello ${receivedFrom},\n\nPlease find your cash receipt ${receiptNo} for ${formatCurrency(totals.grandTotal, "\u20B9")} attached.\n\nThank you!\n\n${companyName || "Your Company"}`
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
@@ -197,8 +226,8 @@ export function CashReceiptClient() {
       const blob = await exportNodeToPdf(node, fileName, true)
 
       const file = new File([blob], fileName, { type: "application/pdf" })
-      const subject = `Cash Receipt ${receiptNo} from ${companyName}`
-      const body = `Dear ${receivedFrom},\n\nPlease find attached the cash receipt ${receiptNo} for ${formatCurrency(totals.grandTotal, "\u20B9")}.\n\nBest regards,\n${companyName}`
+      const subject = `Cash Receipt ${receiptNo} from ${companyName || "Your Company"}`
+      const body = `Dear ${receivedFrom},\n\nPlease find attached the cash receipt ${receiptNo} for ${formatCurrency(totals.grandTotal, "\u20B9")}.\n\nBest regards,\n${companyName || "Your Company"}`
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
@@ -213,7 +242,7 @@ export function CashReceiptClient() {
         a.download = fileName
         a.click()
         URL.revokeObjectURL(url)
-        window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+        window.open(`mailto:${payerEmail || ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
       }
     } catch {
       toast({ title: "Failed to share receipt", variant: "destructive" })
@@ -238,6 +267,10 @@ export function CashReceiptClient() {
       reader.onloadend = () => setBusinessSignature(reader.result as string)
       reader.readAsDataURL(file)
     }
+  }
+
+  const resetForm = () => {
+    setCompanyName(""); setCompanyLogo(""); setBusinessSignature(""); setBusinessEmail(""); setBusinessPhoneCode("+91"); setBusinessPhone(""); setBusinessAddress(""); setBusinessGstin(""); setBusinessPan(""); setReceivedFrom(""); setPayerEmail(""); setPayerPhoneCode("+91"); setPayerPhone(""); setPayerAddress(""); setAmount(""); setPurpose(""); setPaymentMode("Cash"); setTransactionId(""); setInvoiceReference(""); setReceiptNo(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(new Date().toISOString().split("T")[0]); setTemplate("VelvetReceipt"); setNotes("")
   }
 
   const [mounted, setMounted] = useState(false)
@@ -332,6 +365,9 @@ export function CashReceiptClient() {
             <img src="/email.svg" alt="Email" className="h-5 w-5" />
           </button>
           <ShareButton invoiceData={invoiceData} template={template} title={`Cash Receipt ${receiptNo}`} />
+          <Button variant="outline" className="gap-2" onClick={handlePrint}>
+            <Printer className="h-4 w-4" /> Print
+          </Button>
         </div>
 
         {/* Template Selector */}
@@ -350,7 +386,7 @@ export function CashReceiptClient() {
           </div>
         </section>
 
-        {/* From Section */}
+        {/* From (Your Business) */}
         <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
           <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
             <div className="h-5 w-1 rounded-full bg-amber-500" />
@@ -384,17 +420,91 @@ export function CashReceiptClient() {
               </div>
             </div>
           </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Email (Optional)</Label>
+              <Input type="email" placeholder="billing@company.com" value={businessEmail} onChange={e => setBusinessEmail(e.target.value)} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Phone (Optional)</Label>
+              <div className="flex gap-2">
+                <Select value={businessPhoneCode} onValueChange={setBusinessPhoneCode}>
+                  <SelectTrigger className="h-9 w-20 text-xs text-foreground bg-background">
+                    <SelectValue placeholder="+91" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PHONE_CODES.map(code => (
+                      <SelectItem key={code} value={code}>{code}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="tel"
+                  placeholder="9999999999"
+                  value={businessPhone}
+                  onChange={(e) => setBusinessPhone(e.target.value.replace(/[^0-9]/g, ""))}
+                  className="h-9 text-sm flex-1 font-mono"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">Address (Optional)</Label>
+            <Textarea placeholder="Street, Building, City, State, Pincode" value={businessAddress} onChange={e => setBusinessAddress(e.target.value)} className="min-h-16 text-sm" />
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">GSTIN (Optional)</Label>
+              <Input placeholder="22AAAAA0000A1Z5" value={businessGstin} onChange={e => setBusinessGstin(e.target.value.toUpperCase())} className="h-9 text-sm uppercase" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">PAN (Optional)</Label>
+              <Input placeholder="ABCDE1234F" value={businessPan} onChange={e => setBusinessPan(e.target.value.toUpperCase())} className="h-9 text-sm uppercase" />
+            </div>
+          </div>
         </section>
 
         {/* Received From */}
         <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
           <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
             <div className="h-5 w-1 rounded-full bg-orange-500" />
-            Received From
+            Received From (Payer)
           </h3>
           <div className="space-y-1.5">
             <Label className="text-xs font-medium">Payer Name (Required)</Label>
             <Input placeholder="Name of person or entity" value={receivedFrom} onChange={e => setReceivedFrom(e.target.value)} className="h-9 text-sm" />
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Email (Optional)</Label>
+              <Input type="email" placeholder="payer@email.com" value={payerEmail} onChange={e => setPayerEmail(e.target.value)} className="h-9 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Phone (Optional)</Label>
+              <div className="flex gap-2">
+                <Select value={payerPhoneCode} onValueChange={setPayerPhoneCode}>
+                  <SelectTrigger className="h-9 w-20 text-xs text-foreground bg-background">
+                    <SelectValue placeholder="+91" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PHONE_CODES.map(code => (
+                      <SelectItem key={code} value={code}>{code}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="tel"
+                  placeholder="9999988888"
+                  value={payerPhone}
+                  onChange={(e) => setPayerPhone(e.target.value.replace(/[^0-9]/g, ""))}
+                  className="h-9 text-sm flex-1 font-mono"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">Address (Optional)</Label>
+            <Textarea placeholder="Full address of payer" value={payerAddress} onChange={e => setPayerAddress(e.target.value)} className="min-h-16 text-sm" />
           </div>
         </section>
 
@@ -437,6 +547,18 @@ export function CashReceiptClient() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {paymentMode !== "Cash" && (
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Transaction ID (Optional)</Label>
+              <Input placeholder="TXN123456789" value={transactionId} onChange={e => setTransactionId(e.target.value)} className="h-9 text-sm" />
+            </div>
+          )}
+
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium">Invoice / Order Reference (Optional)</Label>
+            <Input placeholder="INV-001 or Order #123" value={invoiceReference} onChange={e => setInvoiceReference(e.target.value)} className="h-9 text-sm" />
           </div>
 
           <div className="space-y-1.5">
@@ -488,9 +610,7 @@ export function CashReceiptClient() {
           <Button type="button" onClick={togglePreview} className="gap-2 bg-gradient-to-r from-amber-600 to-orange-600 text-white border-0 font-semibold flex-1">
             <Eye className="h-4 w-4" /> SHOW PREVIEW
           </Button>
-          <Button type="button" variant="outline" className="gap-2" onClick={() => {
-            setCompanyName(""); setCompanyLogo(""); setBusinessSignature(""); setReceivedFrom(""); setAmount(""); setPurpose(""); setPaymentMode("Cash"); setReceiptNo(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(new Date().toISOString().split("T")[0]); setTemplate("VelvetReceipt"); setNotes("")
-          }}>
+          <Button type="button" variant="outline" className="gap-2" onClick={resetForm}>
             <RotateCcw className="h-4 w-4" /> Reset
           </Button>
         </div>

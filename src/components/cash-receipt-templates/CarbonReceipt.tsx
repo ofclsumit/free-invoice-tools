@@ -17,7 +17,6 @@ function parseMeta(invoice: InvoiceData) {
 
 export default function CarbonReceipt({ invoice, className = "" }: Props) {
   const { paymentMethod, purpose, receivedBy } = parseMeta(invoice)
-  const address = invoice.billTo.addressLines?.join(", ") || ""
   const amount = invoice.amountPaid ?? invoice.items.reduce((s, i) => s + i.rate * i.quantity, 0)
   const addrParts = invoice.billTo.addressLines || []
 
@@ -48,8 +47,13 @@ export default function CarbonReceipt({ invoice, className = "" }: Props) {
         </div>
         <div className={s.carbonMainBody}>
           <div className={s.carbonHeaderRow}>
-            <div>
-              <div className={s.carbonReceiptTitle}>CASH <span className={s.carbonReceiptTitleAccent}>RECEIPT</span></div>
+            <div style={{display: "flex", alignItems: "center", gap: 10}}>
+              {invoice.company.logoUrl && (
+                <img src={invoice.company.logoUrl} alt="Logo" className={s.logo} style={{filter: "brightness(0) invert(1) opacity(0.9)"}} />
+              )}
+              <div>
+                <div className={s.carbonReceiptTitle}>CASH <span className={s.carbonReceiptTitleAccent}>RECEIPT</span></div>
+              </div>
             </div>
             <div className={s.carbonMetaStrip}>
               <div className={s.carbonMetaCell}>
@@ -91,8 +95,14 @@ export default function CarbonReceipt({ invoice, className = "" }: Props) {
               <div className={s.carbonForValue} style={{minWidth: 120}}>{receivedBy}</div>
             </div>
             <div className={s.carbonSigBlock}>
-              <div className={s.carbonSigLine} />
-              <div className={s.carbonSigLabel}>Authorised Signature</div>
+              {invoice.company.signatureUrl ? (
+                <img src={invoice.company.signatureUrl} alt="Signature" className={s.signatureImg} style={{marginLeft: "auto"}} />
+              ) : (
+                <>
+                  <div className={s.carbonSigLine} />
+                  <div className={s.carbonSigLabel}>Authorised Signature</div>
+                </>
+              )}
             </div>
           </div>
         </div>

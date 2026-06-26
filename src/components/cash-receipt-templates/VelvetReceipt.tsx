@@ -46,7 +46,12 @@ export default function VelvetReceipt({ invoice, className = "" }: Props) {
         <div className={s.velvetColLeft}>
           <div className={s.velvetTitleRow}>
             <div className={s.velvetReceiptTitle}>Cash Receipt</div>
-            <div className={s.velvetCompanyName}>{invoice.company.name}</div>
+            <div style={{display: "flex", alignItems: "center", gap: 8, marginTop: 4}}>
+              {invoice.company.logoUrl && (
+                <img src={invoice.company.logoUrl} alt="Logo" className={s.logo} />
+              )}
+              <div className={s.velvetCompanyName}>{invoice.company.name}</div>
+            </div>
           </div>
           <div className={s.velvetReceivedFrom}>
             <div className={s.velvetSectionLabel}>Received From</div>
@@ -85,9 +90,13 @@ export default function VelvetReceipt({ invoice, className = "" }: Props) {
           </div>
         </div>
         <div className={s.velvetSigArea}>
-          <div className={s.velvetSigLine}>
-            <div className={s.velvetSigLabel}>Signature</div>
-          </div>
+          {invoice.company.signatureUrl ? (
+            <img src={invoice.company.signatureUrl} alt="Signature" className={s.signatureImg} />
+          ) : (
+            <div className={s.velvetSigLine}>
+              <div className={s.velvetSigLabel}>Signature</div>
+            </div>
+          )}
         </div>
       </div>
     </div>

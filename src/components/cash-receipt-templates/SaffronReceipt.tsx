@@ -54,6 +54,9 @@ export default function SaffronReceipt({ invoice, className = "" }: Props) {
       <div className={s.saffronContent}>
         <div className={s.saffronLeftBand}>
           <div className={s.saffronReceiptTitle}>Cash Receipt</div>
+          {invoice.company.logoUrl && (
+            <img src={invoice.company.logoUrl} alt="Logo" className={s.logo} style={{marginBottom: 6}} />
+          )}
           <div className={s.saffronCompanyName}>{invoice.company.name}</div>
           <div className={s.saffronCompanySub}>Payment Received</div>
           <div className={s.saffronOrnament}>
@@ -98,8 +101,14 @@ export default function SaffronReceipt({ invoice, className = "" }: Props) {
               <div className={s.saffronForValue} style={{minWidth: 110}}>{receivedBy}</div>
             </div>
             <div className={s.saffronSigBlock}>
-              <div className={s.saffronSigLine} />
-              <div className={s.saffronSigLabel}>Authorised Signature</div>
+              {invoice.company.signatureUrl ? (
+                <img src={invoice.company.signatureUrl} alt="Signature" className={s.signatureImg} style={{marginLeft: "auto"}} />
+              ) : (
+                <>
+                  <div className={s.saffronSigLine} />
+                  <div className={s.saffronSigLabel}>Authorised Signature</div>
+                </>
+              )}
             </div>
           </div>
         </div>

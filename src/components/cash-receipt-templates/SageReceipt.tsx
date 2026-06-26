@@ -39,6 +39,9 @@ export default function SageReceipt({ invoice, className = "" }: Props) {
       </div>
       <div className={s.sageLeftAccent}>
         <div className={s.sageCompanyBlock}>
+          {invoice.company.logoUrl && (
+            <img src={invoice.company.logoUrl} alt="Logo" className={s.logo} style={{marginBottom: 6}} />
+          )}
           <div className={s.sageCompanyName}>{invoice.company.name}</div>
           <div className={s.sageCompanyTagline}>Payment Received</div>
         </div>
@@ -84,8 +87,14 @@ export default function SageReceipt({ invoice, className = "" }: Props) {
             <div className={s.sageForValue} style={{minWidth: 120}}>{receivedBy}</div>
           </div>
           <div className={s.sageSigBlock}>
-            <div className={s.sageSigLine} />
-            <div className={s.sageSigLabel}>Authorised Signature</div>
+            {invoice.company.signatureUrl ? (
+              <img src={invoice.company.signatureUrl} alt="Signature" className={s.signatureImg} style={{marginLeft: "auto"}} />
+            ) : (
+              <>
+                <div className={s.sageSigLine} />
+                <div className={s.sageSigLabel}>Authorised Signature</div>
+              </>
+            )}
           </div>
         </div>
       </div>
