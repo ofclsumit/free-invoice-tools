@@ -77,7 +77,7 @@ export default function MinimalMonoTemplate({ invoice, className = "" }: Props) 
         <div className="h-px bg-black w-full" />
 
         {/* ── Identity block ─────────────────────────────────────── */}
-        <section className="grid grid-cols-3 gap-8 py-8 text-xs">
+        <section className={`grid gap-8 py-8 text-xs ${invoice.shipTo ? 'grid-cols-4' : 'grid-cols-3'}`}>
           <div>
             <p className="text-black/40 uppercase tracking-widest mb-1.5">From</p>
             <p className="font-medium">{company.name}</p>
@@ -120,6 +120,25 @@ export default function MinimalMonoTemplate({ invoice, className = "" }: Props) 
               </p>
             )}
           </div>
+          {invoice.shipTo && (
+            <div>
+              <p className="text-black/40 uppercase tracking-widest mb-1.5">Shipped To</p>
+              <p className="font-medium">{invoice.shipTo.name}</p>
+              {invoice.shipTo.addressLines.map((l, i) => (
+                <p key={i} className="text-black/60">
+                  {l}
+                </p>
+              ))}
+              {invoice.shipTo.gstin && (
+                <p
+                  className="text-black/60 mt-1"
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                >
+                  GSTIN {invoice.shipTo.gstin}
+                </p>
+              )}
+            </div>
+          )}
           <div style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             <KV label="No." value={invoice.invoiceNumber} />
             <KV label="Date" value={invoice.invoiceDate} />
@@ -128,7 +147,64 @@ export default function MinimalMonoTemplate({ invoice, className = "" }: Props) 
           </div>
         </section>
 
+        {invoice.transportDetails && (
+          <>
+            <div className="h-px bg-black w-full" />
+            <section className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 text-xs" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              {invoice.transportDetails.transporterName && (
+                <div>
+                  <p className="text-black/40 uppercase tracking-widest mb-0.5">Transporter</p>
+                  <p className="font-medium">{invoice.transportDetails.transporterName}</p>
+                </div>
+              )}
+              {invoice.transportDetails.vehicleNumber && (
+                <div>
+                  <p className="text-black/40 uppercase tracking-widest mb-0.5">Vehicle No</p>
+                  <p className="font-medium">{invoice.transportDetails.vehicleNumber}</p>
+                </div>
+              )}
+              {invoice.transportDetails.modeOfTransport && (
+                <div>
+                  <p className="text-black/40 uppercase tracking-widest mb-0.5">Mode</p>
+                  <p className="font-medium">{invoice.transportDetails.modeOfTransport}</p>
+                </div>
+              )}
+              {invoice.transportDetails.vehicleType && (
+                <div>
+                  <p className="text-black/40 uppercase tracking-widest mb-0.5">Vehicle Type</p>
+                  <p className="font-medium">{invoice.transportDetails.vehicleType}</p>
+                </div>
+              )}
+              {invoice.transportDetails.distance && (
+                <div>
+                  <p className="text-black/40 uppercase tracking-widest mb-0.5">Distance</p>
+                  <p className="font-medium">{invoice.transportDetails.distance} km</p>
+                </div>
+              )}
+              {invoice.transportDetails.transportDocNo && (
+                <div>
+                  <p className="text-black/40 uppercase tracking-widest mb-0.5">Doc No</p>
+                  <p className="font-medium">{invoice.transportDetails.transportDocNo}</p>
+                </div>
+              )}
+              {invoice.transportDetails.transactionType && (
+                <div>
+                  <p className="text-black/40 uppercase tracking-widest mb-0.5">Transaction Type</p>
+                  <p className="font-medium">{invoice.transportDetails.transactionType}</p>
+                </div>
+              )}
+              {invoice.transportDetails.shippedFromAddress && (
+                <div className="col-span-2">
+                  <p className="text-black/40 uppercase tracking-widest mb-0.5">Shipped From</p>
+                  <p className="font-medium">{invoice.transportDetails.shippedFromAddress}</p>
+                </div>
+              )}
+            </section>
+          </>
+        )}
+
         <div className="h-px bg-black w-full" />
+
 
         {/* ── Line items ─────────────────────────────────────────── */}
         <section className="flex-1">

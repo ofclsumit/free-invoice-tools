@@ -114,17 +114,85 @@ export default function VyaparDesiTemplate({ invoice, className = "" }: Props) {
           />
         </div>
 
-        {/* ── Bill To ────────────────────────────────────────────── */}
-        <div className="px-5 py-3" style={{ borderBottom: `1px solid ${maroon}` }}>
-          <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: maroon }}>
-            Bill To
-          </p>
-          <p className="font-semibold">{billTo.name}</p>
-          <p className="text-[11px] text-stone-600">{billTo.addressLines.join(", ")}</p>
-          {billTo.gstin && gstMode !== "none" && (
-            <p className="text-[11px] text-stone-600">GSTIN: {billTo.gstin}</p>
+        {/* ── Bill To & Ship To ─────────────────────────────────── */}
+        <div className={`grid ${invoice.shipTo ? 'grid-cols-2' : 'grid-cols-1'} px-5 py-3`} style={{ borderBottom: `1px solid ${maroon}` }}>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: maroon }}>
+              Bill To
+            </p>
+            <p className="font-semibold">{billTo.name}</p>
+            <p className="text-[11px] text-stone-600">{billTo.addressLines.join(", ")}</p>
+            {billTo.gstin && gstMode !== "none" && (
+              <p className="text-[11px] text-stone-600">GSTIN: {billTo.gstin}</p>
+            )}
+          </div>
+          {invoice.shipTo && (
+            <div style={{ borderLeft: `1px solid ${maroon}`, paddingLeft: '20px' }}>
+              <p className="text-[10px] font-bold uppercase tracking-wide" style={{ color: maroon }}>
+                Shipped To
+              </p>
+              <p className="font-semibold">{invoice.shipTo.name}</p>
+              <p className="text-[11px] text-stone-600">{invoice.shipTo.addressLines.join(", ")}</p>
+              {invoice.shipTo.gstin && (
+                <p className="text-[11px] text-stone-600">GSTIN: {invoice.shipTo.gstin}</p>
+              )}
+            </div>
           )}
         </div>
+
+        {invoice.transportDetails && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-5 py-3 text-[11px] bg-stone-50" style={{ borderBottom: `1px solid ${maroon}` }}>
+            {invoice.transportDetails.transporterName && (
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: maroon }}>Transporter</p>
+                <p className="font-semibold">{invoice.transportDetails.transporterName}</p>
+              </div>
+            )}
+            {invoice.transportDetails.vehicleNumber && (
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: maroon }}>Vehicle No</p>
+                <p className="font-semibold font-mono">{invoice.transportDetails.vehicleNumber}</p>
+              </div>
+            )}
+            {invoice.transportDetails.modeOfTransport && (
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: maroon }}>Mode</p>
+                <p className="font-semibold">{invoice.transportDetails.modeOfTransport}</p>
+              </div>
+            )}
+            {invoice.transportDetails.vehicleType && (
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: maroon }}>Vehicle Type</p>
+                <p className="font-semibold">{invoice.transportDetails.vehicleType}</p>
+              </div>
+            )}
+            {invoice.transportDetails.distance && (
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: maroon }}>Distance</p>
+                <p className="font-semibold">{invoice.transportDetails.distance} km</p>
+              </div>
+            )}
+            {invoice.transportDetails.transportDocNo && (
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: maroon }}>Doc No</p>
+                <p className="font-semibold">{invoice.transportDetails.transportDocNo}</p>
+              </div>
+            )}
+            {invoice.transportDetails.transactionType && (
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: maroon }}>Transaction Type</p>
+                <p className="font-semibold">{invoice.transportDetails.transactionType}</p>
+              </div>
+            )}
+            {invoice.transportDetails.shippedFromAddress && (
+              <div className="col-span-2">
+                <p className="text-[9px] font-bold uppercase tracking-wide" style={{ color: maroon }}>Shipped From</p>
+                <p className="font-semibold">{invoice.transportDetails.shippedFromAddress}</p>
+              </div>
+            )}
+          </div>
+        )}
+
 
         {/* ── Line items ─────────────────────────────────────────── */}
         <table className="w-full text-[11px] border-collapse">

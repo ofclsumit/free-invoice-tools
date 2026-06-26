@@ -78,7 +78,7 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
         </section>
 
         {/* ── From / To cards ────────────────────────────────────── */}
-        <section className="grid grid-cols-2 gap-4 mb-6">
+        <section className={`grid gap-4 mb-6 ${invoice.shipTo ? 'grid-cols-3' : 'grid-cols-2'}`}>
           <div className="bg-white rounded-2xl p-5">
             <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">
               From
@@ -106,10 +106,78 @@ export default function StudioTemplate({ invoice, className = "" }: Props) {
               <p className="text-xs text-stone-500 mt-1">GSTIN {billTo.gstin}</p>
             )}
           </div>
+          {invoice.shipTo && (
+            <div className="bg-white rounded-2xl p-5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">
+                Shipped To
+              </p>
+              <p className="font-semibold">{invoice.shipTo.name}</p>
+              <p className="text-xs text-stone-500 leading-relaxed mt-0.5">
+                {invoice.shipTo.addressLines.join(", ")}
+              </p>
+              {invoice.shipTo.gstin && (
+                <p className="text-xs text-stone-500 mt-1">GSTIN {invoice.shipTo.gstin}</p>
+              )}
+            </div>
+          )}
         </section>
+
+        {invoice.transportDetails && (
+          <section className="bg-white rounded-2xl p-5 mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+            {invoice.transportDetails.transporterName && (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Transporter</p>
+                <p className="font-semibold">{invoice.transportDetails.transporterName}</p>
+              </div>
+            )}
+            {invoice.transportDetails.vehicleNumber && (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Vehicle No</p>
+                <p className="font-semibold font-mono">{invoice.transportDetails.vehicleNumber}</p>
+              </div>
+            )}
+            {invoice.transportDetails.modeOfTransport && (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Mode</p>
+                <p className="font-semibold">{invoice.transportDetails.modeOfTransport}</p>
+              </div>
+            )}
+            {invoice.transportDetails.vehicleType && (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Vehicle Type</p>
+                <p className="font-semibold">{invoice.transportDetails.vehicleType}</p>
+              </div>
+            )}
+            {invoice.transportDetails.distance && (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Distance (km)</p>
+                <p className="font-semibold">{invoice.transportDetails.distance}</p>
+              </div>
+            )}
+            {invoice.transportDetails.transportDocNo && (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Doc No</p>
+                <p className="font-semibold">{invoice.transportDetails.transportDocNo}</p>
+              </div>
+            )}
+            {invoice.transportDetails.transactionType && (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Transaction Type</p>
+                <p className="font-semibold">{invoice.transportDetails.transactionType}</p>
+              </div>
+            )}
+            {invoice.transportDetails.shippedFromAddress && (
+              <div className="col-span-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">Shipped From</p>
+                <p className="font-semibold">{invoice.transportDetails.shippedFromAddress}</p>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* ── Line items as cards ────────────────────────────────── */}
         <section className="bg-white rounded-2xl overflow-hidden flex-1">
+
           <div
             className="grid text-[10px] font-bold uppercase tracking-widest text-stone-400 px-5 py-3"
             style={{

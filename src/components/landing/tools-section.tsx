@@ -9,7 +9,6 @@ const toolCategories = [
       { href: "/quotation-generator", icon: ClipboardList, title: "Quotation Generator", desc: "Create professional quotations for your clients", color: "from-indigo-500 to-indigo-600", bg: "bg-indigo-50 dark:bg-indigo-950/30" },
       { href: "/proforma-invoice", icon: FileEdit, title: "Proforma Invoice", desc: "Generate proforma invoices for advance billing", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
       { href: "/purchase-order", icon: ShoppingCart, title: "Purchase Order", desc: "Create professional purchase orders for suppliers", color: "from-teal-500 to-teal-600", bg: "bg-teal-50 dark:bg-teal-950/30" },
-      { href: "/purchase-order", icon: ShoppingCart, title: "Purchase Order", desc: "Create professional purchase orders for suppliers", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
       { href: "/delivery-challan", icon: Package, title: "Delivery Challan", desc: "Generate delivery challans for goods transport", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
       { href: "/receipt-generator", icon: FileText, title: "Payment Receipt", desc: "Create professional payment receipts", color: "from-blue-500 to-indigo-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
       { href: "/cash-receipt", icon: IndianRupee, title: "Cash Receipt", desc: "Generate simple cash receipts", color: "from-cyan-500 to-blue-600", bg: "bg-cyan-50 dark:bg-cyan-950/30" },

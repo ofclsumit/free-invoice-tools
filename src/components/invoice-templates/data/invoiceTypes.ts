@@ -51,11 +51,22 @@ export interface BankDetails {
   upiId?: string;
 }
 
+export interface TransportDetails {
+  transporterName?: string;
+  vehicleNumber?: string;
+  vehicleType?: string; // e.g. "Regular", "ODC"
+  modeOfTransport?: string; // e.g. "Road", "Rail", "Air", "Ship"
+  distance?: string;
+  transportDocNo?: string;
+  transactionType?: string; // e.g. "Regular", "Job Work", etc.
+  shippedFromAddress?: string;
+}
+
 export interface InvoiceData {
   invoiceNumber: string;
   invoiceDate: string; // ISO or display string
   dueDate?: string;
-  documentType?: "INVOICE" | "QUOTATION" | "PROFORMA" | "RECEIPT" | "PURCHASE_ORDER";
+  documentType?: "INVOICE" | "QUOTATION" | "PROFORMA" | "RECEIPT" | "PURCHASE_ORDER" | "DELIVERY CHALLAN";
   status?: "Paid" | "Unpaid" | "Overdue" | "Draft" | "Partially Paid";
   currencySymbol: string; // "₹", "$", "€"
   gstMode: GstMode;
@@ -79,7 +90,10 @@ export interface InvoiceData {
   amountPaid?: number;
   /** Whether to render reverse-charge note (Indian GST requirement) */
   reverseCharge?: boolean;
+
+  transportDetails?: TransportDetails;
 }
+
 
 // ──────────────────────────────────────────────────────────────────────────
 // Calculation engine — shared by all templates so totals are always

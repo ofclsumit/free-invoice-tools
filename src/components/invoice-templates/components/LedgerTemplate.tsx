@@ -105,7 +105,7 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
         </section>
 
         {/* ── Party Section ──────────────────────────────────────── */}
-        <section className="grid grid-cols-2 gap-5 mb-6">
+        <section className={`grid gap-5 mb-6 ${invoice.shipTo ? 'grid-cols-3' : 'grid-cols-2'}`}>
           <PartyCard
             title="Bill From"
             name={company.name}
@@ -122,7 +122,71 @@ export default function LedgerTemplate({ invoice, className = "" }: Props) {
             email={billTo.email}
             phone={billTo.phone}
           />
+          {invoice.shipTo && (
+            <PartyCard
+              title="Shipped To"
+              name={invoice.shipTo.name}
+              addressLines={invoice.shipTo.addressLines}
+              gstin={invoice.shipTo.gstin}
+              email={invoice.shipTo.email}
+              phone={invoice.shipTo.phone}
+            />
+          )}
         </section>
+
+        {invoice.transportDetails && (
+          <section className="bg-gray-50/50 border border-gray-200/80 rounded-xl p-4 mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-[11px] text-gray-700 shadow-sm">
+            {invoice.transportDetails.transporterName && (
+              <div>
+                <p className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-0.5">Transporter</p>
+                <p className="font-semibold">{invoice.transportDetails.transporterName}</p>
+              </div>
+            )}
+            {invoice.transportDetails.vehicleNumber && (
+              <div>
+                <p className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-0.5">Vehicle No</p>
+                <p className="font-semibold font-mono">{invoice.transportDetails.vehicleNumber}</p>
+              </div>
+            )}
+            {invoice.transportDetails.modeOfTransport && (
+              <div>
+                <p className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-0.5">Mode</p>
+                <p className="font-semibold">{invoice.transportDetails.modeOfTransport}</p>
+              </div>
+            )}
+            {invoice.transportDetails.vehicleType && (
+              <div>
+                <p className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-0.5">Vehicle Type</p>
+                <p className="font-semibold">{invoice.transportDetails.vehicleType}</p>
+              </div>
+            )}
+            {invoice.transportDetails.distance && (
+              <div>
+                <p className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-0.5">Distance</p>
+                <p className="font-semibold">{invoice.transportDetails.distance} km</p>
+              </div>
+            )}
+            {invoice.transportDetails.transportDocNo && (
+              <div>
+                <p className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-0.5">Doc No</p>
+                <p className="font-semibold">{invoice.transportDetails.transportDocNo}</p>
+              </div>
+            )}
+            {invoice.transportDetails.transactionType && (
+              <div>
+                <p className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-0.5">Transaction Type</p>
+                <p className="font-semibold">{invoice.transportDetails.transactionType}</p>
+              </div>
+            )}
+            {invoice.transportDetails.shippedFromAddress && (
+              <div className="col-span-2">
+                <p className="text-[9px] font-bold text-blue-700 uppercase tracking-wider mb-0.5">Shipped From</p>
+                <p className="font-semibold">{invoice.transportDetails.shippedFromAddress}</p>
+              </div>
+            )}
+          </section>
+        )}
+
 
         {/* ── Line Items Table ───────────────────────────────────── */}
         <section className="mb-5">

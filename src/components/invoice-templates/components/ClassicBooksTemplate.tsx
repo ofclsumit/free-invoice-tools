@@ -116,6 +116,62 @@ export default function ClassicBooksTemplate({ invoice, className = "" }: Props)
           </div>
         </section>
 
+        {invoice.transportDetails && (
+          <section className="mb-6 border-t border-b border-stone-200 py-3 text-xs leading-relaxed">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-stone-500 mb-2">Transport Details</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-stone-700">
+              {invoice.transportDetails.transporterName && (
+                <div>
+                  <span className="font-semibold text-stone-500 uppercase text-[9px] tracking-wide block">Transporter:</span>
+                  <span>{invoice.transportDetails.transporterName}</span>
+                </div>
+              )}
+              {invoice.transportDetails.vehicleNumber && (
+                <div>
+                  <span className="font-semibold text-stone-500 uppercase text-[9px] tracking-wide block">Vehicle No:</span>
+                  <span className="font-mono">{invoice.transportDetails.vehicleNumber}</span>
+                </div>
+              )}
+              {invoice.transportDetails.modeOfTransport && (
+                <div>
+                  <span className="font-semibold text-stone-500 uppercase text-[9px] tracking-wide block">Mode:</span>
+                  <span>{invoice.transportDetails.modeOfTransport}</span>
+                </div>
+              )}
+              {invoice.transportDetails.vehicleType && (
+                <div>
+                  <span className="font-semibold text-stone-500 uppercase text-[9px] tracking-wide block">Vehicle Type:</span>
+                  <span>{invoice.transportDetails.vehicleType}</span>
+                </div>
+              )}
+              {invoice.transportDetails.distance && (
+                <div>
+                  <span className="font-semibold text-stone-500 uppercase text-[9px] tracking-wide block">Distance:</span>
+                  <span>{invoice.transportDetails.distance} km</span>
+                </div>
+              )}
+              {invoice.transportDetails.transportDocNo && (
+                <div>
+                  <span className="font-semibold text-stone-500 uppercase text-[9px] tracking-wide block">Doc No:</span>
+                  <span>{invoice.transportDetails.transportDocNo}</span>
+                </div>
+              )}
+              {invoice.transportDetails.transactionType && (
+                <div>
+                  <span className="font-semibold text-stone-500 uppercase text-[9px] tracking-wide block">Transaction Type:</span>
+                  <span>{invoice.transportDetails.transactionType}</span>
+                </div>
+              )}
+              {invoice.transportDetails.shippedFromAddress && (
+                <div className="col-span-2">
+                  <span className="font-semibold text-stone-500 uppercase text-[9px] tracking-wide block">Shipped From:</span>
+                  <span>{invoice.transportDetails.shippedFromAddress}</span>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* ── Line items — ruled ledger style ───────────────────── */}
         <section className="flex-1">
           <table className="w-full text-sm border-collapse">
