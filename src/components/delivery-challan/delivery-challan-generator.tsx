@@ -55,11 +55,13 @@ const deliveryChallanSchema = z.object({
   businessPan: z.string().optional(),
   businessAddress: z.string().optional(),
   businessPincode: z.string().optional(),
+  businessPhoneCode: z.string().optional().default("+91"),
   businessPhone: z.string().optional(),
   businessEmail: z.string().email().optional().or(z.literal("")),
   clientName: z.string().min(1, "Client name required"),
   clientGstin: z.string().optional(),
   clientEmail: z.string().email().optional().or(z.literal("")),
+  clientPhoneCode: z.string().optional().default("+91"),
   clientPhone: z.string().optional(),
   clientAddress: z.string().optional(),
   clientPincode: z.string().optional(),
@@ -170,12 +172,21 @@ export function DeliveryChallanGenerator() {
   useEffect(() => {
     if (showPreview) {
       document.body.style.overflow = "hidden"
+      document.documentElement.style.overflow = "hidden"
+      document.body.style.touchAction = "none"
+      document.documentElement.style.touchAction = "none"
     } else {
       document.body.style.overflow = ""
+      document.documentElement.style.overflow = ""
+      document.body.style.touchAction = ""
+      document.documentElement.style.touchAction = ""
       setZoom(1)
     }
     return () => {
       document.body.style.overflow = ""
+      document.documentElement.style.overflow = ""
+      document.body.style.touchAction = ""
+      document.documentElement.style.touchAction = ""
     }
   }, [showPreview])
 
@@ -187,6 +198,10 @@ export function DeliveryChallanGenerator() {
       businessLogo: "",
       businessSignature: "",
       businessName: "",
+      businessPhoneCode: "+91",
+      businessPhone: "",
+      clientPhoneCode: "+91",
+      clientPhone: "",
       challanNumber: `DC-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`,
       challanDate: today,
       currency: "INR",
@@ -260,14 +275,14 @@ export function DeliveryChallanGenerator() {
         addressLines: watchedValues.businessAddress ? watchedValues.businessAddress.split('\n') : [],
         gstin: watchedValues.businessGstin,
         pan: watchedValues.businessPan,
-        phone: watchedValues.businessPhone,
+        phone: watchedValues.businessPhone ? `${watchedValues.businessPhoneCode || "+91"} ${watchedValues.businessPhone}` : undefined,
         email: watchedValues.businessEmail,
       },
       billTo: {
         name: watchedValues.clientName,
         addressLines: watchedValues.clientAddress ? watchedValues.clientAddress.split('\n') : [],
         gstin: watchedValues.clientGstin,
-        phone: watchedValues.clientPhone,
+        phone: watchedValues.clientPhone ? `${watchedValues.clientPhoneCode || "+91"} ${watchedValues.clientPhone}` : undefined,
         email: watchedValues.clientEmail,
       },
       shipTo: shipToBlock,
@@ -424,7 +439,7 @@ export function DeliveryChallanGenerator() {
 
       {/* Preview Overlay */}
       {showPreview && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-start bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-start bg-black/80 backdrop-blur-md animate-in fade-in duration-300" style={{ overscrollBehavior: "contain" }}>
           <div className="relative w-full h-full flex flex-col max-w-[1200px] mx-auto bg-white/5 dark:bg-black/5 shadow-2xl animate-in slide-in-from-bottom-8 zoom-in-95 duration-500 overflow-hidden">
 
             <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white dark:bg-gray-950 sticky top-0 z-10 shadow-sm">
@@ -455,8 +470,8 @@ export function DeliveryChallanGenerator() {
 
             <div
               ref={previewContainerRef}
-              className="flex-1 overflow-auto p-0 sm:p-2 md:p-4 flex flex-col items-center"
-              style={{ cursor: "grab" }}
+              className="flex-1 overflow-y-auto p-0 sm:p-2 md:p-4 flex flex-col items-center"
+              style={{ cursor: "grab", overscrollBehavior: "contain" }}
             >
               <div
                 className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white"
@@ -500,9 +515,6 @@ export function DeliveryChallanGenerator() {
             </Button>
             <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleSaveChallan}>
               <Save className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Save Draft</span>
-            </Button>
-            <Button size="sm" className="gap-1.5 h-8 text-xs bg-blue-600 text-white font-semibold hover:bg-blue-700" onClick={togglePreview}>
-              <Eye className="h-3.5 w-3.5 shrink-0" /> Show Preview
             </Button>
           </div>
         </div>
@@ -566,8 +578,8 @@ export function DeliveryChallanGenerator() {
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Business Name *</Label>
-                  <Input {...form.register("businessName")} placeholder="Your registered company name" className="h-9 text-sm" />
+                  <Label className="text-xs font-medium">Business Name (Required)</Label>
+                  <Input {...form.register("businessName")} placeholder="Your registered company name (e.g. Acme Corp)" className="h-9 text-sm" />
                   {form.formState.errors.businessName && (
                     <span className="text-[10px] text-red-500 font-medium">{form.formState.errors.businessName.message}</span>
                   )}
@@ -584,40 +596,105 @@ export function DeliveryChallanGenerator() {
                   <Input {...form.register("businessPan")} placeholder="ABCDE1234F" className="h-9 text-sm uppercase" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Phone</Label>
-                  <Input {...form.register("businessPhone")} placeholder="+91 99999 99999" className="h-9 text-sm" />
+                  <Label className="text-xs font-medium">Phone (Optional)</Label>
+                  <div className="flex gap-2">
+                    <Select
+                      value={watchedValues.businessPhoneCode || "+91"}
+                      onValueChange={(v) => form.setValue("businessPhoneCode", v)}
+                    >
+                      <SelectTrigger className="h-9 w-20 text-xs text-foreground bg-background">
+                        <SelectValue placeholder="+91" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="+91">+91</SelectItem>
+                        <SelectItem value="+1">+1</SelectItem>
+                        <SelectItem value="+44">+44</SelectItem>
+                        <SelectItem value="+971">+971</SelectItem>
+                        <SelectItem value="+61">+61</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      type="tel"
+                      placeholder="9999999999"
+                      value={watchedValues.businessPhone || ""}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, "");
+                        form.setValue("businessPhone", val);
+                      }}
+                      className="h-9 text-sm flex-1 font-mono"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Email</Label>
+                  <Label className="text-xs font-medium">Email (Optional)</Label>
                   <Input {...form.register("businessEmail")} placeholder="billing@company.com" className="h-9 text-sm" />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Company Address</Label>
-                <Textarea {...form.register("businessAddress")} placeholder="Street, Building, City, State" className="min-h-16 text-sm" />
+                <Label className="text-xs font-medium">Company Address (Optional)</Label>
+                <Textarea {...form.register("businessAddress")} placeholder="Street, Building, City, State, Pincode" className="min-h-16 text-sm" />
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4 pt-2">
+              <div className="grid sm:grid-cols-2 gap-6 pt-2">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Business Logo</Label>
-                  <div className="flex items-center gap-3">
-                    <Input type="file" accept="image/*" onChange={handleLogoUpload} className="h-9 text-xs" />
-                    {watchedValues.businessLogo && (
-                      <div className="h-9 w-9 rounded border border-border overflow-hidden flex-shrink-0">
-                        <img src={watchedValues.businessLogo} alt="Logo" className="h-full w-full object-cover grayscale" />
-                      </div>
+                  <Label className="text-xs font-medium">Business Logo (Optional)</Label>
+                  <div className="relative border-2 border-dashed border-border rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group h-28 w-full max-w-[200px] overflow-hidden">
+                    {watchedValues.businessLogo ? (
+                      <>
+                        <img src={watchedValues.businessLogo} alt="Logo" className="max-h-full max-w-full object-contain p-2" />
+                        <div
+                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            form.setValue("businessLogo", "");
+                          }}
+                        >
+                          <Trash2 className="h-5 w-5 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
+                        <Plus className="h-5 w-5 text-muted-foreground mb-1" />
+                        <span className="text-[10px] text-muted-foreground font-medium">Upload Logo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleLogoUpload}
+                        />
+                      </label>
                     )}
                   </div>
                 </div>
+
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Authorized Signature</Label>
-                  <div className="flex items-center gap-3">
-                    <Input type="file" accept="image/*" onChange={handleSignatureUpload} className="h-9 text-xs" />
-                    {watchedValues.businessSignature && (
-                      <div className="h-9 w-9 rounded border border-border overflow-hidden flex-shrink-0">
-                        <img src={watchedValues.businessSignature} alt="Signature" className="h-full w-full object-cover grayscale" />
-                      </div>
+                  <Label className="text-xs font-medium">Authorized Signature (Optional)</Label>
+                  <div className="relative border-2 border-dashed border-border rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group h-28 w-full max-w-[200px] overflow-hidden">
+                    {watchedValues.businessSignature ? (
+                      <>
+                        <img src={watchedValues.businessSignature} alt="Signature" className="max-h-full max-w-full object-contain p-2" />
+                        <div
+                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            form.setValue("businessSignature", "");
+                          }}
+                        >
+                          <Trash2 className="h-5 w-5 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
+                        <Plus className="h-5 w-5 text-muted-foreground mb-1" />
+                        <span className="text-[10px] text-muted-foreground font-medium">Upload Signature</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleSignatureUpload}
+                        />
+                      </label>
                     )}
                   </div>
                 </div>
@@ -629,8 +706,8 @@ export function DeliveryChallanGenerator() {
               <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Delivered To (Consignee / Recipient)</h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Client / Consignee Name *</Label>
-                  <Input {...form.register("clientName")} placeholder="Recipient customer or branch name" className="h-9 text-sm" />
+                  <Label className="text-xs font-medium">Client / Consignee Name (Required)</Label>
+                  <Input {...form.register("clientName")} placeholder="Recipient customer or branch name (e.g. John Doe)" className="h-9 text-sm" />
                   {form.formState.errors.clientName && (
                     <span className="text-[10px] text-red-500 font-medium">{form.formState.errors.clientName.message}</span>
                   )}
@@ -642,16 +719,42 @@ export function DeliveryChallanGenerator() {
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Phone</Label>
-                  <Input {...form.register("clientPhone")} placeholder="+91 99999 88888" className="h-9 text-sm" />
+                  <Label className="text-xs font-medium">Phone (Optional)</Label>
+                  <div className="flex gap-2">
+                    <Select
+                      value={watchedValues.clientPhoneCode || "+91"}
+                      onValueChange={(v) => form.setValue("clientPhoneCode", v)}
+                    >
+                      <SelectTrigger className="h-9 w-20 text-xs text-foreground bg-background">
+                        <SelectValue placeholder="+91" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="+91">+91</SelectItem>
+                        <SelectItem value="+1">+1</SelectItem>
+                        <SelectItem value="+44">+44</SelectItem>
+                        <SelectItem value="+971">+971</SelectItem>
+                        <SelectItem value="+61">+61</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      type="tel"
+                      placeholder="9999988888"
+                      value={watchedValues.clientPhone || ""}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, "");
+                        form.setValue("clientPhone", val);
+                      }}
+                      className="h-9 text-sm flex-1 font-mono"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Email</Label>
+                  <Label className="text-xs font-medium">Email (Optional)</Label>
                   <Input {...form.register("clientEmail")} placeholder="client@email.com" className="h-9 text-sm" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Delivery Address</Label>
+                <Label className="text-xs font-medium">Delivery Address (Optional)</Label>
                 <Textarea {...form.register("clientAddress")} placeholder="Full delivery/billing destination address" className="min-h-16 text-sm" />
               </div>
             </section>
@@ -717,23 +820,32 @@ export function DeliveryChallanGenerator() {
               <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Transport & Dispatch Details</h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Transporter Name</Label>
+                  <Label className="text-xs font-medium">Transporter Name (Optional)</Label>
                   <Input {...form.register("transporterName")} placeholder="E.g. BlueDart, VRL Logistics" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Vehicle Number</Label>
-                  <Input {...form.register("vehicleNumber")} placeholder="E.g. KA-01-XX-1234" className="h-9 text-sm font-mono uppercase" />
+                  <Label className="text-xs font-medium">Vehicle Number (Optional)</Label>
+                  <Input
+                    {...form.register("vehicleNumber")}
+                    placeholder="E.g. KA-01-XX-1234"
+                    className="h-9 text-sm font-mono uppercase"
+                    value={watchedValues.vehicleNumber || ""}
+                    onChange={(e) => {
+                      const val = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, "");
+                      form.setValue("vehicleNumber", val);
+                    }}
+                  />
                 </div>
               </div>
 
               <div className="grid sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Mode of Transport</Label>
+                  <Label className="text-xs font-medium">Mode of Transport (Required)</Label>
                   <Select
                     defaultValue="Road"
                     onValueChange={(v) => form.setValue("modeOfTransport", v)}
                   >
-                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Mode" /></SelectTrigger>
+                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select transport mode" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Road">Road</SelectItem>
                       <SelectItem value="Rail">Rail</SelectItem>
@@ -743,12 +855,12 @@ export function DeliveryChallanGenerator() {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Vehicle Type</Label>
+                  <Label className="text-xs font-medium">Vehicle Type (Required)</Label>
                   <Select
                     defaultValue="Regular"
                     onValueChange={(v) => form.setValue("vehicleType", v)}
                   >
-                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Vehicle Type" /></SelectTrigger>
+                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select vehicle type" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Regular">Regular Cargo</SelectItem>
                       <SelectItem value="ODC">Over Dimensional Cargo (ODC)</SelectItem>
@@ -756,12 +868,12 @@ export function DeliveryChallanGenerator() {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Transaction Type</Label>
+                  <Label className="text-xs font-medium">Transaction Type (Required)</Label>
                   <Select
                     defaultValue="Regular"
                     onValueChange={(v) => form.setValue("transactionType", v)}
                   >
-                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Transaction Type" /></SelectTrigger>
+                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select transaction type" /></SelectTrigger>
                     <SelectContent>
                       {TRANSACTION_TYPES.map(t => (
                         <SelectItem key={t} value={t}>{t}</SelectItem>
@@ -773,12 +885,12 @@ export function DeliveryChallanGenerator() {
 
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Distance (KM)</Label>
-                  <Input {...form.register("distance")} placeholder="Approx distance for E-Way Bill" className="h-9 text-sm" />
+                  <Label className="text-xs font-medium">Distance (KM) (Optional)</Label>
+                  <Input {...form.register("distance")} placeholder="Approx distance for E-Way Bill (e.g. 250)" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Transport Doc No. / B/L No.</Label>
-                  <Input {...form.register("transportDocNo")} placeholder="LR / AWB / Railway Receipt Number" className="h-9 text-sm" />
+                  <Label className="text-xs font-medium">Transport Doc No. / B/L No. (Optional)</Label>
+                  <Input {...form.register("transportDocNo")} placeholder="LR / AWB / Railway Receipt Number (e.g. AWB12345)" className="h-9 text-sm" />
                 </div>
               </div>
             </section>
@@ -788,14 +900,14 @@ export function DeliveryChallanGenerator() {
               <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Challan Details</h3>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Challan Number *</Label>
+                  <Label className="text-xs font-medium">Challan Number (Required)</Label>
                   <Input {...form.register("challanNumber")} placeholder="DC-2026-0001" className="h-9 text-sm" />
                   {form.formState.errors.challanNumber && (
                     <span className="text-[10px] text-red-500 font-medium">{form.formState.errors.challanNumber.message}</span>
                   )}
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Challan Date *</Label>
+                  <Label className="text-xs font-medium">Challan Date (Required)</Label>
                   <Input type="date" {...form.register("challanDate")} className="h-9 text-sm" />
                 </div>
               </div>
@@ -818,11 +930,9 @@ export function DeliveryChallanGenerator() {
                       <th className="py-2.5 px-2 w-[12%]">HSN</th>
                       <th className="py-2.5 px-2 w-[12%]">Qty</th>
                       <th className="py-2.5 px-2 w-[10%]">Unit</th>
+                      <th className="py-2.5 px-2 w-[12%]">Rate (Price)</th>
                       {watchedValues.gstMode !== "none" && (
-                        <>
-                          <th className="py-2.5 px-2 w-[10%]">Rate</th>
-                          <th className="py-2.5 px-2 w-[10%]">GST %</th>
-                        </>
+                        <th className="py-2.5 px-2 w-[10%]">GST %</th>
                       )}
                       <th className="py-2.5 px-2 w-[5%]"></th>
                     </tr>
@@ -862,29 +972,28 @@ export function DeliveryChallanGenerator() {
                             className="h-8 text-xs"
                           />
                         </td>
+                        <td className="py-2 px-2 align-top">
+                          <Input
+                            type="number"
+                            step="any"
+                            placeholder="0.00"
+                            {...form.register(`items.${index}.rate` as const, { valueAsNumber: true })}
+                            className="h-8 text-xs font-mono text-right"
+                          />
+                        </td>
                         {watchedValues.gstMode !== "none" && (
-                          <>
-                            <td className="py-2 px-2 align-top">
-                              <Input
-                                type="number"
-                                step="any"
-                                {...form.register(`items.${index}.rate` as const, { valueAsNumber: true })}
-                                className="h-8 text-xs font-mono text-right"
-                              />
-                            </td>
-                            <td className="py-2 px-2 align-top">
-                              <select
-                                {...form.register(`items.${index}.taxRate` as const, { valueAsNumber: true })}
-                                className="h-8 w-full text-xs rounded-md border border-input bg-transparent px-2 shadow-sm focus-visible:outline-none"
-                              >
-                                <option value={0}>0%</option>
-                                <option value={5}>5%</option>
-                                <option value={12}>12%</option>
-                                <option value={18}>18%</option>
-                                <option value={28}>28%</option>
-                              </select>
-                            </td>
-                          </>
+                          <td className="py-2 px-2 align-top">
+                            <select
+                              {...form.register(`items.${index}.taxRate` as const, { valueAsNumber: true })}
+                              className="h-8 w-full text-xs rounded-md border border-input bg-transparent px-2 shadow-sm focus-visible:outline-none"
+                            >
+                              <option value={0}>0%</option>
+                              <option value={5}>5%</option>
+                              <option value={12}>12%</option>
+                              <option value={18}>18%</option>
+                              <option value={28}>28%</option>
+                            </select>
+                          </td>
                         )}
                         <td className="py-2 px-2 align-top text-right">
                           <Button
@@ -909,11 +1018,11 @@ export function DeliveryChallanGenerator() {
             <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Internal Notes</Label>
+                  <Label className="text-xs font-medium">Internal Notes (Optional)</Label>
                   <Textarea {...form.register("notes")} placeholder="E.g. Gate pass details, dispatcher comments..." className="min-h-20 text-xs leading-normal" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Terms & Conditions</Label>
+                  <Label className="text-xs font-medium">Terms & Conditions (Optional)</Label>
                   <Textarea {...form.register("terms")} placeholder="E.g. Recipient responsibility clause..." className="min-h-20 text-xs leading-normal" />
                 </div>
               </div>
@@ -932,9 +1041,9 @@ export function DeliveryChallanGenerator() {
               <Button
                 type="button"
                 onClick={togglePreview}
-                className="gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold"
               >
-                <Eye className="h-4 w-4" /> Preview & Export
+                <Eye className="h-4 w-4" /> SHOW PREVIEW
               </Button>
             </div>
 

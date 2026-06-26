@@ -1100,7 +1100,7 @@ export function PurchaseOrderClient() {
             {/* Actions */}
             <div className="flex flex-wrap gap-3 pb-4">
               <Button className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-semibold" onClick={togglePreview}>
-                <Eye className="h-4 w-4" /> Preview & Download
+                <Eye className="h-4 w-4" /> SHOW PREVIEW
               </Button>
               <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
                 <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />
@@ -1113,29 +1113,6 @@ export function PurchaseOrderClient() {
                 <Printer className="h-4 w-4" /> Print
               </Button>
             </div>
-
-            {/* Template Showpiece at Bottom */}
-            <section className="form-section overflow-hidden">
-              <h2 className="font-display font-semibold text-sm mb-3 flex items-center gap-2">
-                <span className="h-5 w-5 rounded-md bg-emerald-600 flex items-center justify-center text-white text-xs font-bold">
-                  <Eye className="h-3 w-3" />
-                </span>
-                Live Preview — <span className="text-muted-foreground font-normal text-xs">{TEMPLATES.find(t => t.id === watchedValues.template)?.name}</span>
-              </h2>
-              <div className="relative rounded-xl border border-border/50 bg-white dark:bg-gray-900 overflow-hidden shadow-inner">
-                <div className="max-h-[500px] overflow-auto p-2 sm:p-4">
-                  <div className="transform origin-top scale-[0.45] sm:scale-[0.6] lg:scale-[0.7] origin-top-left w-[calc(100%_/_0.45)] sm:w-[calc(100%_/_0.6)] lg:w-[calc(100%_/_0.7)]">
-                    <InvoicePreview hideToolbar={true}>
-                      {renderTemplate()}
-                    </InvoicePreview>
-                  </div>
-                </div>
-              </div>
-              <p className="text-[11px] text-muted-foreground mt-2 flex items-center gap-1">
-                <Info className="h-3 w-3" />
-                This is how your purchase order will look. Data updates in real-time.
-              </p>
-            </section>
 
             {/* Save Draft Info */}
             <section className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30 p-5 space-y-3">

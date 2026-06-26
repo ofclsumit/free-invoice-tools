@@ -171,12 +171,21 @@ export function InvoiceGenerator() {
   useEffect(() => {
     if (showPreview) {
       document.body.style.overflow = "hidden"
+      document.documentElement.style.overflow = "hidden"
+      document.body.style.touchAction = "none"
+      document.documentElement.style.touchAction = "none"
     } else {
       document.body.style.overflow = ""
+      document.documentElement.style.overflow = ""
+      document.body.style.touchAction = ""
+      document.documentElement.style.touchAction = ""
       setZoom(1)
     }
     return () => {
       document.body.style.overflow = ""
+      document.documentElement.style.overflow = ""
+      document.body.style.touchAction = ""
+      document.documentElement.style.touchAction = ""
     }
   }, [showPreview])
 
@@ -493,7 +502,7 @@ export function InvoiceGenerator() {
 
       {/* Preview Overlay */}
       {showPreview && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-start bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-start bg-black/80 backdrop-blur-md animate-in fade-in duration-300" style={{ overscrollBehavior: "contain" }}>
           <div className="relative w-full h-full flex flex-col max-w-[1200px] mx-auto bg-white/5 dark:bg-black/5 shadow-2xl animate-in slide-in-from-bottom-8 zoom-in-95 duration-500 overflow-hidden">
 
             <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white dark:bg-gray-950 sticky top-0 z-10 shadow-sm">
@@ -524,8 +533,8 @@ export function InvoiceGenerator() {
 
             <div
               ref={previewContainerRef}
-              className="flex-1 overflow-auto p-0 sm:p-2 md:p-4 flex flex-col items-center"
-              style={{ cursor: "grab" }}
+              className="flex-1 overflow-y-auto p-0 sm:p-2 md:p-4 flex flex-col items-center"
+              style={{ cursor: "grab", overscrollBehavior: "contain" }}
             >
               <div
                 className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white"
@@ -1052,7 +1061,7 @@ export function InvoiceGenerator() {
             {/* Actions */}
             <div className="flex flex-wrap gap-3 pb-4">
               <Button className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold" onClick={togglePreview}>
-                <Eye className="h-4 w-4" /> Preview & Download
+                <Eye className="h-4 w-4" /> SHOW PREVIEW
               </Button>
               <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
                 <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />
@@ -1065,29 +1074,6 @@ export function InvoiceGenerator() {
                 <Printer className="h-4 w-4" /> Print
               </Button>
             </div>
-
-            {/* Template Showpiece at Bottom */}
-            <section className="form-section overflow-hidden">
-              <h2 className="font-display font-semibold text-sm mb-3 flex items-center gap-2">
-                <span className="h-5 w-5 rounded-md bg-emerald-600 flex items-center justify-center text-white text-xs font-bold">
-                  <Eye className="h-3 w-3" />
-                </span>
-                Live Preview — <span className="text-muted-foreground font-normal text-xs">{TEMPLATES.find(t => t.id === watchedValues.template)?.name}</span>
-              </h2>
-              <div className="relative rounded-xl border border-border/50 bg-white dark:bg-gray-900 overflow-hidden shadow-inner">
-                <div className="max-h-[500px] overflow-auto p-2 sm:p-4">
-                  <div className="transform origin-top scale-[0.45] sm:scale-[0.6] lg:scale-[0.7] origin-top-left w-[calc(100%_/_0.45)] sm:w-[calc(100%_/_0.6)] lg:w-[calc(100%_/_0.7)]">
-                    <InvoicePreview hideToolbar={true}>
-                      {renderTemplate()}
-                    </InvoicePreview>
-                  </div>
-                </div>
-              </div>
-              <p className="text-[11px] text-muted-foreground mt-2 flex items-center gap-1">
-                <Info className="h-3 w-3" />
-                This is how your invoice will look. Data updates in real-time.
-              </p>
-            </section>
 
             {/* Save Draft Info */}
             <section className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30 p-5 space-y-3">
