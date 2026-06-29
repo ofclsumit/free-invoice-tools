@@ -1,7 +1,6 @@
 "use client"
-import { useState, useRef } from "react"
-import { useReactToPrint } from "react-to-print"
-import { Download, Eye, EyeOff, Export, RotateCcw } from "lucide-react"
+import { useState } from "react"
+import { Download } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { useToast } from "@/hooks/use-toast"
 import { numToWords } from "@/lib/pdf/shared"
@@ -11,9 +10,10 @@ import {
 } from "@/components/invoice-templates/components"
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
-  UltraHeader, UltraCard, UltraToggle, UltraInput, UltraTextInput, UltraRateSelector, UltraPrimaryButton,
-  UltraDivider, UltraResultCard, UltraResultsGrid, UltraSplitRow,
-  UltraSplitContainer, UltraProgressBar, UltraResetButton, UltraRateTable,
+  UltraNav, UltraPage, UltraGrid,
+  UltraHeader, UltraCard, UltraToggle, UltraInput, UltraTextInput,
+  UltraRateSelector,
+  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraProgressBar
 } from "@/components/ultra/ultra-components"
 
 const GST_RATES = [0, 5, 12, 18, 28]
@@ -23,41 +23,24 @@ export function GstCalculatorClient() {
   const [amount, setAmount] = useState("")
   const [gstRate, setGstRate] = useState(18)
   const [mode, setMode] = useState<"exclusive" | "inclusive">("exclusive")
-  const [isDownloading, setIsDownloading] = useState(false)
-  const [showPreview, setShowPreview] = useState(false)
+  const [calculated, setCalculated] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [companyName, setCompanyName] = useState("")
   const [companyLogo, setCompanyLogo] = useState("")
 
-  const printRef = useRef<HTMLDivElement>(null)
-
-  const validateEssentialFields = () => {
-    if (!amount || parseFloat(amount) <= 0) {
-      toast({ title: "Valid amount is required", variant: "destructive" })
-      return false
-    }
-    return true
-  }
-
-  const togglePreview = () => {
-    if (showPreview) {
-      setShowPreview(false)
-    } else if (validateEssentialFields()) {
-      setShowPreview(true)
-    }
-  }
-
   const numAmount = parseFloat(amount) || 0
 
   let baseAmount = 0, gstAmount = 0, totalAmount = 0
-  if (mode === "exclusive") {
-    baseAmount = numAmount
-    gstAmount = (numAmount * gstRate) / 100
-    totalAmount = numAmount + gstAmount
-  } else {
-    totalAmount = numAmount
-    baseAmount = (numAmount * 100) / (100 + gstRate)
-    gstAmount = totalAmount - baseAmount
+  if (calculated && numAmount > 0) {
+    if (mode === "exclusive") {
+      baseAmount = numAmount
+      gstAmount = (numAmount * gstRate) / 100
+      totalAmount = numAmount + gstAmount
+    } else {
+      totalAmount = numAmount
+      baseAmount = (numAmount * 100) / (100 + gstRate)
+      gstAmount = totalAmount - baseAmount
+    }
   }
 
   const cgst = gstAmount / 2
@@ -76,153 +59,48 @@ export function GstCalculatorClient() {
     }
   }
 
+  const handleCalculate = () => {
+    if (numAmount > 0) {
+      setCalculated(true)
+    } else {
+      setCalculated(false)
+      toast({ title: "Valid amount is required", variant: "destructive" })
+    }
+  }
+
+  const handleReset = () => {
+    setAmount("")
+    setCalculated(false)
+  }
+
   const handleDownloadPDF = async () => {
-    if (!showPreview) {
-      toast({ title: "Preview required", description: "Click 'Show Preview' first before downloading.", variant: "destructive" })
+    if (!calculated) {
+      toast({ title: "Calculate first", description: "Please calculate GST before downloading.", variant: "destructive" })
       return
     }
     setIsGenerating(true)
-    setIsDownloading(true)
     try {
       const node = document.getElementById("invoice-print-root");
       if (node) {
         await exportNodeToPdf(node, `gst-report-${new Date().toISOString().split('T')[0]}.pdf`);
       }
     } finally {
-      setIsDownloading(false)
       setIsGenerating(false)
     }
   }
 
-return (
+  const gstPct = calculated && totalAmount > 0 ? (gstAmount / totalAmount) * 100 : 0
+  const basePct = calculated && totalAmount > 0 ? 100 - gstPct : 0
+
+  return (
     <>
-      {isGenerating && <LoadingScreen message="Generating GST Report PDF..." />}
-      <UltraShell>
-        <UltraHeader badge="GST Calculator India" title={<>Instant GST<br/>Calculator</>} subtitle="Real-time GST calculation with automatic CGST & SGST split." />
-
-        {!showPreview ? (
-          <>
-            <UltraCard>
-              <div className="flex items-center justify-between mb-6">
-                <div />
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={togglePreview}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-black/40 border border-white/[0.12] rounded-lg text-xs text-[#f1f5f9]/65 hover:text-[#f1f5f9] transition-all"
-                  >
-                    <Eye className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Show Preview</span>
-                  </button>
-                  <UltraPrimaryButton onClick={() => handleDownloadPDF()} disabled={isGenerating} className="!px-3 !py-1.5 !text-xs !rounded-lg">
-                    <Download className="w-3.5 h-3.5" /> {isGenerating ? "Generating..." : "PDF"}
-                  </UltraPrimaryButton>
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                <UltraTextInput placeholder="Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)} />
-                <div className="flex items-center gap-2">
-                  <div className="flex-1">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="w-full bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none px-4 py-3 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:bg-indigo-500/20 file:text-indigo-300 file:border-0 file:text-xs file:font-semibold"
-                    />
-                  </div>
-                  {companyLogo && (
-                    <div className="h-12 w-12 rounded-xl border border-white/[0.12] overflow-hidden flex-shrink-0">
-                      <img src={companyLogo} alt="Logo" className="h-full w-full object-cover" />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <UltraDivider />
-
-              <UltraToggle
-                options={[{ value: "exclusive", label: "+ GST Exclusive" }, { value: "inclusive", label: "Incl. GST" }]}
-                value={mode}
-                onChange={(v) => setMode(v as "exclusive" | "inclusive")}
-              />
-
-              <UltraInput
-                type="number"
-                placeholder="Enter amount"
-                currencySymbol="₹"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
-              />
-
-              <UltraRateSelector
-                rates={GST_RATES}
-                value={gstRate}
-                onChange={setGstRate}
-                labels={{ 0: "Exempt", 5: "Basic", 12: "Mid", 18: "Standard", 28: "Luxury" }}
-              />
-
-              <UltraDivider />
-
-              {numAmount > 0 && (
-                <>
-                  <UltraResultsGrid>
-                    <UltraResultCard
-                      color="main"
-                      label="Total Amount"
-                      value={`₹${fmt(totalAmount)}`}
-                      sub={mode === "exclusive" ? `Base + ${gstRate}% GST` : `Inclusive of ${gstRate}% GST`}
-                    />
-                    <UltraResultCard color="green" label="Base Amount" value={`₹${fmt(baseAmount)}`} />
-                    <UltraResultCard color="purple" label="GST Amount" value={`₹${fmt(gstAmount)}`} />
-                  </UltraResultsGrid>
-
-                  <UltraSplitContainer>
-                    <UltraSplitRow label={`CGST (${gstRate / 2}%)`} value={`₹${fmt(cgst)}`} dotColor="#6366f1" />
-                    <UltraSplitRow label={`SGST (${gstRate / 2}%)`} value={`₹${fmt(sgst)}`} dotColor="#8b5cf6" />
-                  </UltraSplitContainer>
-
-                  <div className="mt-5">
-                    <UltraProgressBar label="Base amount" value={(baseAmount / totalAmount) * 100} color="indigo" />
-                    <UltraProgressBar label="GST portion" value={(gstAmount / totalAmount) * 100} color="emerald" />
-                  </div>
-                </>
-              )}
-
-              <UltraResetButton onClick={() => setAmount("")} />
-            </UltraCard>
-
-            <UltraRateTable
-              rows={[
-                { rate: "0%", label: "Exempt", desc: "Essential food items, books, newspapers" },
-                { rate: "5%", label: "Basic", desc: "Packaged food, footwear under ₹1000, transport" },
-                { rate: "12%", label: "Mid", desc: "Processed food, mobiles, computers" },
-                { rate: "18%", label: "Standard", desc: "IT services, restaurants, most goods" },
-                { rate: "28%", label: "Luxury", desc: "Luxury goods, tobacco, automobiles" },
-              ]}
-              onSelect={(r) => setGstRate(parseInt(r))}
-            />
-          </>
-        ) : (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-display font-bold text-[#f1f5f9]">GST Report Preview</h2>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={togglePreview}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-black/40 border border-white/[0.12] rounded-lg text-xs text-[#f1f5f9]/65 hover:text-[#f1f5f9] transition-all"
-                >
-                  <EyeOff className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Edit</span>
-                </button>
-                <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="!px-3 !py-1.5 !text-xs !rounded-lg">
-                  <Download className="h-3.5 w-3.5" />
-                  {isGenerating ? "Generating..." : "Download PDF"}
-                </UltraPrimaryButton>
-              </div>
-            </div>
-            <div className="bg-white rounded-2xl p-4 sm:p-6">
-              <div id="invoice-print-root">
-                <InvoicePreview hideToolbar={true}>
+      <div className="absolute -left-[9999px] -top-[9999px]">
+        {isGenerating && <LoadingScreen message="Generating GST Report PDF..." />}
+        <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
+          <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
+            <div className="flex-1 overflow-auto rounded-2xl shadow-glass bg-white border border-border pb-8">
+              <InvoicePreview hideToolbar={true}>
+                <div id="invoice-print-root">
                   <div
                     className="bg-white text-black p-8 sm:p-12 print:shadow-none print:p-8 print:rounded-none w-full border-gray-100"
                     style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box", minHeight: "297mm" }}
@@ -290,11 +168,132 @@ return (
                       </p>
                     </div>
                   </div>
-                </InvoicePreview>
-              </div>
+                </div>
+              </InvoicePreview>
             </div>
           </div>
-        )}
+        </div>
+      </div>
+
+      <UltraShell>
+        <UltraNav />
+        <UltraPage>
+          <UltraHeader
+            badge="GST Calculator India"
+            title={"Instant GST\nCalculator"}
+            subtitle="Real-time GST calculation with automatic CGST & SGST split."
+          />
+
+          <UltraGrid>
+            <UltraCard>
+              <div className="flex items-center gap-2 mb-[1.35rem]">
+                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
+                <span className="text-[1rem] font-bold text-white/90">Calculate</span>
+              </div>
+
+              <div className="space-y-3 mb-4">
+                <UltraTextInput placeholder="Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)} />
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="w-full bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none px-4 py-3 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:bg-indigo-500/20 file:text-indigo-300 file:border-0 file:text-xs file:font-semibold"
+                    />
+                  </div>
+                  {companyLogo && (
+                    <div className="h-12 w-12 rounded-xl border border-white/[0.12] overflow-hidden flex-shrink-0">
+                      <img src={companyLogo} alt="Logo" className="h-full w-full object-cover" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <UltraToggle
+                options={[{ value: "exclusive", label: "+ GST Exclusive" }, { value: "inclusive", label: "Incl. GST" }]}
+                value={mode}
+                onChange={(v) => setMode(v as "exclusive" | "inclusive")}
+              />
+
+              <UltraInput
+                type="number"
+                placeholder="Enter amount"
+                currencySymbol="₹"
+                value={amount}
+                onChange={e => { setAmount(e.target.value); setCalculated(false) }}
+              />
+
+              <UltraRateSelector
+                rates={GST_RATES}
+                value={gstRate}
+                onChange={setGstRate}
+                labels={{ 0: "Exempt", 5: "Basic", 12: "Mid", 18: "Standard", 28: "Luxury" }}
+              />
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  id="calc-btn"
+                  onClick={handleCalculate}
+                  className="flex-[2] py-[.82rem] px-5 bg-gradient-to-r from-[#8b5cf6]/75 to-[#3b82f6]/60 border border-[#a78bfa]/45 rounded-[.9rem] text-white text-[.93rem] font-bold cursor-pointer font-['Inter'] transition-all duration-300 shadow-[0_4px_20px_rgba(139,92,246,.35)] hover:-translate-y-px hover:shadow-[0_6px_28px_rgba(139,92,246,.55)] hover:from-[#8b5cf6]/90 hover:to-[#3b82f6]/75"
+                >
+                  Calculate GST
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="flex-1 py-[.82rem] bg-white/[.08] border border-white/[.15] rounded-[.9rem] text-white/60 text-[.9rem] cursor-pointer font-['Inter'] transition-all duration-300 hover:bg-white/[.14] hover:text-white"
+                >
+                  ↺ Reset
+                </button>
+              </div>
+            </UltraCard>
+
+            <UltraCard>
+              <div className="flex items-center gap-2 mb-[1.35rem]">
+                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
+                <span className="text-[1rem] font-bold text-white/90">Results</span>
+              </div>
+
+              {!calculated || !(numAmount > 0) ? (
+                <div className="flex flex-col items-center justify-center min-h-[280px] text-white/35 text-center gap-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="1.5">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <p className="text-[.88rem] leading-relaxed">Enter your values and tap<br /><strong className="text-[#a78bfa]/70">Calculate GST</strong></p>
+                </div>
+              ) : (
+                <>
+                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-[#8b5cf6]/20 border border-[#8b5cf6]/45 rounded-[2rem] text-[.7rem] font-bold tracking-[.07em] uppercase text-[#c4a8ff]/95 mb-[.55rem] w-fit">
+                    <span className="w-[6px] h-[6px] rounded-full bg-[#a78bfa]/90 shrink-0" />
+                    {mode === "exclusive" ? "GST Exclusive" : "GST Inclusive"}
+                  </div>
+
+                  <UltraResultsGrid>
+                    <UltraResultCard label="Base Amount" value={`₹${fmt(baseAmount)}`} color="blue" />
+                    <UltraResultCard label="GST Rate" value={`${gstRate}%`} color="blue" />
+                    <UltraResultCard label="GST Amount" value={`₹${fmt(gstAmount)}`} color="green" />
+                    <UltraResultCard label="Total Amount" value={`₹${fmt(totalAmount)}`} color="main" />
+                  </UltraResultsGrid>
+
+                  <div className="flex justify-between items-center text-[.78rem] text-white/50 mt-4 pb-2 border-b border-white/[.06]">
+                    <span>CGST ({gstRate / 2}%)</span>
+                    <span className="text-white/80 font-semibold">₹{fmt(cgst)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[.78rem] text-white/50 pb-3">
+                    <span>SGST ({gstRate / 2}%)</span>
+                    <span className="text-white/80 font-semibold">₹{fmt(sgst)}</span>
+                  </div>
+
+                  <UltraProgressBar label="Base vs GST" value={basePct} />
+
+                  <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
+                    <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                  </UltraPrimaryButton>
+                </>
+              )}
+            </UltraCard>
+          </UltraGrid>
+        </UltraPage>
       </UltraShell>
     </>
   )

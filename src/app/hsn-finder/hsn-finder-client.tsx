@@ -4,6 +4,7 @@ import { Search, Download } from "lucide-react"
 import { generateHsnListPDF } from "@/lib/pdf/generate-hsn-list"
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
+  UltraNav, UltraPage, UltraGrid,
   UltraHeader, UltraCard, UltraPrimaryButton, UltraTextInput, UltraResetButton
 } from "@/components/ultra/ultra-components"
 
@@ -86,49 +87,71 @@ export function HsnFinderClient() {
 
   return (
     <UltraShell>
-      <UltraHeader
-        badge="Reference"
-        title="HSN Code Finder"
-        subtitle="Search for Harmonized System of Nomenclature codes and GST rates"
-      />
-      <UltraCard>
-        <div className="flex flex-col sm:flex-row gap-3 mb-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#f1f5f9]/65" />
-            <input
-              placeholder="Search by code or description..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none transition-all duration-300 focus:border-indigo-500/60 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.12)] focus:bg-black/50 pl-10 pr-4 py-3"
-            />
-          </div>
-          <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isDownloading} className="h-11 w-full sm:w-auto">
-            <Download className="h-4 w-4" />
-            {isDownloading ? "Exporting..." : "Export"}
-          </UltraPrimaryButton>
-        </div>
+      <UltraNav />
+      <UltraPage>
+        <UltraHeader
+          badge="Reference"
+          title="HSN Code Finder"
+          subtitle="Search for Harmonized System of Nomenclature codes and GST rates"
+        />
 
-        <div className="bg-black/30 rounded-xl border border-white/[0.06] overflow-hidden">
-          <div className="grid grid-cols-[80px_1fr_60px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-5 py-3 text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 border-b border-white/[0.06] bg-white/[0.03]">
-            <span>HSN Code</span><span>Description</span><span>GST Rate</span>
-          </div>
-          <div className="divide-y divide-white/[0.04] max-h-[500px] overflow-y-auto">
-            {filtered.map(h => (
-              <div key={h.code} className="grid grid-cols-[80px_1fr_60px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-5 py-3 text-sm hover:bg-white/[0.03] transition-colors">
-                <span className="font-mono font-semibold text-indigo-400 truncate">{h.code}</span>
-                <span className="text-[#f1f5f9]/65 truncate" title={h.description}>{h.description}</span>
-                <span className="font-semibold text-[#f1f5f9]">{h.rate}</span>
+        <UltraGrid>
+          <UltraCard>
+            <div className="flex items-center gap-2 mb-[1.35rem]">
+              <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
+              <span className="text-[1rem] font-bold text-white/90">Search</span>
+            </div>
+
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#f1f5f9]/65" />
+              <input
+                placeholder="Search by code or description..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none transition-all duration-300 focus:border-indigo-500/60 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.12)] focus:bg-black/50 pl-10 pr-4 py-3"
+              />
+            </div>
+
+            <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isDownloading} className="w-full">
+              <Download className="h-4 w-4" />
+              {isDownloading ? "Exporting..." : "Export Results"}
+            </UltraPrimaryButton>
+          </UltraCard>
+
+          <UltraCard>
+            <div className="flex items-center gap-2 mb-[1.35rem]">
+              <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
+              <span className="text-[1rem] font-bold text-white/90">Results</span>
+            </div>
+
+            {filtered.length > 0 ? (
+              <div className="bg-black/30 rounded-xl border border-white/[0.06] overflow-hidden">
+                <div className="grid grid-cols-[80px_1fr_60px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-5 py-3 text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 border-b border-white/[0.06] bg-white/[0.03]">
+                  <span>HSN Code</span><span>Description</span><span>GST Rate</span>
+                </div>
+                <div className="divide-y divide-white/[0.04] max-h-[500px] overflow-y-auto">
+                  {filtered.map(h => (
+                    <div key={h.code} className="grid grid-cols-[80px_1fr_60px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-5 py-3 text-sm hover:bg-white/[0.03] transition-colors">
+                      <span className="font-mono font-semibold text-indigo-400 truncate">{h.code}</span>
+                      <span className="text-[#f1f5f9]/65 truncate" title={h.description}>{h.description}</span>
+                      <span className="font-semibold text-[#f1f5f9]">{h.rate}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center min-h-[280px] text-white/35 text-center gap-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="1.5">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <p className="text-[.88rem] leading-relaxed">No HSN codes found for &quot;{search}&quot;</p>
+              </div>
+            )}
 
-        {filtered.length === 0 && (
-          <p className="text-center text-sm text-[#f1f5f9]/65 py-8">No HSN codes found for &quot;{search}&quot;</p>
-        )}
-
-        <p className="text-xs text-[#f1f5f9]/65 text-center mt-4">This is a sample list. Consult official GST portal for complete HSN database.</p>
-      </UltraCard>
+            <p className="text-xs text-[#f1f5f9]/65 text-center mt-4">This is a sample list. Consult official GST portal for complete HSN database.</p>
+          </UltraCard>
+        </UltraGrid>
+      </UltraPage>
     </UltraShell>
   )
 }

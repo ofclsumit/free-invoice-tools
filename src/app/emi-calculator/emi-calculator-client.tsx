@@ -9,8 +9,9 @@ import {
 } from "@/components/invoice-templates/components"
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
+  UltraNav, UltraPage, UltraGrid,
   UltraHeader, UltraCard, UltraToggle, UltraInput,
-  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
+  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraProgressBar
 } from "@/components/ultra/ultra-components"
 
 export function EmiCalculatorClient() {
@@ -18,6 +19,7 @@ export function EmiCalculatorClient() {
   const [rate, setRate] = useState("")
   const [tenure, setTenure] = useState("")
   const [tenureUnit, setTenureUnit] = useState<"months" | "years">("years")
+  const [calculated, setCalculated] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [zoom, setZoom] = useState(1)
@@ -48,8 +50,17 @@ export function EmiCalculatorClient() {
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
+  const handleCalculate = () => {
+    if (P > 0 && r > 0 && n > 0) setCalculated(true)
+    else {
+      setCalculated(false)
+      const btn = document.getElementById("calc-btn")
+      if (btn) { btn.style.animation = "none"; void btn.offsetWidth; btn.style.animation = "shake .4s ease" }
+    }
+  }
+
   const handleReset = () => {
-    setAmount(""); setRate(""); setTenure("")
+    setAmount(""); setRate(""); setTenure(""); setCalculated(false)
   }
 
   const handleDownloadPDF = async () => {
@@ -177,71 +188,112 @@ export function EmiCalculatorClient() {
       )}
 
       <UltraShell>
-        <UltraHeader
-          badge="EMI Calculator"
-          title={"EMI\nCalculator"}
-          subtitle="Plan your loan payments with instant EMI calculations."
-        />
-
-        <UltraCard>
-          <UltraInput
-            type="number"
-            placeholder="Loan Amount"
-            currencySymbol="₹"
-            value={amount}
-            onChange={e => setAmount(e.target.value)}
+        <UltraNav />
+        <UltraPage>
+          <UltraHeader
+            badge="EMI Calculator"
+            title={"EMI\nCalculator"}
+            subtitle="Plan your loan payments with instant EMI calculations."
           />
 
-          <UltraInput
-            type="number"
-            step="0.1"
-            placeholder="Annual Interest Rate"
-            value={rate}
-            onChange={e => setRate(e.target.value)}
-          />
+          <UltraGrid>
+            {/* ─── CALCULATE CARD ─── */}
+            <UltraCard>
+              <div className="flex items-center gap-2 mb-[1.35rem]">
+                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
+                <span className="text-[1rem] font-bold text-white/90">Calculate</span>
+              </div>
 
-          <div className="flex gap-3 items-start">
-            <div className="flex-1">
               <UltraInput
                 type="number"
-                placeholder="Loan Tenure"
-                value={tenure}
-                onChange={e => setTenure(e.target.value)}
+                placeholder="Loan Amount"
+                currencySymbol="₹"
+                value={amount}
+                onChange={e => { setAmount(e.target.value); setCalculated(false) }}
               />
-            </div>
-            <div className="min-w-[160px] pt-7">
-              <UltraToggle
-                options={[{value:"months",label:"Months"},{value:"years",label:"Years"}]}
-                value={tenureUnit}
-                onChange={(v) => setTenureUnit(v as "months" | "years")}
+
+              <UltraInput
+                type="number"
+                step="0.1"
+                placeholder="Annual Interest Rate"
+                suffix="% p.a."
+                value={rate}
+                onChange={e => { setRate(e.target.value); setCalculated(false) }}
               />
-            </div>
-          </div>
 
-          {emi > 0 && (
-            <>
-              <UltraResultsGrid>
-                <UltraResultCard label="Monthly EMI" value={`₹${fmt(emi)}`} color="main" />
-                <UltraResultCard label="Total Interest" value={`₹${fmt(totalInterest)}`} color="amber" />
-                <UltraResultCard label="Total Payment" value={`₹${fmt(totalPayment)}`} color="purple" />
-                <UltraResultCard label="Principal Amount" value={`₹${fmt(P)}`} color="blue" />
-                <UltraResultCard label="Loan Tenure" value={`${n.toFixed(0)} months`} />
-                <UltraResultCard label="Total Interest %" value={`${(totalInterest / P * 100).toFixed(1)}%`} color="amber" />
-              </UltraResultsGrid>
-
-              <div className="grid grid-cols-2 gap-3 mt-2">
-                <button onClick={() => setShowPreview(true)} className="py-3.5 px-4 bg-white/[0.06] border border-white/[0.12] rounded-xl text-sm font-medium text-[#f1f5f9] transition-all duration-300 hover:bg-white/[0.1] flex items-center justify-center gap-2 cursor-pointer">
-                  <Eye className="w-4 h-4" /> Show Preview
-                </button>
-                <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating}>
-                  <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                </UltraPrimaryButton>
+              <div className="flex gap-3 items-start">
+                <div className="flex-1">
+                  <UltraInput
+                    type="number"
+                    placeholder="Loan Tenure"
+                    value={tenure}
+                    onChange={e => { setTenure(e.target.value); setCalculated(false) }}
+                  />
+                </div>
+                <div className="min-w-[160px] pt-7">
+                  <UltraToggle
+                    options={[{value:"months",label:"Months"},{value:"years",label:"Years"}]}
+                    value={tenureUnit}
+                    onChange={(v) => setTenureUnit(v as "months" | "years")}
+                  />
+                </div>
               </div>
-            </>
-          )}
 
-          <UltraResetButton onClick={handleReset} />
-        </UltraCard>
+              <div className="flex gap-3 mt-6">
+                <button
+                  id="calc-btn"
+                  onClick={handleCalculate}
+                  className="flex-[2] py-[.82rem] px-5 bg-gradient-to-r from-[#8b5cf6]/75 to-[#3b82f6]/60 border border-[#a78bfa]/45 rounded-[.9rem] text-white text-[.93rem] font-bold cursor-pointer font-['Inter'] transition-all duration-300 shadow-[0_4px_20px_rgba(139,92,246,.35)] hover:-translate-y-px hover:shadow-[0_6px_28px_rgba(139,92,246,.55)] hover:from-[#8b5cf6]/90 hover:to-[#3b82f6]/75"
+                >
+                  Calculate EMI
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="flex-1 py-[.82rem] bg-white/[.08] border border-white/[.15] rounded-[.9rem] text-white/60 text-[.9rem] cursor-pointer font-['Inter'] transition-all duration-300 hover:bg-white/[.14] hover:text-white"
+                >
+                  ↺ Reset
+                </button>
+              </div>
+            </UltraCard>
+
+            {/* ─── RESULTS CARD ─── */}
+            <UltraCard>
+              <div className="flex items-center gap-2 mb-[1.35rem]">
+                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
+                <span className="text-[1rem] font-bold text-white/90">Results</span>
+              </div>
+
+              {!calculated || !(P > 0 && r > 0 && n > 0) ? (
+                <div className="flex flex-col items-center justify-center min-h-[280px] text-white/35 text-center gap-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="1.5">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <p className="text-[.88rem] leading-relaxed">Enter your values and tap<br /><strong className="text-[#a78bfa]/70">Calculate EMI</strong></p>
+                </div>
+              ) : (
+                <>
+                  <UltraResultsGrid>
+                    <UltraResultCard label="Monthly EMI" value={`₹${fmt(emi)}`} color="main" />
+                    <UltraResultCard label="Total Interest" value={`₹${fmt(totalInterest)}`} color="amber" />
+                    <UltraResultCard label="Total Payment" value={`₹${fmt(totalPayment)}`} color="purple" />
+                    <UltraResultCard label="Principal Amount" value={`₹${fmt(P)}`} color="blue" />
+                    <UltraResultCard label="Loan Tenure" value={`${n.toFixed(0)} months`} />
+                    <UltraResultCard label="Total Interest %" value={`${(totalInterest / P * 100).toFixed(1)}%`} color="amber" />
+                  </UltraResultsGrid>
+
+                  <div className="grid grid-cols-2 gap-3 mt-2">
+                    <button onClick={() => setShowPreview(true)} className="py-3.5 px-4 bg-white/[0.06] border border-white/[0.12] rounded-xl text-sm font-medium text-[#f1f5f9] transition-all duration-300 hover:bg-white/[0.1] flex items-center justify-center gap-2 cursor-pointer">
+                      <Eye className="w-4 h-4" /> Show Preview
+                    </button>
+                    <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating}>
+                      <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                    </UltraPrimaryButton>
+                  </div>
+                </>
+              )}
+            </UltraCard>
+          </UltraGrid>
+        </UltraPage>
       </UltraShell>
     </>
   )

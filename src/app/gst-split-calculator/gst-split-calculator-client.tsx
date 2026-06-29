@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { Download, ArrowLeft, Export, RotateCcw } from "lucide-react"
+import { Download } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import {
   InvoicePreview,
@@ -8,8 +8,9 @@ import {
 } from "@/components/invoice-templates/components"
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
-  UltraHeader, UltraCard, UltraInput, UltraPrimaryButton,
-  UltraDivider, UltraResultCard, UltraResultsGrid, UltraResetButton,
+  UltraNav, UltraPage, UltraGrid,
+  UltraHeader, UltraCard, UltraInput,
+  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
 } from "@/components/ultra/ultra-components"
 
 const GST_RATES = [0, 5, 12, 18, 28]
@@ -24,7 +25,7 @@ export function GstSplitCalculatorClient() {
   const [splits, setSplits] = useState<SplitEntry[]>(
     GST_RATES.map(rate => ({ rate, percentage: 0 }))
   )
-  const [showPreview, setShowPreview] = useState(false)
+  const [calculated, setCalculated] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
 
   const total = parseFloat(totalAmount) || 0
@@ -39,9 +40,19 @@ export function GstSplitCalculatorClient() {
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
+  const handleCalculate = () => {
+    if (total > 0 && splits.some(s => s.percentage > 0)) setCalculated(true)
+    else {
+      setCalculated(false)
+      const btn = document.getElementById("calc-btn")
+      if (btn) { btn.style.animation = "none"; void btn.offsetWidth; btn.style.animation = "shake .4s ease" }
+    }
+  }
+
   const handleReset = () => {
     setTotalAmount("")
     setSplits(GST_RATES.map(rate => ({ rate, percentage: 0 })))
+    setCalculated(false)
   }
 
   const handleDownloadPDF = async () => {
@@ -56,28 +67,15 @@ export function GstSplitCalculatorClient() {
     }
   }
 
-  const previewContent = (
-      <>
+  const totalAllocated = splits.filter(s => s.percentage > 0).reduce((sum, s) => sum + (total * s.percentage) / 100, 0)
+  const allocatedPortion = calculated && total > 0 ? (totalAllocated / total) * 100 : 0
+
+  return (
+    <>
+      <div className="absolute -left-[9999px] -top-[9999px]">
         {isGenerating && <LoadingScreen message="Generating PDF..." />}
         <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
           <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
-            <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-              <button
-                onClick={handleDownloadPDF}
-                disabled={isGenerating}
-                className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-sm font-medium border border-border transition-all"
-              >
-                <ArrowLeft className="h-4 w-4" /> Edit Analysis
-              </button>
-              <button
-                onClick={handleDownloadPDF}
-                disabled={isGenerating}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
-              >
-                <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-              </button>
-            </div>
-
             <div className="flex-1 overflow-auto rounded-2xl shadow-glass bg-white border border-border pb-8">
               <InvoicePreview hideToolbar={true}>
                 <div
@@ -141,31 +139,35 @@ export function GstSplitCalculatorClient() {
             </div>
           </div>
         </div>
-      </>
-    )
-
-  return (
-    <>
-      <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
+      </div>
 
       <UltraShell>
-        <UltraHeader badge="GST Split" title={<>GST Split<br/>Calculator</>} subtitle="Allocate a total amount across different GST rate slabs and see the breakdown." />
-
-        <UltraCard>
-          <UltraInput
-            type="number"
-            placeholder="Total Amount"
-            currencySymbol="₹"
-            value={totalAmount}
-            onChange={e => setTotalAmount(e.target.value)}
+        <UltraNav />
+        <UltraPage>
+          <UltraHeader
+            badge="GST Split"
+            title={"GST Split\nCalculator"}
+            subtitle="Allocate a total amount across different GST rate slabs and see the breakdown."
           />
 
-          <UltraDivider />
+          <UltraGrid>
+            {/* ─── CALCULATE CARD ─── */}
+            <UltraCard>
+              <div className="flex items-center gap-2 mb-[1.35rem]">
+                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
+                <span className="text-[1rem] font-bold text-white/90">Calculate</span>
+              </div>
 
-          {total > 0 && (
-            <>
-              <div className="space-y-3 mb-6">
-                <label className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 block">Split Percentage by GST Rate</label>
+              <UltraInput
+                type="number"
+                placeholder="Total Amount"
+                currencySymbol="₹"
+                value={totalAmount}
+                onChange={e => { setTotalAmount(e.target.value); setCalculated(false) }}
+              />
+
+              <div className="space-y-3 mt-4">
+                <label className="block text-[.72rem] font-bold tracking-[.07em] uppercase text-[#a78bfa]/90 mb-[.4rem]">Split Percentage by GST Rate</label>
                 {splits.map(s => (
                   <div key={s.rate} className="flex items-center gap-3">
                     <span className="text-sm font-semibold text-[#f1f5f9] w-12 flex-shrink-0">{s.rate}%</span>
@@ -176,7 +178,7 @@ export function GstSplitCalculatorClient() {
                         max="100"
                         placeholder="0"
                         value={s.percentage || ""}
-                        onChange={e => updateSplit(s.rate, e.target.value)}
+                        onChange={e => { updateSplit(s.rate, e.target.value); setCalculated(false) }}
                         className="w-full bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none px-4 py-2.5 focus:border-indigo-500/60 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.12)]"
                       />
                     </div>
@@ -198,11 +200,52 @@ export function GstSplitCalculatorClient() {
                 </div>
               </div>
 
-              {splits.some(s => s.percentage > 0) && (
+              <div className="flex gap-3 mt-6">
+                <button
+                  id="calc-btn"
+                  onClick={handleCalculate}
+                  className="flex-[2] py-[.82rem] px-5 bg-gradient-to-r from-[#8b5cf6]/75 to-[#3b82f6]/60 border border-[#a78bfa]/45 rounded-[.9rem] text-white text-[.93rem] font-bold cursor-pointer font-['Inter'] transition-all duration-300 shadow-[0_4px_20px_rgba(139,92,246,.35)] hover:-translate-y-px hover:shadow-[0_6px_28px_rgba(139,92,246,.55)] hover:from-[#8b5cf6]/90 hover:to-[#3b82f6]/75"
+                >
+                  Calculate Split
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="flex-1 py-[.82rem] bg-white/[.08] border border-white/[.15] rounded-[.9rem] text-white/60 text-[.9rem] cursor-pointer font-['Inter'] transition-all duration-300 hover:bg-white/[.14] hover:text-white"
+                >
+                  ↺ Reset
+                </button>
+              </div>
+            </UltraCard>
+
+            {/* ─── RESULTS CARD ─── */}
+            <UltraCard>
+              <div className="flex items-center gap-2 mb-[1.35rem]">
+                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
+                <span className="text-[1rem] font-bold text-white/90">Results</span>
+              </div>
+
+              {!calculated || !(total > 0 && splits.some(s => s.percentage > 0)) ? (
+                <div className="flex flex-col items-center justify-center min-h-[280px] text-white/35 text-center gap-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="1.5">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <p className="text-[.88rem] leading-relaxed">Enter your values and tap<br /><strong className="text-[#a78bfa]/70">Calculate Split</strong></p>
+                </div>
+              ) : (
                 <>
-                  <UltraDivider />
-                  <div className="space-y-3 mb-9">
-                    <p className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65">Amount by GST Rate</p>
+                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-[#8b5cf6]/20 border border-[#8b5cf6]/45 rounded-[2rem] text-[.7rem] font-bold tracking-[.07em] uppercase text-[#c4a8ff]/95 mb-[.55rem] w-fit">
+                    <span className="w-[6px] h-[6px] rounded-full bg-[#a78bfa]/90 shrink-0" />
+                    GST Split Breakdown
+                  </div>
+
+                  <UltraResultsGrid>
+                    <UltraResultCard label="Total Amount" value={`₹${fmt(total)}`} color="blue" />
+                    <UltraResultCard label="Total Allocated" value={`₹${fmt(totalAllocated)}`} color="green" />
+                    <UltraResultCard label="Allocated %" value={`${allocatedPortion.toFixed(1)}%`} color="main" />
+                    <UltraResultCard label="Unallocated" value={`₹${fmt((total * remaining) / 100)}`} color={remaining > 0 ? "amber" : "green"} />
+                  </UltraResultsGrid>
+
+                  <div className="space-y-2 mt-4">
                     {splits.filter(s => s.percentage > 0).map(s => {
                       const allocated = (total * s.percentage) / 100
                       const gstOnAllocated = (allocated * s.rate) / 100
@@ -211,35 +254,26 @@ export function GstSplitCalculatorClient() {
                       return (
                         <div key={s.rate} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-3 space-y-1">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm font-semibold text-[#f1f5f9]">{s.rate}% GST Category</span>
+                            <span className="text-sm font-semibold text-[#f1f5f9]">{s.rate}% GST Category ({s.percentage}%)</span>
                             <span className="text-sm font-semibold text-[#f1f5f9]">₹{fmt(allocated)}</span>
                           </div>
                           <div className="flex justify-between items-center text-xs text-[#f1f5f9]/65">
-                            <span>GST Amount: ₹{fmt(gstOnAllocated)}</span>
+                            <span>GST: ₹{fmt(gstOnAllocated)}</span>
                             <span>(CGST: ₹{fmt(cgst)} / SGST: ₹{fmt(sgst)})</span>
                           </div>
                         </div>
                       )
                     })}
-                    <UltraDivider />
-                    <div className="flex justify-between items-center">
-                      <span className="font-['Space_Grotesk'] font-bold text-[#f1f5f9]">Total Allocated</span>
-                      <span className="font-['Space_Grotesk'] font-bold text-xl bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                        ₹{fmt(splits.filter(s => s.percentage > 0).reduce((sum, s) => sum + (total * s.percentage) / 100, 0))}
-                      </span>
-                    </div>
                   </div>
+
+                  <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
+                    <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                  </UltraPrimaryButton>
                 </>
               )}
-
-              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mb-6">
-                <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-              </UltraPrimaryButton>
-            </>
-          )}
-
-          <UltraResetButton onClick={handleReset} />
-        </UltraCard>
+            </UltraCard>
+          </UltraGrid>
+        </UltraPage>
       </UltraShell>
     </>
   )

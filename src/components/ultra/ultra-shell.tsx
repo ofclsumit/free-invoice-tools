@@ -15,20 +15,18 @@ export function UltraShell({ children }: { children: ReactNode }) {
         </defs>
       </svg>
       <div
-        className="font-['Inter'] min-h-screen text-white overflow-hidden relative"
+        className="font-['Inter'] min-h-screen w-full text-white overflow-hidden"
         style={{
-          background: `
-            radial-gradient(ellipse at 20% 10%, rgba(139,92,246,0.55) 0%, transparent 55%),
-            radial-gradient(ellipse at 80% 0%, rgba(59,130,246,0.5) 0%, transparent 50%),
-            radial-gradient(ellipse at 60% 85%, rgba(16,185,129,0.35) 0%, transparent 50%),
-            linear-gradient(160deg, #0f0a2a 0%, #0d1b3e 40%, #0a1628 100%)
-          `,
+          background: [
+            "radial-gradient(ellipse at 20% 10%, rgba(139,92,246,0.55) 0%, transparent 55%)",
+            "radial-gradient(ellipse at 80% 0%, rgba(59,130,246,0.5) 0%, transparent 50%)",
+            "radial-gradient(ellipse at 60% 85%, rgba(16,185,129,0.35) 0%, transparent 50%)",
+            "linear-gradient(160deg, #0f0a2a 0%, #0d1b3e 40%, #0a1628 100%)"
+          ].join(","),
           animation: "hue-shift 10s ease-in-out infinite alternate"
         }}
       >
-        <div className="px-5 py-10 max-w-[920px] mx-auto">
-          {children}
-        </div>
+        {children}
       </div>
     </>
   )
