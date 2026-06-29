@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Plus, Trash2, Download, Eye, Save, Printer, FileText,
   X, ZoomIn, ZoomOut, ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
-  RotateCcw, Share2, Loader2
+  RotateCcw, Share2, Loader2, LayoutTemplate
 } from "lucide-react"
 import {
   InvoicePreview,
@@ -33,6 +33,8 @@ import { formatCurrency } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { ShareButton } from "@/components/shared/share-button"
+import { TemplateDialog } from "@/components/template-selection"
+import { tryNativeShare, generateShareUrl, openWhatsApp, openEmail } from "@/lib/share-utils"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -156,11 +158,24 @@ export function InvoiceGenerator() {
   const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [showExtras, setShowExtras] = useState(false)
   const [savedOnce, setSavedOnce] = useState(false)
   const [invoices, setInvoices] = useState<SavedInvoice[]>([])
   const previewContainerRef = useRef<HTMLDivElement>(null)
+
+  const handleTemplateSelect = (templateId: string) => {
+    const mapping: Record<string, string> = {
+      modern: "StudioTemplate",
+      corporate: "LedgerTemplate",
+      minimal: "MinimalMonoTemplate",
+      creative: "ClassicBooksTemplate",
+      "gst-india": "VyaparDesiTemplate",
+    }
+    const formValue = mapping[templateId] || "StudioTemplate"
+    form.setValue("template", formValue as any)
+  }
 
   useEffect(() => setMounted(true), [])
 
@@ -412,35 +427,23 @@ export function InvoiceGenerator() {
     setIsGenerating(true)
     try {
       const node = document.getElementById("invoice-print-root")
-      if (!node) throw new Error("Invoice not found")
+      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
       const fileName = `invoice-${watchedValues.invoiceNumber}.pdf`
       const blob = await exportNodeToPdf(node, fileName, true)
-      
-      const file = new File([blob], fileName, { type: "application/pdf" })
       const subject = `Invoice ${watchedValues.invoiceNumber} from ${watchedValues.businessName}`
       const body = `Dear ${watchedValues.clientName},\n\nPlease find attached the invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\nPayment is due by ${watchedValues.dueDate || "the specified date"}.\n\nBest regards,\n${watchedValues.businessName}`
-      
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: subject,
-          text: body,
-          files: [file]
-        })
-      } else {
-        // Fallback: download PDF and open mailto
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = fileName
-        a.click()
-        URL.revokeObjectURL(url)
-        window.open(`mailto:${watchedValues.clientEmail || ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      const shared = await tryNativeShare(blob, fileName, subject, body)
+      if (!shared) {
+        const url = await generateShareUrl(invoiceData, watchedValues.template, subject)
+        if (url) {
+          openEmail(watchedValues.clientEmail || "", subject, `${body}\n\nView online: ${url}`)
+        } else {
+          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
+          openEmail(watchedValues.clientEmail || "", subject, body)
+        }
       }
-    } catch (e) {
-      toast({ title: "Failed to share invoice", variant: "destructive" })
-    } finally {
-      setIsGenerating(false)
-    }
+    } catch { toast({ title: "Failed to share invoice", variant: "destructive" }) }
+    finally { setIsGenerating(false) }
   }
 
   const handleWhatsAppShare = async () => {
@@ -448,34 +451,22 @@ export function InvoiceGenerator() {
     setIsGenerating(true)
     try {
       const node = document.getElementById("invoice-print-root")
-      if (!node) throw new Error("Invoice not found")
+      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
       const fileName = `invoice-${watchedValues.invoiceNumber}.pdf`
       const blob = await exportNodeToPdf(node, fileName, true)
-      
-      const file = new File([blob], fileName, { type: "application/pdf" })
-      const message = `Hello ${watchedValues.clientName},\n\nPlease find your invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nPayment due by ${watchedValues.dueDate}.\n\nThank you!\n\n${watchedValues.businessName}`
-      
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: `Invoice ${watchedValues.invoiceNumber}`,
-          text: message,
-          files: [file]
-        })
-      } else {
-        // Fallback: download PDF and open wa.me
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = fileName
-        a.click()
-        URL.revokeObjectURL(url)
-        window.open(`https://wa.me/?text=${encodeURIComponent(message + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      const msg = `Hello ${watchedValues.clientName},\n\nPlease find your invoice ${watchedValues.invoiceNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nPayment due by ${watchedValues.dueDate}.\n\nThank you!\n\n${watchedValues.businessName}`
+      const shared = await tryNativeShare(blob, fileName, `Invoice ${watchedValues.invoiceNumber}`, msg)
+      if (!shared) {
+        const url = await generateShareUrl(invoiceData, watchedValues.template, `Invoice ${watchedValues.invoiceNumber}`)
+        if (url) {
+          openWhatsApp(`${msg}\n\nView online: ${url}`)
+        } else {
+          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
+          openWhatsApp(msg)
+        }
       }
-    } catch (e) {
-      toast({ title: "Failed to share via WhatsApp", variant: "destructive" })
-    } finally {
-      setIsGenerating(false)
-    }
+    } catch { toast({ title: "Failed to share via WhatsApp", variant: "destructive" }) }
+    finally { setIsGenerating(false) }
   }
 
   const handlePrint = () => {
@@ -588,19 +579,18 @@ export function InvoiceGenerator() {
             {/* Settings Section */}
             <section className="form-section">
               <div className="grid sm:grid-cols-3 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Template</Label>
-                  <Select
-                    defaultValue="StudioTemplate"
-                    onValueChange={(v) => form.setValue("template", v as any)}
-                  >
-                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select template" /></SelectTrigger>
-                    <SelectContent>
-                      {TEMPLATES.map(t => (
-                        <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="sm:col-span-3 border-b border-stone-100 dark:border-stone-850 pb-4 mb-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template</Label>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        Current: <span className="font-semibold text-foreground">{watchedValues.template === "StudioTemplate" ? "Modern" : watchedValues.template === "LedgerTemplate" ? "Corporate" : watchedValues.template === "MinimalMonoTemplate" ? "Minimal" : watchedValues.template === "ClassicBooksTemplate" ? "Creative" : watchedValues.template === "VyaparDesiTemplate" ? "GST India" : "Modern"}</span>
+                      </p>
+                    </div>
+                    <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsTemplateDialogOpen(true)}>
+                      <LayoutTemplate className="h-4 w-4" /> Change Template
+                    </Button>
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Currency</Label>
@@ -1112,6 +1102,12 @@ export function InvoiceGenerator() {
           </div>
         </div>
       </div>
+      <TemplateDialog
+        isOpen={isTemplateDialogOpen}
+        onClose={() => setIsTemplateDialogOpen(false)}
+        onSelect={handleTemplateSelect}
+        documentType="invoice"
+      />
     </>
-  )
+  );
 }

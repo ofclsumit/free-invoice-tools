@@ -85,7 +85,7 @@ export default function RentReceiptGeneratorPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-3 mt-8">
               <Link
-                href="/tools/rent-receipt"
+                href="/rent-receipt"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
               >
                 <Receipt className="h-4 w-4" /> Generate Rent Receipt
@@ -127,7 +127,7 @@ export default function RentReceiptGeneratorPage() {
             </div>
             <div className="text-center mt-8">
               <Link
-                href="/tools/rent-receipt"
+                href="/rent-receipt"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors"
               >
                 Get Started Now <CheckCircle className="h-4 w-4" />

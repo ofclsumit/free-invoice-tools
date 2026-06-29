@@ -1,15 +1,18 @@
 "use client"
 import { useState, useRef } from "react"
 import { useReactToPrint } from "react-to-print"
+import { Download, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RefreshCw, Download, Eye, ArrowLeft } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import {
   InvoicePreview,
   exportNodeToPdf,
 } from "@/components/invoice-templates/components"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraInput, UltraResultsGrid, UltraResultCard, UltraPrimaryButton,
+  UltraDivider, UltraResetButton
+} from "@/components/ultra/ultra-components"
 
 export function DiscountCalculatorClient() {
   const [originalPrice, setOriginalPrice] = useState("")
@@ -116,62 +119,46 @@ export function DiscountCalculatorClient() {
     <>
       <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
 
-    <div className="space-y-5">
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Original Price (₹)</Label>
-        <Input
-          type="number"
-          placeholder="Enter original price"
-          value={originalPrice}
-          onChange={e => setOriginalPrice(e.target.value)}
-          className="h-12 text-lg font-semibold"
+    <UltraShell>
+        <UltraHeader
+          badge="Calculator"
+          title="Discount Calculator"
+          subtitle="Calculate savings and final price after discount"
         />
-      </div>
+        <UltraCard>
+          <UltraInput
+            type="number"
+            placeholder="Original Price"
+            currencySymbol="₹"
+            value={originalPrice}
+            onChange={e => setOriginalPrice(e.target.value)}
+          />
+          <UltraInput
+            type="number"
+            step="0.1"
+            placeholder="Discount Rate"
+            value={discountRate}
+            onChange={e => setDiscountRate(e.target.value)}
+          />
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Discount Rate (%)</Label>
-        <Input
-          type="number"
-          step="0.1"
-          placeholder="Enter discount percentage"
-          value={discountRate}
-          onChange={e => setDiscountRate(e.target.value)}
-          className="h-12 text-lg font-semibold"
-        />
-      </div>
+          {price > 0 && (
+            <>
+              <UltraDivider />
+              <UltraResultsGrid>
+                <UltraResultCard label="Original Price" value={`₹${fmt(price)}`} color="blue" />
+                <UltraResultCard label={`Discount (${rate}%)`} value={`-₹${fmt(discountAmount)}`} color="amber" />
+                <UltraResultCard label="Final Price" value={`₹${fmt(finalPrice)}`} color="green" />
+                <UltraResultCard label="You Save" value={`₹${fmt(discountAmount)} (${rate}%)`} color="green" />
+              </UltraResultsGrid>
+          <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-2">
+            <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+          </UltraPrimaryButton>
+            </>
+          )}
 
-      {price > 0 && (
-        <div className="space-y-3 pt-2">
-          <div className="h-px bg-border" />
-          <div className="space-y-2.5">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Original Price</span>
-              <span className="font-semibold">₹{fmt(price)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Discount ({rate}%)</span>
-              <span className="font-semibold text-green-600">-₹{fmt(discountAmount)}</span>
-            </div>
-            <div className="h-px bg-border" />
-            <div className="flex justify-between items-center">
-              <span className="font-display font-bold">Final Price</span>
-              <span className="font-display font-bold text-xl text-emerald-600 dark:text-emerald-400">₹{fmt(finalPrice)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">You Save</span>
-              <span className="font-semibold text-green-600">₹{fmt(discountAmount)} ({rate}%)</span>
-            </div>
-          </div>
-          <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-0 font-semibold gap-2">
-            <Download className="h-4 w-4" /> Download PDF
-          </Button>
-        </div>
-      )}
-
-      <Button variant="outline" className="gap-2 w-full" onClick={handleReset}>
-        <RefreshCw className="h-4 w-4" /> Reset
-      </Button>
-    </div>
+          <UltraResetButton onClick={handleReset} />
+        </UltraCard>
+      </UltraShell>
   </>
   )
 }

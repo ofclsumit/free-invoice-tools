@@ -20,8 +20,6 @@ const allTools: RelatedTool[] = [
   { title: "Proforma Invoice Generator", description: "Create preliminary bills for clients.", href: "/proforma-invoice" },
   { title: "Purchase Order Generator", description: "Create purchase orders for suppliers.", href: "/purchase-order" },
   { title: "Delivery Challan Generator", description: "Generate delivery challans for goods transport.", href: "/delivery-challan" },
-  { title: "Receipt Generator", description: "Generate simple payment receipts.", href: "/receipt-generator" },
-  { title: "Cash Receipt Generator", description: "Generate official cash receipts with amount in words.", href: "/cash-receipt" },
   { title: "Payment Receipt Generator", description: "Create formal payment receipts with transaction details.", href: "/payment-receipt" },
   { title: "Rent Receipt Generator", description: "Generate HRA-compliant rent receipts.", href: "/rent-receipt-generator" },
   { title: "Salary Slip Generator", description: "Generate professional payslips for employees.", href: "/salary-slip-generator" },
@@ -144,7 +142,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         answer: "Yes, you can set GST to 0% for export of services. The tool works for billing clients worldwide with customizable currency and tax fields.",
       },
     ],
-    relatedTools: allTools.filter(t => ["/gst-calculator", "/quotation-generator", "/discount-calculator", "/profit-margin", "/receipt-generator"].includes(t.href)),
+    relatedTools: allTools.filter(t => ["/gst-calculator", "/quotation-generator", "/discount-calculator", "/profit-margin", "/payment-receipt"].includes(t.href)),
   },
   "gst-invoice": {
     slug: "gst-invoice-generator",
@@ -294,7 +292,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         answer: "Yes, you can set up recurring line items for monthly maintenance retainers and add variable items for additional development work.",
       },
     ],
-    relatedTools: allTools.filter(t => ["/gst-calculator", "/quotation-generator", "/receipt-generator"].includes(t.href)),
+    relatedTools: allTools.filter(t => ["/gst-calculator", "/quotation-generator", "/payment-receipt"].includes(t.href)),
   },
   "tuition": {
     slug: "tuition-invoice-generator",
@@ -328,7 +326,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         answer: "Yes, you can generate individual invoices for each student. The tool does not store data, so you can create as many as you need.",
       },
     ],
-    relatedTools: allTools.filter(t => ["/receipt-generator", "/payment-receipt", "/cash-receipt"].includes(t.href)),
+    relatedTools: allTools.filter(t => ["/payment-receipt"].includes(t.href)),
   },
   "shop": {
     slug: "shop-invoice-generator",
@@ -396,7 +394,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         answer: "Yes, you can add multiple line items covering ad spend (media costs), service fees, creative charges, and other expenses on the same invoice.",
       },
     ],
-    relatedTools: allTools.filter(t => ["/quotation-generator", "/estimate-generator", "/gst-calculator", "/receipt-generator"].includes(t.href)),
+    relatedTools: allTools.filter(t => ["/quotation-generator", "/estimate-generator", "/gst-calculator", "/payment-receipt"].includes(t.href)),
   },
 }
 
@@ -640,86 +638,6 @@ export const toolContentDictionary: Record<string, SeoContent> = {
     ],
     relatedTools: allTools.filter(t => ["/purchase-order", "/invoice-generator", "/proforma-invoice", "/debit-note", "/gst-calculator"].includes(t.href)),
   },
-  "receipt-generator": {
-    slug: "receipt-generator",
-    title: "Free Receipt Generator Online | Create Payment Receipts | QuoteFlow",
-    metaDescription: "Generate simple payment receipts online for free. Download as PDF with company logo. Perfect for small businesses and freelancers.",
-    h1: "Receipt Generator",
-    heroDescription: "Generate a simple payment receipt for your customers. Add payer details, amount, purpose, and payment mode. Download as a professional PDF.",
-    howToUse: {
-      title: "How to Generate a Receipt",
-      steps: [
-        "Enter your company name, logo, and the payer's details.",
-        "Add the amount received, purpose of payment, and payment mode (Cash, UPI, Bank Transfer, Cheque).",
-        "Preview and download the receipt as a professional PDF.",
-      ],
-    },
-    features: [
-      "Custom company logo and name",
-      "Multiple payment modes supported",
-      "Auto-generated receipt number",
-      "Clean, professional receipt layout",
-      "Print-optimized design",
-    ],
-    benefits: [
-      "100% free with no signup",
-      "Create professional receipts in seconds",
-      "Keep organized payment records",
-      "Share receipts via email or WhatsApp",
-      "Complete privacy — data stays in your browser",
-    ],
-    faqs: [
-      {
-        question: "Is this receipt legal?",
-        answer: "Yes, this is a valid payment receipt that can be used for record-keeping and accounting purposes. It includes all essential fields like date, amount, payer name, and payment mode.",
-      },
-      {
-        question: "Can I add a company logo?",
-        answer: "Yes, you can upload your company logo and it will appear on the receipt. This helps brand your receipts professionally.",
-      },
-    ],
-    relatedTools: allTools.filter(t => ["/cash-receipt", "/payment-receipt", "/rent-receipt-generator", "/invoice-generator"].includes(t.href)),
-  },
-  "cash-receipt": {
-    slug: "cash-receipt",
-    title: "Free Cash Receipt Generator | Download PDF | QuoteFlow",
-    metaDescription: "Create official cash receipts with amount in words. Download as PDF. Perfect for businesses issuing cash payment acknowledgments.",
-    h1: "Cash Receipt Generator",
-    heroDescription: "Generate an official cash receipt with amount in words. Perfect for businesses that need formal cash payment acknowledgments.",
-    howToUse: {
-      title: "How to Generate a Cash Receipt",
-      steps: [
-        "Enter your company name, logo, and the payer's details.",
-        "Add the amount (auto-converts to words), purpose, and payment mode.",
-        "Preview and download the receipt as a print-ready PDF.",
-      ],
-    },
-    features: [
-      "Automatic amount to words conversion (Indian numbering system)",
-      "Custom company logo and name",
-      "Multiple payment modes supported",
-      "Receipt number and date tracking",
-      "Professional formal receipt layout",
-    ],
-    benefits: [
-      "Free forever with no hidden charges",
-      "Save time with automatic amount-to-words conversion",
-      "Professional receipts that build trust",
-      "Instant PDF download",
-      "No account creation required",
-    ],
-    faqs: [
-      {
-        question: "What is a cash receipt?",
-        answer: "A cash receipt is a document acknowledging receipt of cash payment. It includes the payer's name, amount (in figures and words), purpose, date, and payment mode.",
-      },
-      {
-        question: "Why is amount in words important?",
-        answer: "Amount in words prevents fraud and disputes by clearly stating the payment amount. It is a standard practice in Indian accounting and legal documents.",
-      },
-    ],
-    relatedTools: allTools.filter(t => ["/receipt-generator", "/payment-receipt", "/rent-receipt-generator", "/invoice-generator"].includes(t.href)),
-  },
   "payment-receipt": {
     slug: "payment-receipt",
     title: "Free Payment Receipt Generator | Download PDF | QuoteFlow",
@@ -758,7 +676,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         answer: "Yes, you can add UTR number, transaction reference, or any payment ID to the receipt for easy tracking and reconciliation.",
       },
     ],
-    relatedTools: allTools.filter(t => ["/receipt-generator", "/cash-receipt", "/rent-receipt-generator", "/invoice-generator"].includes(t.href)),
+    relatedTools: allTools.filter(t => ["/payment-receipt", "/rent-receipt", "/invoice-generator"].includes(t.href)),
   },
   "salary-slip": {
     slug: "salary-slip",
@@ -808,7 +726,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         answer: "Common deductions include Employee PF (12% of basic), ESI (if applicable), Professional Tax (state-dependent), and TDS (Income Tax deducted at source).",
       },
     ],
-    relatedTools: allTools.filter(t => ["/invoice-generator", "/receipt-generator", "/gst-calculator", "/profit-margin"].includes(t.href)),
+    relatedTools: allTools.filter(t => ["/invoice-generator", "/payment-receipt", "/gst-calculator", "/profit-margin"].includes(t.href)),
   },
   "rent-receipt": {
     slug: "rent-receipt",
@@ -853,7 +771,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         answer: "Yes, our rent receipt includes all fields required by the Income Tax Department for HRA claim verification.",
       },
     ],
-    relatedTools: allTools.filter(t => ["/receipt-generator", "/cash-receipt", "/payment-receipt", "/salary-slip-generator"].includes(t.href)),
+    relatedTools: allTools.filter(t => ["/payment-receipt", "/salary-slip-generator"].includes(t.href)),
   },
   "estimate-generator": {
     slug: "estimate-generator",
@@ -1014,7 +932,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         answer: "The tool works in your browser without saving data. We recommend downloading the PDF and keeping a copy for your records.",
       },
     ],
-    relatedTools: allTools.filter(t => ["/invoice-generator", "/quotation-generator", "/estimate-generator", "/receipt-generator"].includes(t.href)),
+    relatedTools: allTools.filter(t => ["/invoice-generator", "/quotation-generator", "/estimate-generator", "/payment-receipt"].includes(t.href)),
   },
   "discount-calculator": {
     slug: "discount-calculator",

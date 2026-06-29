@@ -1,9 +1,11 @@
 "use client"
 import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
 import { Search, Download } from "lucide-react"
 import { generateHsnListPDF } from "@/lib/pdf/generate-hsn-list"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraPrimaryButton, UltraTextInput, UltraResetButton
+} from "@/components/ultra/ultra-components"
 
 const HSN_CODES = [
   { code: "0101", description: "Live horses, asses, mules and hinnies", rate: "0%" },
@@ -63,7 +65,7 @@ const HSN_CODES = [
 export function HsnFinderClient() {
   const [search, setSearch] = useState("")
   const [isDownloading, setIsDownloading] = useState(false)
-  
+
   const filtered = HSN_CODES.filter(h =>
     h.code.includes(search) || h.description.toLowerCase().includes(search.toLowerCase())
   )
@@ -83,42 +85,50 @@ export function HsnFinderClient() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by code or description..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="pl-9 h-11 text-sm"
-          />
+    <UltraShell>
+      <UltraHeader
+        badge="Reference"
+        title="HSN Code Finder"
+        subtitle="Search for Harmonized System of Nomenclature codes and GST rates"
+      />
+      <UltraCard>
+        <div className="flex flex-col sm:flex-row gap-3 mb-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#f1f5f9]/65" />
+            <input
+              placeholder="Search by code or description..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none transition-all duration-300 focus:border-indigo-500/60 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.12)] focus:bg-black/50 pl-10 pr-4 py-3"
+            />
+          </div>
+          <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isDownloading} className="h-11 w-full sm:w-auto">
+            <Download className="h-4 w-4" />
+            {isDownloading ? "Exporting..." : "Export"}
+          </UltraPrimaryButton>
         </div>
-        <Button onClick={handleDownloadPDF} disabled={isDownloading} className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 font-semibold gap-2 h-11 w-full sm:w-auto">
-          <Download className="h-4 w-4" /> {isDownloading ? "..." : "Export"}
-        </Button>
-      </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-border overflow-hidden">
-        <div className="grid grid-cols-[80px_1fr_60px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border bg-muted/30">
-          <span>HSN Code</span><span>Description</span><span>GST Rate</span>
+        <div className="bg-black/30 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="grid grid-cols-[80px_1fr_60px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-5 py-3 text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 border-b border-white/[0.06] bg-white/[0.03]">
+            <span>HSN Code</span><span>Description</span><span>GST Rate</span>
+          </div>
+          <div className="divide-y divide-white/[0.04] max-h-[500px] overflow-y-auto">
+            {filtered.map(h => (
+              <div key={h.code} className="grid grid-cols-[80px_1fr_60px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-5 py-3 text-sm hover:bg-white/[0.03] transition-colors">
+                <span className="font-mono font-semibold text-indigo-400 truncate">{h.code}</span>
+                <span className="text-[#f1f5f9]/65 truncate" title={h.description}>{h.description}</span>
+                <span className="font-semibold text-[#f1f5f9]">{h.rate}</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="divide-y divide-border max-h-[500px] overflow-y-auto">
-          {filtered.map(h => (
-            <div key={h.code} className="grid grid-cols-[80px_1fr_60px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-5 py-3 text-sm hover:bg-muted/30 transition-colors">
-              <span className="font-mono font-semibold text-blue-600 truncate">{h.code}</span>
-              <span className="text-muted-foreground truncate" title={h.description}>{h.description}</span>
-              <span className="font-semibold">{h.rate}</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {filtered.length === 0 && (
-        <p className="text-center text-sm text-muted-foreground py-8">No HSN codes found for &quot;{search}&quot;</p>
-      )}
+        {filtered.length === 0 && (
+          <p className="text-center text-sm text-[#f1f5f9]/65 py-8">No HSN codes found for &quot;{search}&quot;</p>
+        )}
 
-      <p className="text-xs text-muted-foreground text-center">This is a sample list. Consult official GST portal for complete HSN database.</p>
-    </div>
+        <p className="text-xs text-[#f1f5f9]/65 text-center mt-4">This is a sample list. Consult official GST portal for complete HSN database.</p>
+      </UltraCard>
+    </UltraShell>
   )
 }

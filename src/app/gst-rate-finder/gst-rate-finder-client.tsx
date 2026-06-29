@@ -1,8 +1,10 @@
 "use client"
 import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Search, Download } from "lucide-react"
+import { Search, Download, RotateCcw } from "lucide-react"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraTextInput, UltraPrimaryButton,
+} from "@/components/ultra/ultra-components"
 
 const GST_RATE_DATA = [
   { category: "Food & Agriculture", hsn: "0101-2309", description: "Live animals, meat, fish, dairy, vegetables, grains", rate: 0, cgst: 0, sgst: 0 },
@@ -58,61 +60,67 @@ export function GstRateFinderClient() {
   })
 
   return (
-    <div className="space-y-5">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search by category, HSN code, or description..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="pl-9 h-11 text-sm"
-        />
-      </div>
-      <div className="flex gap-2 flex-wrap">
-        {categories.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              selectedCategory === cat
-                ? "bg-gradient-to-r from-sky-600 to-indigo-600 text-white"
-                : "border border-border text-muted-foreground hover:border-sky-300 hover:text-foreground"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-      <div className="flex justify-between items-center">
-        <p className="text-xs text-muted-foreground">{filtered.length} result{filtered.length !== 1 ? "s" : ""}</p>
-        <Button variant="outline" className="gap-2 h-8 text-xs border-sky-200 text-sky-700 hover:bg-sky-50 hover:text-sky-800">
-          <Download className="h-3 w-3" /> Export
-        </Button>
-      </div>
+    <UltraShell>
+      <UltraHeader badge="GST Rate Finder" title={<>GST Rate<br/>Finder</>} subtitle="Look up GST rates by category, HSN code, or product description." />
 
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-border overflow-hidden">
-        <div className="grid grid-cols-[1fr_80px_60px_60px_60px] sm:grid-cols-[120px_1fr_70px_60px_60px_60px] gap-2 sm:gap-3 px-3 sm:px-5 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border bg-muted/30">
-          <span className="hidden sm:inline">Category</span><span className="sm:hidden">Cat.</span><span>Description</span><span>HSN</span><span>GST</span><span>CGST</span><span>SGST</span>
+      <UltraCard>
+        <div className="relative mb-2">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#f1f5f9]/65 z-10" />
+          <UltraTextInput
+            placeholder="Search by category, HSN code, or description..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-9"
+          />
         </div>
-        <div className="divide-y divide-border max-h-[600px] overflow-y-auto">
-          {filtered.map((d, idx) => (
-            <div key={idx} className="grid grid-cols-[1fr_80px_60px_60px_60px] sm:grid-cols-[120px_1fr_70px_60px_60px_60px] gap-2 sm:gap-3 px-3 sm:px-5 py-3 text-sm hover:bg-muted/30 transition-colors">
-              <span className="text-xs font-medium text-muted-foreground truncate">{d.category}</span>
-              <span className="text-muted-foreground truncate text-xs sm:text-sm" title={d.description}>{d.description}</span>
-              <span className="font-mono text-xs text-blue-600 truncate">{d.hsn}</span>
-              <span className={`font-bold ${d.rate === 0 ? "text-green-600" : d.rate >= 28 ? "text-red-600" : "text-amber-600"}`}>{d.rate}%</span>
-              <span className="text-xs text-muted-foreground">{d.cgst}%</span>
-              <span className="text-xs text-muted-foreground">{d.sgst}%</span>
-            </div>
+
+        <div className="flex gap-2 flex-wrap mb-5">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                selectedCategory === cat
+                  ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
+                  : "bg-black/40 border border-white/[0.12] text-[#f1f5f9]/65 hover:text-[#f1f5f9]"
+              }`}
+            >
+              {cat}
+            </button>
           ))}
         </div>
-      </div>
 
-      {filtered.length === 0 && (
-        <p className="text-center text-sm text-muted-foreground py-8">No GST rates found for &quot;{search}&quot;</p>
-      )}
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-xs text-[#f1f5f9]/65">{filtered.length} result{filtered.length !== 1 ? "s" : ""}</p>
+          <UltraPrimaryButton className="!px-3 !py-1.5 !text-xs !rounded-lg">
+            <Download className="h-3 w-3" /> Export
+          </UltraPrimaryButton>
+        </div>
 
-      <p className="text-xs text-muted-foreground text-center">GST rates are indicative. Please refer to official GST portal for accurate rates.</p>
-    </div>
+        <div className="bg-white/[0.07] border border-white/[0.12] rounded-xl overflow-hidden">
+          <div className="grid grid-cols-[1fr_80px_60px_60px_60px] sm:grid-cols-[120px_1fr_70px_60px_60px_60px] gap-2 sm:gap-3 px-3 sm:px-5 py-3 text-xs font-semibold text-[#f1f5f9]/65 uppercase tracking-wider border-b border-white/[0.12] bg-black/30">
+            <span className="hidden sm:inline">Category</span><span className="sm:hidden">Cat.</span><span>Description</span><span>HSN</span><span>GST</span><span>CGST</span><span>SGST</span>
+          </div>
+          <div className="divide-y divide-white/[0.06] max-h-[600px] overflow-y-auto">
+            {filtered.map((d, idx) => (
+              <div key={idx} className="grid grid-cols-[1fr_80px_60px_60px_60px] sm:grid-cols-[120px_1fr_70px_60px_60px_60px] gap-2 sm:gap-3 px-3 sm:px-5 py-3 text-sm hover:bg-white/[0.04] transition-colors">
+                <span className="text-xs font-medium text-[#f1f5f9]/65 truncate">{d.category}</span>
+                <span className="text-[#f1f5f9]/65 truncate text-xs sm:text-sm" title={d.description}>{d.description}</span>
+                <span className="font-mono text-xs text-indigo-400 truncate">{d.hsn}</span>
+                <span className={`font-bold ${d.rate === 0 ? "text-emerald-400" : d.rate >= 28 ? "text-rose-400" : "text-amber-400"}`}>{d.rate}%</span>
+                <span className="text-xs text-[#f1f5f9]/65">{d.cgst}%</span>
+                <span className="text-xs text-[#f1f5f9]/65">{d.sgst}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {filtered.length === 0 && (
+          <p className="text-center text-sm text-[#f1f5f9]/65 py-8">No GST rates found for &quot;{search}&quot;</p>
+        )}
+
+        <p className="text-xs text-[#f1f5f9]/50 text-center mt-6">GST rates are indicative. Please refer to official GST portal for accurate rates.</p>
+      </UltraCard>
+    </UltraShell>
   )
 }

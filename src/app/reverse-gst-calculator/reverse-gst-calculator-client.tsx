@@ -1,14 +1,16 @@
 "use client"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RefreshCw, Download, Eye, ArrowLeft } from "lucide-react"
+import { Download, ArrowLeft, Export, RotateCcw } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import {
   InvoicePreview,
   exportNodeToPdf,
 } from "@/components/invoice-templates/components"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraInput, UltraRateSelector, UltraPrimaryButton,
+  UltraDivider, UltraResultCard, UltraResultsGrid, UltraResetButton,
+} from "@/components/ultra/ultra-components"
 
 const GST_RATES = [0, 5, 12, 18, 28]
 
@@ -48,14 +50,18 @@ export function ReverseGstCalculatorClient() {
         <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
           <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
             <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-              <Button variant="outline" onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-white">
+              <button
+                onClick={handleDownloadPDF}
+                disabled={isGenerating}
+                className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl text-sm font-medium border border-border transition-all"
+              >
                 <ArrowLeft className="h-4 w-4" /> Edit Analysis
-              </Button>
-              <Button onClick={handleDownloadPDF} disabled={isGenerating} className="gap-2 bg-gradient-to-r from-teal-600 to-cyan-600 text-white border-0 shadow-lg hover:shadow-xl transition-all">
+              </button>
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="!px-4 !py-2">
                 <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-              </Button>
+              </UltraPrimaryButton>
             </div>
-            
+
             <div className="flex-1 overflow-auto rounded-2xl shadow-glass bg-white border border-border pb-8">
               <InvoicePreview hideToolbar={true}>
                 <div
@@ -121,83 +127,66 @@ export function ReverseGstCalculatorClient() {
         </div>
       </>
     )
-  
 
   return (
     <>
       <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
 
-    <div className="space-y-5">
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Total Amount (Inclusive of GST) (₹)</Label>
-        <Input
-          type="number"
-          placeholder="Enter total amount including GST"
-          value={totalAmount}
-          onChange={e => setTotalAmount(e.target.value)}
-          className="h-12 text-lg font-semibold"
-        />
-      </div>
+      <UltraShell>
+        <UltraHeader badge="Reverse GST" title={<>Reverse GST<br/>Calculator</>} subtitle="Calculate the original base amount and GST from a total inclusive price." />
 
-      <div className="space-y-2">
-        <Label className="text-xs font-medium">GST Rate</Label>
-        <div className="flex gap-2 flex-wrap">
-          {GST_RATES.map(rate => (
-            <button
-              key={rate}
-              onClick={() => setGstRate(rate)}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                gstRate === rate
-                  ? "bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-glow-sm"
-                  : "border border-border text-muted-foreground hover:border-teal-300 hover:text-foreground"
-              }`}
-            >
-              {rate}%
-            </button>
-          ))}
-        </div>
-      </div>
+        <UltraCard>
+          <UltraInput
+            type="number"
+            placeholder="Total Amount (Inclusive of GST)"
+            currencySymbol="₹"
+            value={totalAmount}
+            onChange={e => setTotalAmount(e.target.value)}
+          />
 
-      {total > 0 && (
-        <div className="space-y-3 pt-2">
-          <div className="h-px bg-border" />
-          <div className="space-y-2.5">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Base Amount (without GST)</span>
-              <span className="font-semibold">₹{fmt(baseAmount)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">GST ({gstRate}%)</span>
-              <span className="font-semibold text-amber-600">₹{fmt(gstAmount)}</span>
-            </div>
-            <div className="pl-4 space-y-1.5">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">↳ CGST ({gstRate / 2}%)</span>
-                <span className="text-xs text-muted-foreground">₹{fmt(cgst)}</span>
+          <UltraRateSelector
+            rates={GST_RATES}
+            value={gstRate}
+            onChange={setGstRate}
+            labels={{ 0: "Exempt", 5: "Basic", 12: "Mid", 18: "Standard", 28: "Luxury" }}
+          />
+
+          <UltraDivider />
+
+          {total > 0 && (
+            <>
+              <UltraResultsGrid>
+                <UltraResultCard color="main" label="Total (Inclusive)" value={`₹${fmt(total)}`} sub={`Including ${gstRate}% GST`} />
+                <UltraResultCard color="green" label="Base Amount" value={`₹${fmt(baseAmount)}`} sub="Without GST" />
+                <UltraResultCard color="amber" label="GST Amount" value={`₹${fmt(gstAmount)}`} sub={`${gstRate}% GST`} />
+              </UltraResultsGrid>
+
+              <div className="mt-4 p-4 sm:p-5 bg-black/30 rounded-xl border border-white/[0.06]">
+                <div className="flex justify-between items-center py-2">
+                  <span className="flex items-center gap-2 text-xs sm:text-sm text-[#f1f5f9]/65">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: "#6366f1" }} />
+                    CGST ({gstRate / 2}%)
+                  </span>
+                  <span className="font-['Space_Grotesk'] text-sm sm:text-base font-semibold text-indigo-400">₹{fmt(cgst)}</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="flex items-center gap-2 text-xs sm:text-sm text-[#f1f5f9]/65">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: "#8b5cf6" }} />
+                    SGST ({gstRate / 2}%)
+                  </span>
+                  <span className="font-['Space_Grotesk'] text-sm sm:text-base font-semibold text-purple-400">₹{fmt(sgst)}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">↳ SGST ({gstRate / 2}%)</span>
-                <span className="text-xs text-muted-foreground">₹{fmt(sgst)}</span>
-              </div>
-            </div>
-            <div className="h-px bg-border" />
-            <div className="flex justify-between items-center">
-              <span className="font-display font-bold">Total (Inclusive)</span>
-              <span className="font-display font-bold text-xl text-teal-600 dark:text-teal-400">₹{fmt(total)}</span>
-            </div>
-          </div>
-          <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4 bg-gradient-to-r from-teal-600 to-cyan-600 text-white border-0 font-semibold gap-2">
-            <Download className="h-4 w-4" /> Download PDF
-          </Button>
-        </div>
-      )}
 
-      <div className="flex gap-3">
-        <Button variant="outline" className="gap-2 flex-1" onClick={handleReset}>
-          <RefreshCw className="h-4 w-4" /> Reset
-        </Button>
-      </div>
-    </div>
-  </>
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-6">
+                <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+            </>
+          )}
+
+          <UltraResetButton onClick={handleReset} />
+        </UltraCard>
+      </UltraShell>
+    </>
   )
 }

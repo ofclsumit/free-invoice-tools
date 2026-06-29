@@ -15,9 +15,9 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import {
-  Plus, Trash2, Download, Eye, Save, Printer, FileText,
+  Plus, Trash2, Download, Eye, Save, Printer,
   X, ZoomIn, ZoomOut, ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
-  RotateCcw, Share2, Loader2, Truck, HelpCircle
+  RotateCcw, Share2, Loader2, Truck, HelpCircle, LayoutTemplate
 } from "lucide-react"
 import {
   InvoicePreview,
@@ -33,7 +33,9 @@ import {
 import { formatCurrency } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { LoadingScreen } from "@/components/shared/loading-screen"
+import { tryNativeShare, generateShareUrl, openWhatsApp, openEmail } from "@/lib/share-utils"
 import { ShareButton } from "@/components/shared/share-button"
+import { TemplateDialog } from "@/components/template-selection"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -158,10 +160,23 @@ export function DeliveryChallanGenerator() {
   const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [savedOnce, setSavedOnce] = useState(false)
   const [challans, setChallans] = useState<SavedChallan[]>([])
   const previewContainerRef = useRef<HTMLDivElement>(null)
+
+  const handleTemplateSelect = (templateId: string) => {
+    const mapping: Record<string, string> = {
+      modern: "StudioTemplate",
+      corporate: "LedgerTemplate",
+      minimal: "MinimalMonoTemplate",
+      creative: "ClassicBooksTemplate",
+      "gst-india": "VyaparDesiTemplate",
+    }
+    const formValue = mapping[templateId] || "StudioTemplate"
+    form.setValue("template", formValue as any)
+  }
 
   useEffect(() => setMounted(true), [])
 
@@ -391,6 +406,56 @@ export function DeliveryChallanGenerator() {
     }
   }
 
+  const handleWhatsAppShare = async () => {
+    const valid = await form.trigger()
+    if (!valid) { toast({ title: "Please fix form errors", variant: "destructive" }); return }
+    setIsGenerating(true)
+    try {
+      const node = document.getElementById("challan-print-root")
+      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
+      const fileName = `delivery-challan-${watchedValues.challanNumber || "document"}.pdf`
+      const blob = await exportNodeToPdf(node, fileName, true)
+      const msg = `Delivery Challan ${watchedValues.challanNumber || ""} from ${watchedValues.businessName || "our company"}`
+      const shared = await tryNativeShare(blob, fileName, msg, msg)
+      if (!shared) {
+        const url = await generateShareUrl(invoiceData, watchedValues.template, `Delivery Challan ${watchedValues.challanNumber || ""}`)
+        if (url) {
+          openWhatsApp(`${msg}\n\nView online: ${url}`)
+        } else {
+          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
+          openWhatsApp(msg)
+        }
+      }
+    } catch { toast({ title: "Failed to share", variant: "destructive" }) }
+    finally { setIsGenerating(false) }
+  }
+
+  const handleEmailDC = async () => {
+    const valid = await form.trigger()
+    if (!valid) { toast({ title: "Please fix form errors", variant: "destructive" }); return }
+    setIsGenerating(true)
+    try {
+      const node = document.getElementById("challan-print-root")
+      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
+      const fileName = `delivery-challan-${watchedValues.challanNumber || "document"}.pdf`
+      const blob = await exportNodeToPdf(node, fileName, true)
+      const body = `Dear ${watchedValues.clientName || "Sir/Madam"},\n\nPlease find attached the delivery challan ${watchedValues.challanNumber || ""}.\n\nBest regards,\n${watchedValues.businessName || ""}`
+      const shared = await tryNativeShare(blob, fileName, `Delivery Challan ${watchedValues.challanNumber || ""}`, body)
+      if (!shared) {
+        const url = await generateShareUrl(invoiceData, watchedValues.template, `Delivery Challan ${watchedValues.challanNumber || ""}`)
+        if (url) {
+          openEmail(watchedValues.clientEmail || "", `Delivery Challan ${watchedValues.challanNumber || ""}`, `${body}\n\nView online: ${url}`)
+        } else {
+          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
+          openEmail(watchedValues.clientEmail || "", `Delivery Challan ${watchedValues.challanNumber || ""}`, body)
+        }
+      }
+    } catch { toast({ title: "Failed to send email", variant: "destructive" }) }
+    finally { setIsGenerating(false) }
+  }
+
+  const handlePrint = () => window.print()
+
   const handleUseCurrency = (code: string) => {
     const currency = CURRENCIES.find(c => c.code === code)
     if (currency) {
@@ -526,19 +591,18 @@ export function DeliveryChallanGenerator() {
             <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
               <h3 className="text-sm font-semibold flex items-center gap-2 text-blue-600"><Truck className="h-4 w-4" /> Challan Design & Preferences</h3>
               <div className="grid sm:grid-cols-3 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Template Design</Label>
-                  <Select
-                    defaultValue="StudioTemplate"
-                    onValueChange={(v) => form.setValue("template", v as any)}
-                  >
-                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select template" /></SelectTrigger>
-                    <SelectContent>
-                      {TEMPLATES.map(t => (
-                        <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="sm:col-span-3 border-b border-stone-100 dark:border-stone-850 pb-4 mb-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template</Label>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        Current: <span className="font-semibold text-foreground">{(() => { const t = form.watch("template"); return t === "StudioTemplate" ? "Modern" : t === "LedgerTemplate" ? "Corporate" : t === "MinimalMonoTemplate" ? "Minimal" : t === "ClassicBooksTemplate" ? "Creative" : t === "VyaparDesiTemplate" ? "GST India" : "Modern"; })()}</span>
+                      </p>
+                    </div>
+                    <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsTemplateDialogOpen(true)}>
+                      <LayoutTemplate className="h-4 w-4" /> Change Template
+                    </Button>
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Currency</Label>
@@ -1029,27 +1093,31 @@ export function DeliveryChallanGenerator() {
             </section>
 
             {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 pb-12">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={handleSaveChallan}
-                className="gap-2"
-              >
-                <Save className="h-4 w-4" /> Save Draft
-              </Button>
-              <Button
-                type="button"
-                onClick={togglePreview}
-                className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold"
-              >
+            <div className="flex flex-wrap gap-3 pb-6 mt-6">
+              <Button className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold flex-1" onClick={togglePreview}>
                 <Eye className="h-4 w-4" /> SHOW PREVIEW
+              </Button>
+              <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
+                <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />
+              </button>
+              <button onClick={handleEmailDC} title="Email Delivery Challan" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
+                <img src="/email.svg" alt="Email" className="h-5 w-5" />
+              </button>
+              <ShareButton invoiceData={invoiceData} template={watchedValues.template} title={`Delivery Challan ${watchedValues.challanNumber || ""}`} />
+              <Button variant="outline" className="gap-2" onClick={handlePrint}>
+                <Printer className="h-4 w-4" /> Print
               </Button>
             </div>
 
           </div>
         </div>
       </div>
+      <TemplateDialog
+        isOpen={isTemplateDialogOpen}
+        onClose={() => setIsTemplateDialogOpen(false)}
+        onSelect={handleTemplateSelect}
+        documentType="delivery challan"
+      />
     </>
   )
 }

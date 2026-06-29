@@ -1,14 +1,17 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RefreshCw, Download, Eye, X, ZoomIn, ZoomOut } from "lucide-react"
+import { Download, Eye, X, ZoomIn, ZoomOut } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import {
   InvoicePreview,
   exportNodeToPdf,
 } from "@/components/invoice-templates/components"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraToggle, UltraInput,
+  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
+} from "@/components/ultra/ultra-components"
 
 export function EmiCalculatorClient() {
   const [amount, setAmount] = useState("")
@@ -173,108 +176,73 @@ export function EmiCalculatorClient() {
         </div>
       )}
 
-      <div className="space-y-5">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium">Loan Amount (₹)</Label>
-          <Input
+      <UltraShell>
+        <UltraHeader
+          badge="EMI Calculator"
+          title={"EMI\nCalculator"}
+          subtitle="Plan your loan payments with instant EMI calculations."
+        />
+
+        <UltraCard>
+          <UltraInput
             type="number"
-            placeholder="Enter loan amount"
+            placeholder="Loan Amount"
+            currencySymbol="₹"
             value={amount}
             onChange={e => setAmount(e.target.value)}
-            className="h-12 text-lg font-semibold"
           />
-        </div>
 
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium">Annual Interest Rate (%)</Label>
-          <Input
+          <UltraInput
             type="number"
             step="0.1"
-            placeholder="Enter interest rate"
+            placeholder="Annual Interest Rate"
             value={rate}
             onChange={e => setRate(e.target.value)}
-            className="h-12 text-lg font-semibold"
           />
-        </div>
 
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium">Loan Tenure</Label>
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-start">
             <div className="flex-1">
-              <Input
+              <UltraInput
                 type="number"
-                placeholder="Enter tenure"
+                placeholder="Loan Tenure"
                 value={tenure}
                 onChange={e => setTenure(e.target.value)}
-                className="h-12 text-lg font-semibold"
               />
             </div>
-            <div className="flex rounded-xl border border-border overflow-hidden">
-              {(["years", "months"] as const).map(u => (
-                <button
-                  key={u}
-                  onClick={() => setTenureUnit(u)}
-                  className={`px-4 py-2.5 text-sm font-medium transition-all ${
-                    tenureUnit === u ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {u === "years" ? "Yrs" : "Mon"}
+            <div className="min-w-[160px] pt-7">
+              <UltraToggle
+                options={[{value:"months",label:"Months"},{value:"years",label:"Years"}]}
+                value={tenureUnit}
+                onChange={(v) => setTenureUnit(v as "months" | "years")}
+              />
+            </div>
+          </div>
+
+          {emi > 0 && (
+            <>
+              <UltraResultsGrid>
+                <UltraResultCard label="Monthly EMI" value={`₹${fmt(emi)}`} color="main" />
+                <UltraResultCard label="Total Interest" value={`₹${fmt(totalInterest)}`} color="amber" />
+                <UltraResultCard label="Total Payment" value={`₹${fmt(totalPayment)}`} color="purple" />
+                <UltraResultCard label="Principal Amount" value={`₹${fmt(P)}`} color="blue" />
+                <UltraResultCard label="Loan Tenure" value={`${n.toFixed(0)} months`} />
+                <UltraResultCard label="Total Interest %" value={`${(totalInterest / P * 100).toFixed(1)}%`} color="amber" />
+              </UltraResultsGrid>
+
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                <button onClick={() => setShowPreview(true)} className="py-3.5 px-4 bg-white/[0.06] border border-white/[0.12] rounded-xl text-sm font-medium text-[#f1f5f9] transition-all duration-300 hover:bg-white/[0.1] flex items-center justify-center gap-2 cursor-pointer">
+                  <Eye className="w-4 h-4" /> Show Preview
                 </button>
-              ))}
-            </div>
-          </div>
-        </div>
+                <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating}>
+                  <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                </UltraPrimaryButton>
+              </div>
+            </>
+          )}
 
-        {emi > 0 && (
-          <div className="space-y-3 pt-2">
-            <div className="h-px bg-border" />
-            <div className="space-y-2.5">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Monthly EMI</span>
-                <span className="font-display font-bold text-xl text-emerald-600 dark:text-emerald-400">₹{fmt(emi)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Total Interest Payable</span>
-                <span className="font-semibold text-amber-600">₹{fmt(totalInterest)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Total Payment (Principal + Interest)</span>
-                <span className="font-semibold">₹{fmt(totalPayment)}</span>
-              </div>
-              <div className="h-px bg-border" />
-              <div className="flex justify-between items-center">
-                <span className="font-display font-bold">Principal Amount</span>
-                <span className="font-display font-bold text-blue-600 dark:text-blue-400">₹{fmt(P)}</span>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3 pt-2">
-              <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-xl p-3 text-center">
-                <p className="text-xs text-muted-foreground">Loan Tenure</p>
-                <p className="text-lg font-display font-bold text-emerald-600">{n.toFixed(0)} months</p>
-              </div>
-              <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-3 text-center">
-                <p className="text-xs text-muted-foreground">Total Interest %</p>
-                <p className="text-lg font-display font-bold text-amber-600">{(totalInterest / P * 100).toFixed(1)}%</p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3 mt-4">
-              <Button variant="outline" className="gap-2 font-semibold" onClick={() => setShowPreview(true)}>
-                <Eye className="h-4 w-4" /> Show Preview
-              </Button>
-              <Button onClick={handleDownloadPDF} disabled={isGenerating} className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-0 font-semibold gap-2">
-                <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        <div className="flex gap-3">
-          <Button variant="outline" className="gap-2 flex-1" onClick={handleReset}>
-            <RefreshCw className="h-4 w-4" /> Reset
-          </Button>
-        </div>
-      </div>
+          <UltraResetButton onClick={handleReset} />
+        </UltraCard>
+      </UltraShell>
     </>
   )
 }

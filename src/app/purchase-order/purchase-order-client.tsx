@@ -33,6 +33,8 @@ import { formatCurrency } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { ShareButton } from "@/components/shared/share-button"
+import { TemplateDialog, TemplateSelectorInline } from "@/components/template-selection"
+import { tryNativeShare, generateShareUrl, openWhatsApp, openEmail } from "@/lib/share-utils"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -160,13 +162,25 @@ export function PurchaseOrderClient() {
   const { toast } = useToast()
   const [showPreview, setShowPreview] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
-  const [mounted, setMounted] = useState(false)
+  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [showExtras, setShowExtras] = useState(false)
   const [savedOnce, setSavedOnce] = useState(false)
   const [savedPOs, setSavedPOs] = useState<SavedPO[]>([])
   const previewContainerRef = useRef<HTMLDivElement>(null)
 
+  const handleTemplateSelect = (templateId: string) => {
+    const mapping: Record<string, string> = {
+      modern: "StudioTemplate",
+      corporate: "LedgerTemplate",
+      minimal: "MinimalMonoTemplate",
+      creative: "ClassicBooksTemplate",
+      "gst-india": "VyaparDesiTemplate",
+    }
+    const formValue = mapping[templateId] || "StudioTemplate"
+    form.setValue("template", formValue as any)
+  }
+  const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
   useEffect(() => {
@@ -384,34 +398,22 @@ export function PurchaseOrderClient() {
     setIsGenerating(true)
     try {
       const node = document.getElementById("po-print-root")
-      if (!node) throw new Error("Purchase order not found")
+      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
       const fileName = `purchase-order-${watchedValues.poNumber}.pdf`
       const blob = await exportNodeToPdf(node, fileName, true)
-      
-      const file = new File([blob], fileName, { type: "application/pdf" })
-      const subject = `Purchase Order ${watchedValues.poNumber} from ${watchedValues.businessName}`
       const body = `Dear ${watchedValues.supplierName || "Supplier"},\n\nPlease find attached the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\nDelivery requested by ${watchedValues.deliveryDate || "the specified date"}.\n\nBest regards,\n${watchedValues.businessName}`
-      
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: subject,
-          text: body,
-          files: [file]
-        })
-      } else {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = fileName
-        a.click()
-        URL.revokeObjectURL(url)
-        window.open(`mailto:${watchedValues.supplierEmail || ""}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      const shared = await tryNativeShare(blob, fileName, `Purchase Order ${watchedValues.poNumber}`, body)
+      if (!shared) {
+        const url = await generateShareUrl(invoiceData, watchedValues.template, `Purchase Order ${watchedValues.poNumber}`)
+        if (url) {
+          openEmail(watchedValues.supplierEmail || "", `Purchase Order ${watchedValues.poNumber} from ${watchedValues.businessName}`, `${body}\n\nView online: ${url}`)
+        } else {
+          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
+          openEmail(watchedValues.supplierEmail || "", `Purchase Order ${watchedValues.poNumber} from ${watchedValues.businessName}`, body)
+        }
       }
-    } catch (e) {
-      toast({ title: "Failed to share purchase order", variant: "destructive" })
-    } finally {
-      setIsGenerating(false)
-    }
+    } catch { toast({ title: "Failed to send email", variant: "destructive" }) }
+    finally { setIsGenerating(false) }
   }
 
   const handleWhatsAppShare = async () => {
@@ -419,33 +421,22 @@ export function PurchaseOrderClient() {
     setIsGenerating(true)
     try {
       const node = document.getElementById("po-print-root")
-      if (!node) throw new Error("Purchase order not found")
+      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
       const fileName = `purchase-order-${watchedValues.poNumber}.pdf`
       const blob = await exportNodeToPdf(node, fileName, true)
-      
-      const file = new File([blob], fileName, { type: "application/pdf" })
-      const message = `Hello,\n\nPlease find the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nThank you!\n\n${watchedValues.businessName}`
-      
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: `Purchase Order ${watchedValues.poNumber}`,
-          text: message,
-          files: [file]
-        })
-      } else {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = fileName
-        a.click()
-        URL.revokeObjectURL(url)
-        window.open(`https://wa.me/?text=${encodeURIComponent(message + "\n\n(Note: Please attach the downloaded PDF manually)")}`, "_blank")
+      const msg = `Hello,\n\nPlease find the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nThank you!\n\n${watchedValues.businessName}`
+      const shared = await tryNativeShare(blob, fileName, `Purchase Order ${watchedValues.poNumber}`, msg)
+      if (!shared) {
+        const url = await generateShareUrl(invoiceData, watchedValues.template, `Purchase Order ${watchedValues.poNumber}`)
+        if (url) {
+          openWhatsApp(`${msg}\n\nView online: ${url}`)
+        } else {
+          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
+          openWhatsApp(msg)
+        }
       }
-    } catch (e) {
-      toast({ title: "Failed to share via WhatsApp", variant: "destructive" })
-    } finally {
-      setIsGenerating(false)
-    }
+    } catch { toast({ title: "Failed to share", variant: "destructive" }) }
+    finally { setIsGenerating(false) }
   }
 
   const handlePrint = () => { window.print() }
@@ -543,16 +534,13 @@ export function PurchaseOrderClient() {
             {/* Settings Section */}
             <section className="form-section">
               <div className="grid sm:grid-cols-3 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Template</Label>
-                  <Select defaultValue="StudioTemplate" onValueChange={(v) => form.setValue("template", v as any)}>
-                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select template" /></SelectTrigger>
-                    <SelectContent>
-                      {TEMPLATES.map(t => (
-                        <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-1.5 sm:col-span-3 border-b border-stone-100 dark:border-stone-850 pb-4 mb-2">
+                  <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template Selection</Label>
+                  <TemplateSelectorInline
+                    currentValue={form.watch("template")}
+                    onSelect={(v) => form.setValue("template", v as any)}
+                    onOpenDialog={() => setIsTemplateDialogOpen(true)}
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Currency</Label>
@@ -1147,6 +1135,12 @@ export function PurchaseOrderClient() {
           </div>
         </div>
       </div>
+      <TemplateDialog
+        isOpen={isTemplateDialogOpen}
+        onClose={() => setIsTemplateDialogOpen(false)}
+        onSelect={handleTemplateSelect}
+        documentType="purchase order"
+      />
     </>
   )
 }

@@ -1,14 +1,17 @@
 "use client"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RefreshCw, Download, Eye, ArrowLeft } from "lucide-react"
+import { Download, ArrowLeft } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import {
   InvoicePreview,
   exportNodeToPdf,
 } from "@/components/invoice-templates/components"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraToggle, UltraInput,
+  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
+} from "@/components/ultra/ultra-components"
 
 const COMPOUND_FREQUENCIES = [
   { value: 1, label: "Yearly" },
@@ -130,107 +133,84 @@ export function InterestCalculatorClient() {
     <>
       <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
 
-    <div className="space-y-5">
-      <div className="flex rounded-xl border border-border overflow-hidden">
-        {(["simple", "compound"] as const).map(m => (
-          <button
-            key={m}
-            onClick={() => setMode(m)}
-            className={`flex-1 py-2.5 text-sm font-medium transition-all ${
-              mode === m ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {m === "simple" ? "Simple" : "Compound"}
-          </button>
-        ))}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Principal Amount (₹)</Label>
-        <Input
-          type="number"
-          placeholder="Enter principal amount"
-          value={principal}
-          onChange={e => setPrincipal(e.target.value)}
-          className="h-12 text-lg font-semibold"
+      <UltraShell>
+        <UltraHeader
+          badge="Interest Calculator"
+          title={"Interest\nCalculator"}
+          subtitle="Calculate simple and compound interest for any investment."
         />
-      </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Annual Interest Rate (%)</Label>
-        <Input
-          type="number"
-          step="0.1"
-          placeholder="Enter interest rate"
-          value={rate}
-          onChange={e => setRate(e.target.value)}
-          className="h-12 text-lg font-semibold"
-        />
-      </div>
+        <UltraCard>
+          <UltraToggle
+            options={[{value:"simple",label:"Simple Interest"},{value:"compound",label:"Compound Interest"}]}
+            value={mode}
+            onChange={(v) => setMode(v as "simple" | "compound")}
+          />
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Time Period (Years)</Label>
-        <Input
-          type="number"
-          step="0.5"
-          placeholder="Enter time in years"
-          value={time}
-          onChange={e => setTime(e.target.value)}
-          className="h-12 text-lg font-semibold"
-        />
-      </div>
+          <UltraInput
+            type="number"
+            placeholder="Principal Amount"
+            currencySymbol="₹"
+            value={principal}
+            onChange={e => setPrincipal(e.target.value)}
+          />
 
-      {mode === "compound" && (
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Compounding Frequency</Label>
-          <div className="flex gap-2 flex-wrap">
-            {COMPOUND_FREQUENCIES.map(f => (
-              <button
-                key={f.value}
-                onClick={() => setFrequency(f.value)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  frequency === f.value
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-glow-sm"
-                    : "border border-border text-muted-foreground hover:border-purple-300 hover:text-foreground"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+          <UltraInput
+            type="number"
+            step="0.1"
+            placeholder="Annual Interest Rate"
+            suffix="% p.a."
+            value={rate}
+            onChange={e => setRate(e.target.value)}
+          />
 
-      {P > 0 && (
-        <div className="space-y-3 pt-2">
-          <div className="h-px bg-border" />
-          <div className="space-y-2.5">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Maturity Amount</span>
-              <span className="font-display font-bold text-xl text-blue-600 dark:text-blue-400">₹{fmt(maturity)}</span>
+          <UltraInput
+            type="number"
+            step="0.5"
+            placeholder="Time Period"
+            suffix="Years"
+            value={time}
+            onChange={e => setTime(e.target.value)}
+          />
+
+          {mode === "compound" && (
+            <div className="space-y-2 mb-6">
+              <label className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 block">Compounding Frequency</label>
+              <div className="flex gap-2 flex-wrap">
+                {COMPOUND_FREQUENCIES.map(f => (
+                  <button
+                    key={f.value}
+                    onClick={() => setFrequency(f.value)}
+                    className={`flex-1 min-w-[80px] px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 cursor-pointer ${
+                      frequency === f.value
+                        ? "border border-indigo-500/70 text-white bg-indigo-500/15 shadow-lg shadow-indigo-500/25"
+                        : "bg-black/40 border border-white/[0.12] text-[#f1f5f9]/65 hover:border-white/20 hover:text-[#f1f5f9]"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Total Interest Earned</span>
-              <span className="font-semibold text-emerald-600">₹{fmt(interest)}</span>
-            </div>
-            <div className="h-px bg-border" />
-            <div className="flex justify-between items-center">
-              <span className="font-display font-bold">Principal Invested</span>
-              <span className="font-display font-bold text-blue-600 dark:text-blue-400">₹{fmt(P)}</span>
-            </div>
-          </div>
-          <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 font-semibold gap-2">
-            <Download className="h-4 w-4" /> Download PDF
-          </Button>
-        </div>
-      )}
+          )}
 
-      <div className="flex gap-3">
-        <Button variant="outline" className="gap-2 flex-1" onClick={handleReset}>
-          <RefreshCw className="h-4 w-4" /> Reset
-        </Button>
-      </div>
-    </div>
-  </>
+          {P > 0 && (
+            <>
+              <UltraResultsGrid>
+                <UltraResultCard label="Maturity Amount" value={`₹${fmt(maturity)}`} color="main" />
+                <UltraResultCard label="Total Interest Earned" value={`₹${fmt(interest)}`} color="green" />
+                <UltraResultCard label="Principal Invested" value={`₹${fmt(P)}`} color="blue" />
+              </UltraResultsGrid>
+
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-2">
+                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+            </>
+          )}
+
+          <UltraResetButton onClick={handleReset} />
+        </UltraCard>
+      </UltraShell>
+    </>
   )
 }

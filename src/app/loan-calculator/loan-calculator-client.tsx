@@ -1,14 +1,17 @@
 "use client"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RefreshCw, Download, Eye, ArrowLeft } from "lucide-react"
+import { Download, ArrowLeft } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import {
   InvoicePreview,
   exportNodeToPdf,
 } from "@/components/invoice-templates/components"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraInput, UltraPrimaryButton,
+  UltraResultsGrid, UltraResultCard, UltraResetButton
+} from "@/components/ultra/ultra-components"
 
 export function LoanCalculatorClient() {
   const [amount, setAmount] = useState("")
@@ -127,81 +130,56 @@ export function LoanCalculatorClient() {
     <>
       <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
 
-    <div className="space-y-5">
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Loan Amount (₹)</Label>
-        <Input
-          type="number"
-          placeholder="Enter loan amount"
-          value={amount}
-          onChange={e => setAmount(e.target.value)}
-          className="h-12 text-lg font-semibold"
+      <UltraShell>
+        <UltraHeader
+          badge="Loan Calculator"
+          title={"Loan\nCalculator"}
+          subtitle="Calculate your monthly payments and total loan costs instantly."
         />
-      </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Annual Interest Rate (%)</Label>
-        <Input
-          type="number"
-          step="0.1"
-          placeholder="Enter interest rate"
-          value={rate}
-          onChange={e => setRate(e.target.value)}
-          className="h-12 text-lg font-semibold"
-        />
-      </div>
+        <UltraCard>
+          <UltraInput
+            type="number"
+            placeholder="Loan Amount"
+            currencySymbol="₹"
+            value={amount}
+            onChange={e => setAmount(e.target.value)}
+          />
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Loan Tenure (Months)</Label>
-        <Input
-          type="number"
-          placeholder="Enter tenure in months"
-          value={tenure}
-          onChange={e => setTenure(e.target.value)}
-          className="h-12 text-lg font-semibold"
-        />
-      </div>
+          <UltraInput
+            type="number"
+            step="0.1"
+            placeholder="Annual Interest Rate"
+            value={rate}
+            onChange={e => setRate(e.target.value)}
+          />
 
-      {emi > 0 && (
-        <div className="space-y-3 pt-2">
-          <div className="h-px bg-border" />
-          <div className="space-y-2.5">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Monthly EMI</span>
-              <span className="font-display font-bold text-xl text-blue-600 dark:text-blue-400">₹{fmt(emi)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Total Interest Payable</span>
-              <span className="font-semibold text-amber-600">₹{fmt(totalInterest)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Total Cost (Principal + Interest)</span>
-              <span className="font-semibold">₹{fmt(totalCost)}</span>
-            </div>
-          </div>
-          <div className="h-px bg-border" />
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <div className="bg-blue-50 dark:bg-blue-950/30 rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground">Principal</p>
-              <p className="text-lg font-display font-bold text-blue-600">₹{fmt(P)}</p>
-            </div>
-            <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground">Interest % of Total</p>
-              <p className="text-lg font-display font-bold text-amber-600">{(totalInterest / totalCost * 100).toFixed(1)}%</p>
-            </div>
-          </div>
-          <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0 font-semibold gap-2">
-            <Download className="h-4 w-4" /> Download PDF
-          </Button>
-        </div>
-      )}
+          <UltraInput
+            type="number"
+            placeholder="Loan Tenure (Months)"
+            value={tenure}
+            onChange={e => setTenure(e.target.value)}
+          />
 
-      <div className="flex gap-3">
-        <Button variant="outline" className="gap-2 flex-1" onClick={handleReset}>
-          <RefreshCw className="h-4 w-4" /> Reset
-        </Button>
-      </div>
-    </div>
-  </>
+          {emi > 0 && (
+            <>
+              <UltraResultsGrid>
+                <UltraResultCard label="Monthly EMI" value={`₹${fmt(emi)}`} color="main" />
+                <UltraResultCard label="Total Interest" value={`₹${fmt(totalInterest)}`} color="amber" />
+                <UltraResultCard label="Total Cost" value={`₹${fmt(totalCost)}`} color="purple" />
+                <UltraResultCard label="Principal" value={`₹${fmt(P)}`} color="blue" />
+                <UltraResultCard label="Interest % of Total" value={`${(totalInterest / totalCost * 100).toFixed(1)}%`} color="amber" />
+              </UltraResultsGrid>
+
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-2">
+                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+            </>
+          )}
+
+          <UltraResetButton onClick={handleReset} />
+        </UltraCard>
+      </UltraShell>
+    </>
   )
 }

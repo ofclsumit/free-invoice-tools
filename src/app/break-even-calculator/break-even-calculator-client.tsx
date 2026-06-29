@@ -1,15 +1,17 @@
 "use client"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RefreshCw, Download, Eye, EyeOff } from "lucide-react"
+import { Download, Eye, EyeOff } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { useToast } from "@/hooks/use-toast"
 import {
   InvoicePreview,
   exportNodeToPdf,
 } from "@/components/invoice-templates/components"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraInput, UltraResultsGrid, UltraResultCard, UltraPrimaryButton,
+  UltraDivider, UltraResetButton
+} from "@/components/ultra/ultra-components"
 
 export function BreakEvenCalculatorClient() {
   const { toast } = useToast()
@@ -73,207 +75,182 @@ export function BreakEvenCalculatorClient() {
   }
 
   return (
-    <>
+    <UltraShell>
       {isGenerating && <LoadingScreen message="Generating Break-Even Report PDF..." />}
-      <div className="flex flex-col min-h-[calc(100vh-8rem)]">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-display font-bold">
-            {showPreview ? "Break-Even Report Preview" : "Break-Even Calculator"}
-          </h2>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1.5 h-8 text-xs"
+      <UltraHeader
+        badge="Calculator"
+        title={showPreview ? "Break-Even Report Preview" : "Break-Even Calculator"}
+        subtitle={showPreview ? undefined : "Find out how many units you need to sell to cover your fixed and variable costs"}
+      />
+
+      {!showPreview ? (
+        <UltraCard>
+          <div className="flex items-center justify-end gap-2 mb-2">
+            <button
               onClick={togglePreview}
+              className="flex items-center gap-1.5 py-2 px-3.5 bg-white/[0.04] border border-white/[0.1] text-[#f1f5f9]/65 text-xs font-medium rounded-lg hover:bg-white/[0.08] hover:text-[#f1f5f9] transition-all duration-300"
             >
-              {showPreview ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-              <span className="hidden sm:inline">{showPreview ? "Edit" : "Show Preview"}</span>
-            </Button>
-            <Button
-              size="sm"
-              className="gap-1.5 h-8 text-xs bg-gradient-to-r from-rose-600 to-pink-600 text-white border-0 font-semibold"
-              onClick={handleDownloadPDF}
-              disabled={isGenerating}
-            >
+              <Eye className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Show Preview</span>
+            </button>
+            <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="!py-2 !px-3.5 !text-xs !rounded-lg">
               <Download className="h-3.5 w-3.5" />
               {isGenerating ? "Generating..." : "Download PDF"}
-            </Button>
+            </UltraPrimaryButton>
+          </div>
+
+          <UltraInput
+            type="number"
+            placeholder="Fixed Costs"
+            currencySymbol="₹"
+            value={fixedCost}
+            onChange={e => setFixedCost(e.target.value)}
+          />
+          <UltraInput
+            type="number"
+            step="0.01"
+            placeholder="Variable Cost Per Unit"
+            currencySymbol="₹"
+            value={variableCost}
+            onChange={e => setVariableCost(e.target.value)}
+          />
+          <UltraInput
+            type="number"
+            step="0.01"
+            placeholder="Selling Price Per Unit"
+            currencySymbol="₹"
+            value={sellingPrice}
+            onChange={e => setSellingPrice(e.target.value)}
+          />
+
+          {contribution > 0 && (
+            <>
+              <UltraDivider />
+              <UltraResultsGrid>
+                <UltraResultCard label="Break-Even Point" value={`${fmtUnits(breakEvenUnits)} units`} />
+                <UltraResultCard label="Break-Even Revenue" value={`₹${fmt(breakEvenRevenue)}`} color="blue" />
+                <UltraResultCard label="Contribution Per Unit" value={`₹${fmt(contribution)}`} color="green" />
+              </UltraResultsGrid>
+
+              {sampleVolumes.length > 0 && (
+                <div className="mt-5">
+                  <p className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 mb-3">Profit / Loss at Different Volumes</p>
+                  <div className="bg-black/30 rounded-xl border border-white/[0.06] p-4">
+                    {sampleVolumes.map(v => (
+                      <div key={v.units} className="flex justify-between items-center py-2.5 border-b border-white/[0.04] last:border-b-0">
+                        <span className="text-sm text-[#f1f5f9]/65">{fmtUnits(v.units)} units</span>
+                        <span className={`font-['Space_Grotesk'] text-sm font-semibold ${v.profit >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                          {v.profit >= 0 ? "+" : ""}₹{fmt(v.profit)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <UltraPrimaryButton onClick={togglePreview} disabled={isGenerating} className="w-full mt-4">
+                    <Eye className="h-4 w-4" />
+                    Show Preview
+                  </UltraPrimaryButton>
+                </div>
+              )}
+
+              <UltraResetButton onClick={handleReset} />
+            </>
+          )}
+
+          {contribution <= 0 && <UltraResetButton onClick={handleReset} />}
+        </UltraCard>
+      ) : (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={togglePreview}
+              className="flex items-center gap-1.5 py-2.5 px-4 bg-white/[0.04] border border-white/[0.1] text-[#f1f5f9]/65 text-sm font-medium rounded-xl hover:bg-white/[0.08] hover:text-[#f1f5f9] transition-all duration-300"
+            >
+              <EyeOff className="h-4 w-4" />
+              Back to Edit
+            </button>
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full">
+                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+          </div>
+          <div id="invoice-print-root">
+            <InvoicePreview hideToolbar={true}>
+              <div
+                className="bg-white text-black p-8 sm:p-12 print:shadow-none print:p-8 print:rounded-none w-full border-gray-100"
+                style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box", minHeight: "297mm" }}
+              >
+                <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-8">
+                  <div className="text-right w-full">
+                    <h1 className="text-3xl font-light text-rose-600 uppercase tracking-widest mb-2">Break-Even Report</h1>
+                    <p className="text-gray-500 text-sm">Date: <span className="font-medium text-gray-900">{new Date().toLocaleDateString("en-IN")}</span></p>
+                  </div>
+                </div>
+
+                <div className="mb-12 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Break-Even Analysis</h3>
+                  <p className="text-gray-500 text-sm">A detailed breakdown of costs, revenues, and break-even point.</p>
+                </div>
+
+                <div className="space-y-6 mb-12">
+                  <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-6">
+                    <div className="bg-gray-50 p-4 rounded-xl text-center">
+                      <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Fixed Costs</p>
+                      <p className="text-xl font-medium text-gray-900">₹{fmt(FC)}</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl text-center">
+                      <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Variable Cost/Unit</p>
+                      <p className="text-xl font-medium text-gray-900">₹{fmt(VC)}</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl text-center">
+                      <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Selling Price/Unit</p>
+                      <p className="text-xl font-medium text-gray-900">₹{fmt(SP)}</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-rose-50 p-6 rounded-xl text-center col-span-2">
+                      <p className="text-3xl font-display font-bold text-rose-600">{fmtUnits(breakEvenUnits)} units</p>
+                      <p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">Break-Even Point (Units)</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-6">
+                    <div className="bg-emerald-50 p-4 rounded-xl text-center">
+                      <p className="text-lg font-display font-bold text-emerald-700">₹{fmt(contribution)}</p>
+                      <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">Contribution Margin/Unit</p>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-xl text-center">
+                      <p className="text-lg font-display font-bold text-blue-700">₹{fmt(breakEvenRevenue)}</p>
+                      <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">Break-Even Revenue</p>
+                    </div>
+                  </div>
+
+                  {sampleVolumes.length > 0 && (
+                    <div className="pt-8">
+                      <p className="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wider">Profit / Loss at Different Volumes</p>
+                      <div className="space-y-2">
+                        {sampleVolumes.map(v => (
+                          <div key={v.units} className="flex justify-between items-center text-sm bg-gray-50 rounded-lg px-4 py-3">
+                            <span className="text-gray-600 font-medium">{fmtUnits(v.units)} units</span>
+                            <span className={`font-semibold ${v.profit >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                              {v.profit >= 0 ? "+" : ""}₹{fmt(v.profit)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-16 pt-8 border-t border-gray-100 text-center">
+                  <p className="text-gray-400 text-xs italic">
+                    This report was generated using the QuoteFlow Break-Even Calculator.
+                  </p>
+                </div>
+              </div>
+            </InvoicePreview>
           </div>
         </div>
-
-        <div className="flex-1 flex flex-col lg:flex-row gap-0 lg:gap-6 overflow-hidden">
-          {!showPreview && (
-            <div className="flex-1 min-w-0 overflow-y-auto pb-8">
-              <div className="max-w-2xl mx-auto space-y-5">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Fixed Costs (₹)</Label>
-                  <Input
-                    type="number"
-                    placeholder="Enter total fixed costs"
-                    value={fixedCost}
-                    onChange={e => setFixedCost(e.target.value)}
-                    className="h-12 text-lg font-semibold"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Variable Cost Per Unit (₹)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="Enter variable cost per unit"
-                    value={variableCost}
-                    onChange={e => setVariableCost(e.target.value)}
-                    className="h-12 text-lg font-semibold"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Selling Price Per Unit (₹)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="Enter selling price per unit"
-                    value={sellingPrice}
-                    onChange={e => setSellingPrice(e.target.value)}
-                    className="h-12 text-lg font-semibold"
-                  />
-                </div>
-
-                {contribution > 0 && (
-                  <div className="space-y-3 pt-2">
-                    <div className="h-px bg-border" />
-                    <div className="space-y-2.5">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Break-Even Point (Units)</span>
-                        <span className="font-display font-bold text-xl text-rose-600 dark:text-rose-400">{fmtUnits(breakEvenUnits)} units</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Break-Even Revenue</span>
-                        <span className="font-semibold">₹{fmt(breakEvenRevenue)}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Contribution Per Unit</span>
-                        <span className="font-semibold text-emerald-600">₹{fmt(contribution)}</span>
-                      </div>
-                    </div>
-
-                    {sampleVolumes.length > 0 && (
-                      <div className="pt-2">
-                        <p className="text-xs font-semibold text-muted-foreground mb-2">Profit / Loss at Different Volumes</p>
-                        <div className="space-y-1.5">
-                          {sampleVolumes.map(v => (
-                            <div key={v.units} className="flex justify-between items-center text-sm bg-muted/30 rounded-lg px-3 py-2">
-                              <span className="text-muted-foreground">{fmtUnits(v.units)} units</span>
-                              <span className={`font-semibold ${v.profit >= 0 ? "text-emerald-600" : "text-red-600"}`}>
-                                {v.profit >= 0 ? "+" : ""}₹{fmt(v.profit)}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    <Button onClick={togglePreview} disabled={isGenerating} className="w-full mt-4 bg-gradient-to-r from-rose-600 to-pink-600 text-white border-0 font-semibold gap-2">
-                      <Eye className="h-4 w-4" /> Show Preview
-                    </Button>
-                  </div>
-                )}
-
-                <div className="flex gap-3">
-                  <Button variant="outline" className="gap-2 flex-1" onClick={handleReset}>
-                    <RefreshCw className="h-4 w-4" /> Reset
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {showPreview && (
-            <div className="w-full min-w-0 overflow-y-auto pb-8 pt-4 lg:pt-0 border-t lg:border-t-0 lg:border-l border-border mt-6 lg:mt-0 lg:pl-6">
-              <div className="max-w-2xl mx-auto">
-                <div id="invoice-print-root">
-                  <InvoicePreview hideToolbar={true}>
-                    <div
-                      className="bg-white text-black p-8 sm:p-12 print:shadow-none print:p-8 print:rounded-none w-full border-gray-100"
-                      style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box", minHeight: "297mm" }}
-                    >
-                      <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-8">
-                        <div className="text-right w-full">
-                          <h1 className="text-3xl font-light text-rose-600 uppercase tracking-widest mb-2">Break-Even Report</h1>
-                          <p className="text-gray-500 text-sm">Date: <span className="font-medium text-gray-900">{new Date().toLocaleDateString("en-IN")}</span></p>
-                        </div>
-                      </div>
-
-                      <div className="mb-12 text-center">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Break-Even Analysis</h3>
-                        <p className="text-gray-500 text-sm">A detailed breakdown of costs, revenues, and break-even point.</p>
-                      </div>
-
-                      <div className="space-y-6 mb-12">
-                        <div className="grid grid-cols-3 gap-4 border-b border-gray-100 pb-6">
-                          <div className="bg-gray-50 p-4 rounded-xl text-center">
-                            <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Fixed Costs</p>
-                            <p className="text-xl font-medium text-gray-900">₹{fmt(FC)}</p>
-                          </div>
-                          <div className="bg-gray-50 p-4 rounded-xl text-center">
-                            <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Variable Cost/Unit</p>
-                            <p className="text-xl font-medium text-gray-900">₹{fmt(VC)}</p>
-                          </div>
-                          <div className="bg-gray-50 p-4 rounded-xl text-center">
-                            <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Selling Price/Unit</p>
-                            <p className="text-xl font-medium text-gray-900">₹{fmt(SP)}</p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-rose-50 p-6 rounded-xl text-center col-span-2">
-                            <p className="text-3xl font-display font-bold text-rose-600">{fmtUnits(breakEvenUnits)} units</p>
-                            <p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">Break-Even Point (Units)</p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-6">
-                          <div className="bg-emerald-50 p-4 rounded-xl text-center">
-                            <p className="text-lg font-display font-bold text-emerald-700">₹{fmt(contribution)}</p>
-                            <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">Contribution Margin/Unit</p>
-                          </div>
-                          <div className="bg-blue-50 p-4 rounded-xl text-center">
-                            <p className="text-lg font-display font-bold text-blue-700">₹{fmt(breakEvenRevenue)}</p>
-                            <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">Break-Even Revenue</p>
-                          </div>
-                        </div>
-
-                        {sampleVolumes.length > 0 && (
-                          <div className="pt-8">
-                            <p className="text-sm font-semibold text-gray-900 mb-4 uppercase tracking-wider">Profit / Loss at Different Volumes</p>
-                            <div className="space-y-2">
-                              {sampleVolumes.map(v => (
-                                <div key={v.units} className="flex justify-between items-center text-sm bg-gray-50 rounded-lg px-4 py-3">
-                                  <span className="text-gray-600 font-medium">{fmtUnits(v.units)} units</span>
-                                  <span className={`font-semibold ${v.profit >= 0 ? "text-emerald-600" : "text-red-600"}`}>
-                                    {v.profit >= 0 ? "+" : ""}₹{fmt(v.profit)}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-16 pt-8 border-t border-gray-100 text-center">
-                        <p className="text-gray-400 text-xs italic">
-                          This report was generated using the QuoteFlow Break-Even Calculator.
-                        </p>
-                      </div>
-                    </div>
-                  </InvoicePreview>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </>
+      )}
+    </UltraShell>
   )
 }

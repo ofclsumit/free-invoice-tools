@@ -1,15 +1,17 @@
 "use client"
 import { useState, useRef } from "react"
-import { useReactToPrint } from "react-to-print"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Download, Eye, Upload, ArrowLeft } from "lucide-react"
+import { Download, ArrowLeft } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import {
   InvoicePreview,
   exportNodeToPdf,
 } from "@/components/invoice-templates/components"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraInput, UltraTextInput, UltraPrimaryButton,
+  UltraResultsGrid, UltraResultCard, UltraResetButton, UltraDivider
+} from "@/components/ultra/ultra-components"
 
 export function ProfitMarginClient() {
   const [cost, setCost] = useState("")
@@ -28,6 +30,10 @@ export function ProfitMarginClient() {
   const markup = c > 0 ? (profit / c) * 100 : 0
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2 })
+
+  const handleReset = () => {
+    setCost(""); setSelling(""); setCompanyName(""); setCompanyLogo("")
+  }
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -136,59 +142,80 @@ export function ProfitMarginClient() {
     <>
       <div className="absolute -left-[9999px] -top-[9999px]">{previewContent}</div>
 
-    <div className="space-y-5">
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Company Name</Label>
-        <Input placeholder="Your Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)} className="h-9 text-sm" />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Company Logo</Label>
-        <div className="flex items-center gap-2">
-          <Input type="file" accept="image/*" onChange={handleLogoUpload} className="h-9 text-sm flex-1" />
-          {companyLogo && <div className="h-9 w-9 rounded border border-border overflow-hidden flex-shrink-0"><img src={companyLogo} alt="Logo" className="h-full w-full object-cover" /></div>}
-        </div>
-      </div>
+      <UltraShell>
+        <UltraHeader
+          badge="Profit Margin"
+          title={"Profit\nMargin"}
+          subtitle="Calculate your profit margin, markup, and see how your business is performing."
+        />
 
-      <div className="h-px bg-border" />
+        <UltraCard>
+          <UltraTextInput
+            placeholder="Company Name"
+            value={companyName}
+            onChange={e => setCompanyName(e.target.value)}
+          />
 
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Cost Price (₹)</Label>
-        <Input type="number" placeholder="Enter cost price" value={cost} onChange={e => setCost(e.target.value)} className="h-11 text-lg font-semibold" />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Selling Price (₹)</Label>
-        <Input type="number" placeholder="Enter selling price" value={selling} onChange={e => setSelling(e.target.value)} className="h-11 text-lg font-semibold" />
-      </div>
-
-      {(c > 0 || s > 0) && (
-        <div className="space-y-4 pt-2">
-          <div className="h-px bg-border" />
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-amber-50 dark:bg-amber-950/30 rounded-xl p-4 text-center">
-              <p className="text-2xl font-display font-bold text-amber-600">{profit >= 0 ? "+" : ""}₹{fmt(profit)}</p>
-              <p className="text-xs text-muted-foreground mt-1">Profit / Loss</p>
-            </div>
-            <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-xl p-4 text-center">
-              <p className="text-2xl font-display font-bold text-emerald-600">{margin.toFixed(1)}%</p>
-              <p className="text-xs text-muted-foreground mt-1">Profit Margin</p>
+          <div className="space-y-2 mb-6">
+            <label className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 block">Company Logo</label>
+            <div className="flex items-center gap-2">
+              <input type="file" accept="image/*" onChange={handleLogoUpload} className="flex-1 bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none transition-all duration-300 focus:border-indigo-500/60 px-4 py-3 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-500/20 file:text-indigo-300 file:cursor-pointer cursor-pointer" />
+              {companyLogo && (
+                <div className="h-11 w-11 rounded-xl border border-white/[0.12] overflow-hidden flex-shrink-0 bg-black/40">
+                  <img src={companyLogo} alt="Logo" className="h-full w-full object-cover" />
+                </div>
+              )}
             </div>
           </div>
-          <div className="bg-blue-50 dark:bg-blue-950/30 rounded-xl p-4 text-center">
-            <p className="text-2xl font-display font-bold text-blue-600">{markup.toFixed(1)}%</p>
-            <p className="text-xs text-muted-foreground mt-1">Markup Percentage</p>
+
+          <UltraDivider />
+
+          <UltraInput
+            type="number"
+            placeholder="Cost Price"
+            currencySymbol="₹"
+            value={cost}
+            onChange={e => setCost(e.target.value)}
+          />
+
+          <UltraInput
+            type="number"
+            placeholder="Selling Price"
+            currencySymbol="₹"
+            value={selling}
+            onChange={e => setSelling(e.target.value)}
+          />
+
+          {(c > 0 || s > 0) && (
+            <>
+              <UltraResultsGrid>
+                <UltraResultCard
+                  label="Profit / Loss"
+                  value={<span className={profit >= 0 ? "text-emerald-400" : "text-rose-400"}>{profit >= 0 ? "+" : ""}₹{fmt(profit)}</span>}
+                  color="amber"
+                />
+                <UltraResultCard label="Profit Margin" value={`${margin.toFixed(1)}%`} color="green" />
+                <UltraResultCard label="Markup Percentage" value={`${markup.toFixed(1)}%`} color="blue" />
+              </UltraResultsGrid>
+
+                <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-2">
+                  <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                </UltraPrimaryButton>
+            </>
+          )}
+
+          <div className="mt-4 bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
+            <p className="text-xs text-[#f1f5f9]/65 space-y-1.5 leading-relaxed">
+              <span className="font-semibold text-[#f1f5f9]">Profit Margin</span> = (Selling Price - Cost) &divide; Selling Price &times; 100
+            </p>
+            <p className="text-xs text-[#f1f5f9]/65 space-y-1.5 leading-relaxed mt-1">
+              <span className="font-semibold text-[#f1f5f9]">Markup</span> = (Selling Price - Cost) &divide; Cost &times; 100
+            </p>
           </div>
 
-          <Button onClick={handleDownloadPDF} disabled={isGenerating} className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white border-0 font-semibold gap-2">
-            <Download className="h-4 w-4" /> Download PDF Report
-          </Button>
-        </div>
-      )}
-
-      <div className="bg-muted/50 rounded-xl p-4 text-xs text-muted-foreground space-y-1">
-        <p><strong>Profit Margin</strong> = (Selling Price - Cost) ÷ Selling Price × 100</p>
-        <p><strong>Markup</strong> = (Selling Price - Cost) ÷ Cost × 100</p>
-      </div>
-    </div>
-  </>
+          <UltraResetButton onClick={handleReset} />
+        </UltraCard>
+      </UltraShell>
+    </>
   )
 }

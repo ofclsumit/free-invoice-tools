@@ -1,9 +1,11 @@
 "use client"
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RefreshCw, Download } from "lucide-react"
+import { Download } from "lucide-react"
+import { UltraShell } from "@/components/ultra/ultra-shell"
+import {
+  UltraHeader, UltraCard, UltraInput, UltraResultsGrid, UltraResultCard, UltraPrimaryButton,
+  UltraDivider, UltraResetButton
+} from "@/components/ultra/ultra-components"
 
 export function CommissionCalculatorClient() {
   const [saleAmount, setSaleAmount] = useState("")
@@ -26,76 +28,50 @@ export function CommissionCalculatorClient() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Sale Amount (₹)</Label>
-        <Input
+    <UltraShell>
+      <UltraHeader
+        badge="Calculator"
+        title="Commission Calculator"
+        subtitle="Calculate commission amounts and split shares"
+      />
+      <UltraCard>
+        <UltraInput
           type="number"
-          placeholder="Enter total sale amount"
+          placeholder="Sale Amount"
+          currencySymbol="₹"
           value={saleAmount}
           onChange={e => setSaleAmount(e.target.value)}
-          className="h-12 text-lg font-semibold"
         />
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Commission Rate (%)</Label>
-        <Input
+        <UltraInput
           type="number"
           step="0.1"
-          placeholder="Enter commission rate"
+          placeholder="Commission Rate"
           value={commissionRate}
           onChange={e => setCommissionRate(e.target.value)}
-          className="h-12 text-lg font-semibold"
         />
-      </div>
-
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium">Your Split Share (%)</Label>
-        <Input
+        <UltraInput
           type="number"
-          placeholder="Enter your split percentage (default 100)"
+          placeholder="Your Split Share"
           value={splitRatio}
           onChange={e => setSplitRatio(e.target.value)}
-          className="h-12 text-lg font-semibold"
         />
-        <p className="text-xs text-muted-foreground">Your share of the total commission (0-100%)</p>
-      </div>
+        <p className="text-[11px] text-[#f1f5f9]/65 -mt-4 mb-6">Your share of the total commission (0-100%)</p>
 
-      {sale > 0 && (
-        <div className="space-y-3 pt-2">
-          <div className="h-px bg-border" />
-          <div className="space-y-2.5">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Total Commission ({rate}%)</span>
-              <span className="font-semibold text-cyan-600">₹{fmt(commissionAmount)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Your Share ({split}%)</span>
-              <span className="font-display font-bold text-xl text-emerald-600 dark:text-emerald-400">₹{fmt(yourShare)}</span>
-            </div>
-            {split < 100 && (
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Other Party Share ({(100 - split).toFixed(0)}%)</span>
-                <span className="font-semibold text-muted-foreground">₹{fmt(otherShare)}</span>
-              </div>
-            )}
-            <div className="h-px bg-border" />
-            <div className="flex justify-between items-center">
-              <span className="font-display font-bold">Net Amount After Commission</span>
-              <span className="font-display font-bold text-blue-600 dark:text-blue-400">₹{fmt(netAmount)}</span>
-            </div>
-          </div>
-        </div>
-      )}
+        {sale > 0 && (
+          <>
+            <UltraDivider />
+            <UltraResultsGrid>
+              <UltraResultCard label={`Total Commission (${rate}%)`} value={`₹${fmt(commissionAmount)}`} color="blue" />
+              <UltraResultCard label={`Your Share (${split}%)`} value={`₹${fmt(yourShare)}`} color="green" />
+              {split < 100 && (
+                <UltraResultCard label={`Other Party Share (${(100 - split).toFixed(0)}%)`} value={`₹${fmt(otherShare)}`} color="amber" />
+              )}
+              <UltraResultCard label="Net Amount After Commission" value={`₹${fmt(netAmount)}`} />
+            </UltraResultsGrid>
+          </>
+        )}
 
-      <div className="flex gap-3">
-        <Button variant="outline" className="gap-2 flex-1" onClick={handleReset}>
-          <RefreshCw className="h-4 w-4" /> Reset
-        </Button>
-        <Button 
-          variant="outline" 
-          className="gap-2 flex-1 border-cyan-200 text-cyan-700 hover:bg-cyan-50 hover:text-cyan-800"
+        <UltraPrimaryButton
           onClick={async () => {
             if (!saleAmount || !commissionRate) {
               alert("Please enter sale amount and commission rate");
@@ -112,10 +88,14 @@ export function CommissionCalculatorClient() {
               netAmount
             });
           }}
+          className="w-full mt-6"
         >
-          <Download className="h-4 w-4" /> Download PDF
-        </Button>
-      </div>
-    </div>
+          <Download className="h-4 w-4" />
+          Download PDF
+        </UltraPrimaryButton>
+
+        <UltraResetButton onClick={handleReset} />
+      </UltraCard>
+    </UltraShell>
   )
 }

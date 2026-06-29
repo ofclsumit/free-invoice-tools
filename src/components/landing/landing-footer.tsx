@@ -10,8 +10,6 @@ const footerLinks = {
     { label: "Delivery Challan", href: "/delivery-challan" },
     { label: "Rent Receipt", href: "/rent-receipt" },
     { label: "Salary Slip", href: "/salary-slip" },
-    { label: "Receipt Generator", href: "/receipt-generator" },
-    { label: "Cash Receipt", href: "/cash-receipt" },
     { label: "Payment Receipt", href: "/payment-receipt" },
     { label: "Estimate Generator", href: "/estimate-generator" },
     { label: "Credit Note", href: "/credit-note" },

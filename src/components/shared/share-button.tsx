@@ -5,6 +5,7 @@ import { Share2, X, Copy, Check, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import QRCode from "qrcode"
+import { buildShareUrl } from "@/lib/share-utils"
 
 interface ShareButtonProps {
   invoiceData: any
@@ -42,22 +43,30 @@ export function ShareButton({ invoiceData, template, title, disabled }: ShareBut
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ invoiceData, template, title }),
       })
-      if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.error || "Failed to create share link")
+      let url: string
+      if (res.ok) {
+        const { id } = await res.json()
+        url = `${window.location.origin}/view/${id}`
+        toast({ title: "Share link created! Valid for 15 minutes." })
+      } else {
+        throw new Error("API failed")
       }
-      const { id } = await res.json()
-      const baseUrl = window.location.origin
-      const url = `${baseUrl}/view/${id}`
       setShareUrl(url)
-
       const qr = await QRCode.toDataURL(url, { width: 256, margin: 2, color: { dark: "#000000", light: "#ffffff" } })
       setQrDataUrl(qr)
       setShowModal(true)
-      toast({ title: "Share link created! Valid for 15 minutes." })
-    } catch (e: any) {
-      setError(e.message || "Failed to create share link")
-      toast({ title: "Failed to create share link", variant: "destructive" })
+    } catch {
+      try {
+        const url = buildShareUrl({ invoiceData, template, title, _t: Date.now() })
+        setShareUrl(url)
+        const qr = await QRCode.toDataURL(url, { width: 256, margin: 2, color: { dark: "#000000", light: "#ffffff" } })
+        setQrDataUrl(qr)
+        setShowModal(true)
+        toast({ title: "Share link created!" })
+      } catch (e: any) {
+        setError(e.message || "Failed to create share link")
+        toast({ title: "Failed to create share link", variant: "destructive" })
+      }
     } finally {
       setIsLoading(false)
     }
