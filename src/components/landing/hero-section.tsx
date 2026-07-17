@@ -47,14 +47,15 @@ export function HeroSection() {
           padding-top: 8.5rem;
           padding-bottom: 6rem;
           background: transparent;
-          color: #ECE9F5;
+          color: var(--foreground);
           position: relative;
           z-index: 30;
         }
+        .dark .hero-root { color: #ECE9F5; }
         @media (max-width: 1023px) { .hero-root { min-height: 75vh; } }
         @media (max-width: 639px) { .hero-root { min-height: auto; padding-bottom: 5rem; } }
 
-        .hero-radial {
+        .dark .hero-radial {
           position: absolute;
           top: 8%;
           left: 50%;
@@ -72,14 +73,14 @@ export function HeroSection() {
           50% { opacity: 1; transform: translateX(-50%) scale(1.06); }
         }
 
-        .hero-vignette {
+        .dark .hero-vignette {
           position: absolute;
           inset: 0;
           pointer-events: none;
           background: radial-gradient(120% 80% at 50% 12%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 55%);
         }
 
-        .hero-particle {
+        .dark .hero-particle {
           position: absolute;
           border-radius: 9999px;
           background: rgba(196,181,253,0.9);
@@ -122,61 +123,88 @@ export function HeroSection() {
           width: 100%;
           padding: .85rem 1rem;
           border-radius: 9999px;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.14);
+          background: rgba(255,255,255,0.85);
+          border: 1px solid rgba(15,23,42,0.12);
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
-          box-shadow: 0 10px 40px -12px rgba(124,58,237,0.4);
+          box-shadow: 0 10px 40px -12px rgba(124,58,237,0.25);
           transition: border-color .2s ease, box-shadow .2s ease;
         }
         .hero-search-box:focus-within {
-          border-color: rgba(167,139,250,0.6);
-          box-shadow: 0 0 0 4px rgba(139,92,246,0.18), 0 10px 40px -12px rgba(124,58,237,0.5);
+          border-color: rgba(139,92,246,0.6);
+          box-shadow: 0 0 0 4px rgba(139,92,246,0.14), 0 10px 40px -12px rgba(124,58,237,0.35);
         }
-        .hero-search-box svg.search-ico { color: rgba(196,181,253,0.8); flex-shrink: 0; }
+        .hero-search-box svg.search-ico { color: rgba(99,102,241,0.8); flex-shrink: 0; }
         .hero-search-input {
           flex: 1; background: transparent; border: none; outline: none;
-          color: #fff; font-size: .98rem;
+          color: #0f172a; font-size: .98rem;
         }
-        .hero-search-input::placeholder { color: rgba(196,181,253,0.55); }
+        .hero-search-input::placeholder { color: rgba(71,85,105,0.6); }
 
         .hero-search-clear {
           display: flex; align-items: center; justify-content: center;
           width: 28px; height: 28px; border-radius: 9999px; flex-shrink: 0;
-          color: rgba(196,181,253,0.7); transition: background .2s ease, color .2s ease;
+          color: rgba(71,85,105,0.7); transition: background .2s ease, color .2s ease;
         }
-        .hero-search-clear:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .hero-search-clear:hover { background: rgba(15,23,42,0.06); color: #0f172a; }
 
         .hero-search-results {
           position: absolute; top: calc(100% + .6rem); left: 0; right: 0;
-          background: rgba(10,6,24,0.98);
-          border: 1px solid rgba(167,139,250,0.28);
+          background: rgba(255,255,255,0.98);
+          border: 1px solid rgba(15,23,42,0.1);
           border-radius: 1.1rem;
           backdrop-filter: blur(18px);
           -webkit-backdrop-filter: blur(18px);
-          box-shadow: 0 24px 60px -12px rgba(0,0,0,0.75), 0 0 0 1px rgba(139,92,246,0.12);
+          box-shadow: 0 24px 60px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(139,92,246,0.12);
           overflow: hidden; z-index: 40;
           max-height: 360px; overflow-y: auto;
         }
         .hero-result-item {
           display: flex; align-items: center; gap: .75rem;
           padding: .8rem 1rem; text-align: left; width: 100%;
-          color: #ECE9F5; text-decoration: none;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          color: #1e1b4b; text-decoration: none;
+          border-bottom: 1px solid rgba(15,23,42,0.06);
           transition: background .15s ease;
         }
         .hero-result-item:last-child { border-bottom: none; }
-        .hero-result-item:hover { background: rgba(139,92,246,0.16); }
+        .hero-result-item:hover { background: rgba(139,92,246,0.1); }
         .hero-result-ico {
           width: 34px; height: 34px; border-radius: .7rem; flex-shrink: 0;
           display: flex; align-items: center; justify-content: center;
-          background: rgba(139,92,246,0.18); color: #c4b5fd;
+          background: rgba(139,92,246,0.14); color: #7c3aed;
         }
         .hero-result-ico svg { width: 17px; height: 17px; }
         .hero-result-title { font-size: .9rem; font-weight: 600; }
-        .hero-result-cat { font-size: .72rem; color: rgba(196,181,253,0.6); }
-        .hero-result-arrow { margin-left: auto; color: rgba(196,181,253,0.5); }
-        .hero-result-empty { padding: 1.25rem 1rem; text-align: center; color: rgba(196,181,253,0.6); font-size: .85rem; }
+        .hero-result-cat { font-size: .72rem; color: rgba(71,85,105,0.7); }
+        .hero-result-arrow { margin-left: auto; color: rgba(99,102,241,0.5); }
+        .hero-result-empty { padding: 1.25rem 1rem; text-align: center; color: rgba(71,85,105,0.7); font-size: .85rem; }
+
+        /* Dark search bar */
+        .dark .hero-search-box {
+          background: rgba(13,8,30,0.6);
+          border: 1px solid rgba(255,255,255,0.14);
+          box-shadow: 0 10px 40px -12px rgba(124,58,237,0.4);
+        }
+        .dark .hero-search-box:focus-within {
+          border-color: rgba(167,139,250,0.6);
+          box-shadow: 0 0 0 4px rgba(139,92,246,0.18), 0 10px 40px -12px rgba(124,58,237,0.5);
+        }
+        .dark .hero-search-box svg.search-ico { color: rgba(196,181,253,0.8); }
+        .dark .hero-search-input { color: #fff; }
+        .dark .hero-search-input::placeholder { color: rgba(196,181,253,0.55); }
+        .dark .hero-search-clear { color: rgba(196,181,253,0.7); }
+        .dark .hero-search-clear:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .dark .hero-search-results {
+          background: rgba(10,6,24,0.98);
+          border: 1px solid rgba(167,139,250,0.28);
+          box-shadow: 0 24px 60px -12px rgba(0,0,0,0.75), 0 0 0 1px rgba(139,92,246,0.12);
+        }
+        .dark .hero-result-item { color: #ECE9F5; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dark .hero-result-item:hover { background: rgba(139,92,246,0.16); }
+        .dark .hero-result-ico { background: rgba(139,92,246,0.18); color: #c4b5fd; }
+        .dark .hero-result-cat { color: rgba(196,181,253,0.6); }
+        .dark .hero-result-arrow { color: rgba(196,181,253,0.5); }
+        .dark .hero-result-empty { color: rgba(196,181,253,0.6); }
       ` }} />
 
       {/* Background layers */}
@@ -193,18 +221,6 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-6 pt-6 pb-16 text-center">
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="hero-badge inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-violet-200">
-            <span className="h-1.5 w-1.5 rounded-full bg-violet-300 shadow-[0_0_8px_rgba(167,139,250,0.9)]" />
-            Free Business Document Platform
-          </span>
-        </motion.div>
-
         {/* Heading */}
         <motion.h1
           initial={{ opacity: 0, y: 18 }}
@@ -212,7 +228,7 @@ export function HeroSection() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="mt-6 max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl"
         >
-          <span className="text-white">Professional Business Documents.</span>{" "}
+          <span className="text-foreground">Professional Business Documents.</span>{" "}
           <span className="hero-gradient-text">Made Simple.</span>
         </motion.h1>
 
@@ -221,7 +237,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-5 max-w-2xl text-[15px] text-violet-100/70 sm:text-[17px]"
+          className="mt-5 max-w-2xl text-[15px] text-muted-foreground sm:text-[17px]"
         >
           Create invoices, quotations, GST invoices, purchase orders, delivery challans and more in seconds.
         </motion.p>
@@ -297,7 +313,7 @@ export function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.45 }}
-          className="mt-10 text-center text-[13px] text-violet-100/45"
+          className="mt-10 text-center text-[13px] text-muted-foreground"
         >
           Explore all tools below — invoices, calculators, GST utilities &amp; more.
         </motion.p>

@@ -192,7 +192,13 @@ export function ToolsSection() {
           }
 
           return (
-            <div key={category.label}>
+            <div key={category.label} id={
+              category.label === "Document Generators"
+                ? "cat-document"
+                : category.label === "Financial Calculators"
+                ? "cat-calculators"
+                : "cat-utilities"
+            }>
               {idx > 0 && <div className="section-divider" />}
               <div className="section">
                 <div className="section-header">

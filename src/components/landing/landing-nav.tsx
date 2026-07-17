@@ -46,7 +46,9 @@ export function LandingNav() {
 
   const navLinks = [
     { href: "#how-it-works", label: "How it works" },
-    { href: "/#tools", label: "Free Tools" },
+    { href: "#cat-document", label: "Document Generators" },
+    { href: "#cat-calculators", label: "Financial Calculators" },
+    { href: "#cat-utilities", label: "Utilities & Tools" },
   ]
 
   return (
@@ -109,9 +111,12 @@ export function LandingNav() {
           {/* Right actions */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link href="/invoice-generator" className="hidden md:inline-flex">
+            <Link href="/auth?tab=login" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Login
+            </Link>
+            <Link href="/auth?tab=signup" className="hidden md:inline-flex">
               <Button size="sm" className="h-9 px-5 text-sm font-semibold gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white shadow-md shadow-blue-500/20">
-                Get Started
+                Sign Up
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </Link>
@@ -140,11 +145,18 @@ export function LandingNav() {
               </a>
             ))}
             <Link
-              href="/invoice-generator"
+              href="/auth?tab=login"
+              className="block px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-all"
+              onClick={() => setIsMobileOpen(false)}
+            >
+              Login
+            </Link>
+            <Link
+              href="/auth?tab=signup"
               className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-violet-600 rounded-lg mt-2"
               onClick={() => setIsMobileOpen(false)}
             >
-              Get Started
+              Sign Up
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>

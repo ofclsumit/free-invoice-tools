@@ -239,10 +239,10 @@ body {
     display: flex;
     flex-direction: column;
     text-decoration: none;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.55);
     border-radius: 1.1rem;
     overflow: hidden;
-    box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 4px 16px rgba(0,0,0,.18);
+    box-shadow: 0 0 0 1px rgba(15,23,42,0.06), 0 4px 16px rgba(15,23,42,0.06);
     transition: transform .3s cubic-bezier(.175,.885,.32,2.2), box-shadow .25s ease;
   }
 
@@ -355,6 +355,7 @@ body {
 
   /* Dark mode overrides for cards */
   .dark .tool-card, .dark .related-card {
+    background: rgba(255, 255, 255, 0.04);
     box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 4px 16px rgba(0,0,0,.35);
   }
 

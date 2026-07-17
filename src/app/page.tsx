@@ -32,6 +32,10 @@ export default function LandingPage() {
 
       <style dangerouslySetInnerHTML={{ __html: `
         .home-bg {
+          background: linear-gradient(180deg,#fbfaff 0%,#f5f1ff 28%,#efe9ff 60%,#e9e2ff 100%);
+          color: #1e1b4b;
+        }
+        .dark .home-bg {
           background: linear-gradient(180deg,#05010C 0%,#0B0618 22%,#140A2E 55%,#1A1045 100%);
           color: #ECE9F5;
         }
