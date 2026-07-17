@@ -1,112 +1,82 @@
 import Link from "next/link"
-import { Zap, Twitter, Github, Linkedin, Youtube, MessageCircle } from "lucide-react"
+import { Zap } from "lucide-react"
 
-const footerColumns = [
-  {
-    title: "Product",
-    links: [
-      { label: "Invoice Generator", href: "/invoice-generator" },
-      { label: "Quotation Generator", href: "/quotation-generator" },
-      { label: "GST Calculator", href: "/gst-calculator" },
-      { label: "Purchase Order", href: "/purchase-order" },
-      { label: "All Tools", href: "/#tools" },
-    ],
-  },
-  {
-    title: "Templates",
-    links: [
-      { label: "Modern", href: "/invoice-generator" },
-      { label: "Corporate", href: "/invoice-generator" },
-      { label: "Minimal", href: "/invoice-generator" },
-      { label: "Creative", href: "/invoice-generator" },
-      { label: "GST India", href: "/invoice-generator" },
-    ],
-  },
-  {
-    title: "Business Documents",
-    links: [
-      { label: "Proforma Invoice", href: "/proforma-invoice" },
-      { label: "Delivery Challan", href: "/delivery-challan" },
-      { label: "Payment Receipt", href: "/payment-receipt" },
-      { label: "Salary Slip", href: "/salary-slip" },
-      { label: "Credit Note", href: "/credit-note" },
-    ],
-  },
-  {
-    title: "Support",
-    links: [
-      { label: "How to Create Invoice", href: "/guides/how-to-create-invoice" },
-      { label: "GST Invoice Format", href: "/guides/gst-invoice-format" },
-      { label: "Quotation vs Invoice", href: "/guides/quotation-vs-invoice" },
-      { label: "Contact Us", href: "/contact" },
-      { label: "FAQ", href: "/blog" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About", href: "/about" },
-      { label: "Blog", href: "/blog" },
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-    ],
-  },
-]
-
-const socials = [
-  { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
-  { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-  { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
-  { icon: Github, href: "https://github.com", label: "GitHub" },
-  { icon: MessageCircle, href: "https://wa.me", label: "WhatsApp" },
-]
+const footerLinks = {
+  "Document Generators": [
+    { label: "Invoice Generator", href: "/invoice-generator" },
+    { label: "Quotation Generator", href: "/quotation-generator" },
+    { label: "Proforma Invoice", href: "/proforma-invoice" },
+    { label: "Purchase Order", href: "/purchase-order" },
+    { label: "Delivery Challan", href: "/delivery-challan" },
+    { label: "Rent Receipt", href: "/rent-receipt" },
+    { label: "Salary Slip", href: "/salary-slip" },
+    { label: "Payment Receipt", href: "/payment-receipt" },
+    { label: "Estimate Generator", href: "/estimate-generator" },
+    { label: "Credit Note", href: "/credit-note" },
+    { label: "Debit Note", href: "/debit-note" },
+    { label: "Business Letter", href: "/business-letter" },
+  ],
+  Calculators: [
+    { label: "GST Calculator", href: "/gst-calculator" },
+    { label: "Reverse GST Calculator", href: "/reverse-gst-calculator" },
+    { label: "GST Split Calculator", href: "/gst-split-calculator" },
+    { label: "GST Rate Finder", href: "/gst-rate-finder" },
+    { label: "EMI Calculator", href: "/emi-calculator" },
+    { label: "Loan Calculator", href: "/loan-calculator" },
+    { label: "Interest Calculator", href: "/interest-calculator" },
+    { label: "Profit Margin Calculator", href: "/profit-margin" },
+    { label: "Break-Even Calculator", href: "/break-even-calculator" },
+    { label: "Commission Calculator", href: "/commission-calculator" },
+    { label: "Discount Calculator", href: "/discount-calculator" },
+  ],
+  Resources: [
+    { label: "HSN Code Finder", href: "/hsn-finder" },
+    { label: "GSTIN Validator", href: "/gstin-validator" },
+    { label: "How to Create Invoice", href: "/guides/how-to-create-invoice" },
+    { label: "GST Invoice Format", href: "/guides/gst-invoice-format" },
+    { label: "Quotation vs Invoice", href: "/guides/quotation-vs-invoice" },
+    { label: "Rent Receipt Guide", href: "/rent-receipt-generator" },
+    { label: "Salary Slip Guide", href: "/salary-slip-generator" },
+  ],
+  Company: [
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/terms" },
+  ],
+}
 
 export function LandingFooter() {
   return (
-    <footer className="border-t border-border bg-white dark:bg-[#05010C]">
-      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-6">
-          {/* Brand */}
-          <div className="col-span-2 space-y-5">
-            <Link href="/" className="flex items-center gap-2.5 font-display text-lg font-bold">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 shadow-glow-sm">
-                <Zap className="h-4 w-4 text-white" />
+    <footer className="border-t border-border bg-white dark:bg-gray-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div className="col-span-2 md:col-span-1 space-y-4">
+            <Link href="/" className="flex items-center gap-2 font-display font-bold text-lg">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600">
+                <Zap className="h-3.5 w-3.5 text-white" />
               </div>
-              <span className="bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
                 QuoteFlow
               </span>
             </Link>
-            <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-              India&apos;s most comprehensive free business document platform. Create invoices, quotations, receipts and more in seconds.
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              India&apos;s most comprehensive free business document platform. Create invoices, quotations, receipts and more.
             </p>
-            <div className="flex items-center gap-2.5">
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={s.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-violet-500/50 hover:bg-violet-500/10 hover:text-violet-500"
-                >
-                  <s.icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
+            <p className="text-xs text-muted-foreground">
+              Made in India 🇮🇳 · 100% Free · No Signup
+            </p>
           </div>
 
-          {/* Link columns */}
-          {footerColumns.map((col) => (
-            <div key={col.title}>
-              <p className="mb-4 font-display text-sm font-semibold tracking-tight text-foreground">
-                {col.title}
-              </p>
-              <ul className="space-y-3">
-                {col.links.map((link) => (
-                  <li key={link.label}>
+          {Object.entries(footerLinks).map(([category, links]) => (
+            <div key={category}>
+              <p className="font-display font-semibold text-sm mb-4">{category}</p>
+              <ul className="space-y-2.5">
+                {links.map((link) => (
+                  <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-violet-500"
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -117,13 +87,12 @@ export function LandingFooter() {
           ))}
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
-          <p className="text-sm text-muted-foreground">
+        <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} QuoteFlow. All rights reserved.
           </p>
-          <p className="text-sm font-medium text-muted-foreground">
-            Made in India 🇮🇳 · 100% Free · No Signup
+          <p className="text-xs text-muted-foreground">
+            27+ free business tools for India
           </p>
         </div>
       </div>

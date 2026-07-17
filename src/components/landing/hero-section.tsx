@@ -2,131 +2,144 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { useState, useRef, useCallback } from "react"
 import { ArrowRight, LayoutTemplate } from "lucide-react"
 import GlassInvoiceCard from "./GlassInvoiceCard"
 
-const stats = [
-  { value: "25+", label: "Business Tools" },
-  { value: "150+", label: "Templates" },
-  { value: "100%", label: "Free" },
-  { value: "GST", label: "Ready" },
-]
-
-const noiseDataUri =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")"
-
 export function HeroSection() {
-  const [pointer, setPointer] = useState({ x: 50, y: 30 })
-  const frame = useRef<number | null>(null)
-  const heroRef = useRef<HTMLDivElement>(null)
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!heroRef.current) return
-    const rect = heroRef.current.getBoundingClientRect()
-    const px = ((e.clientX - rect.left) / rect.width) * 100
-    const py = ((e.clientY - rect.top) / rect.height) * 100
-    if (frame.current) return
-    frame.current = requestAnimationFrame(() => {
-      setPointer({ x: px, y: py })
-      frame.current = null
-    })
-  }, [])
-
   return (
-    <section
-      ref={heroRef}
-      onMouseMove={handleMouseMove}
-      className="hero-root relative w-full overflow-hidden"
-    >
+    <section className="hero-root relative w-full overflow-hidden">
       <style dangerouslySetInnerHTML={{ __html: `
         .hero-root {
           min-height: 70vh;
-          padding-top: 8.5rem;
-          padding-bottom: 2.5rem;
-          display: flex;
-          align-items: center;
-          background: linear-gradient(180deg,#05010C 0%,#0B0618 35%,#120A28 70%,#170F3C 100%);
-          color: #fff;
+          padding-top: 7.5rem;
+          padding-bottom: 0;
+          background: linear-gradient(180deg,#05010C 0%,#0B0618 30%,#140A2E 70%,#1A1045 100%);
+          color: #ECE9F5;
         }
         @media (max-width: 1023px) { .hero-root { min-height: 75vh; } }
-        @media (max-width: 639px) { .hero-root { min-height: auto; padding-top: 7rem; padding-bottom: 2rem; } }
+        @media (max-width: 639px) { .hero-root { min-height: auto; padding-bottom: 3rem; } }
 
-        /* Large radial glow */
         .hero-radial {
           position: absolute;
-          top: 0; left: 50%;
+          top: 8%;
+          left: 50%;
           transform: translateX(-50%);
-          width: 1200px; height: 900px;
-          max-width: 170vw;
-          background: radial-gradient(ellipse at 50% 35%, rgba(139,92,246,0.32) 0%, rgba(124,58,237,0.12) 38%, rgba(7,4,20,0) 68%);
-          filter: blur(8px);
+          width: 1100px;
+          height: 1100px;
+          max-width: 160vw;
+          background: radial-gradient(circle at 50% 50%, rgba(139,92,246,0.35) 0%, rgba(124,58,237,0.16) 32%, rgba(10,6,30,0) 62%);
+          filter: blur(10px);
           pointer-events: none;
           animation: heroGlowBreathe 9s ease-in-out infinite;
         }
         @keyframes heroGlowBreathe {
-          0%,100% { opacity: 0.85; }
-          50% { opacity: 1; }
+          0%,100% { opacity: 0.85; transform: translateX(-50%) scale(1); }
+          50% { opacity: 1; transform: translateX(-50%) scale(1.06); }
         }
 
-        /* Cursor-reactive glow */
-        .hero-cursor-glow {
-          position: absolute; inset: 0;
-          pointer-events: none;
-          background: radial-gradient(600px circle at var(--cx,50%) var(--cy,30%), rgba(167,139,250,0.18) 0%, rgba(124,58,237,0) 55%);
-          transition: background 0.2s ease-out;
-        }
-
-        /* Noise texture */
-        .hero-noise {
-          position: absolute; inset: 0;
-          pointer-events: none;
-          opacity: 0.04;
-          mix-blend-mode: overlay;
-        }
-
-        /* Vignette */
         .hero-vignette {
-          position: absolute; inset: 0;
+          position: absolute;
+          inset: 0;
           pointer-events: none;
-          background: radial-gradient(120% 90% at 50% 28%, rgba(0,0,0,0) 42%, rgba(0,0,0,0.55) 100%);
+          background: radial-gradient(120% 90% at 50% 22%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%);
         }
 
         .hero-particle {
           position: absolute;
           border-radius: 9999px;
-          background: rgba(196,181,253,0.85);
-          box-shadow: 0 0 8px rgba(167,139,250,0.85);
+          background: rgba(196,181,253,0.9);
+          box-shadow: 0 0 8px rgba(167,139,250,0.9);
           pointer-events: none;
-          animation: heroParticleFloat 16s ease-in-out infinite;
+          animation: heroParticleFloat 14s ease-in-out infinite;
         }
         @keyframes heroParticleFloat {
-          0%,100% { transform: translateY(0) translateX(0); opacity: 0.2; }
-          50% { transform: translateY(-26px) translateX(12px); opacity: 0.6; }
+          0%,100% { transform: translateY(0) translateX(0); opacity: 0.25; }
+          50% { transform: translateY(-22px) translateX(10px); opacity: 0.7; }
+        }
+
+        .hero-ring {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          border-radius: 9999px;
+          border: 1px solid rgba(167,139,250,0.16);
+          transform: translate(-50%,-50%) rotateX(58deg);
+          transform-style: preserve-3d;
+          pointer-events: none;
+        }
+        .hero-ring-1 {
+          width: 360px;
+          height: 360px;
+          animation: heroRingSpin 26s linear infinite;
+        }
+        .hero-ring-2 {
+          width: 520px;
+          height: 520px;
+          border-color: rgba(139,92,246,0.12);
+          animation: heroRingSpinRev 34s linear infinite;
+        }
+        .hero-ring-3 {
+          width: 680px;
+          height: 680px;
+          border-color: rgba(124,58,237,0.08);
+          animation: heroRingSpin 44s linear infinite;
+        }
+        @keyframes heroRingSpin {
+          from { transform: translate(-50%,-50%) rotateX(58deg) rotateZ(0deg); }
+          to { transform: translate(-50%,-50%) rotateX(58deg) rotateZ(360deg); }
+        }
+        @keyframes heroRingSpinRev {
+          from { transform: translate(-50%,-50%) rotateX(58deg) rotateZ(360deg); }
+          to { transform: translate(-50%,-50%) rotateX(58deg) rotateZ(0deg); }
+        }
+        .hero-ring-dot {
+          position: absolute;
+          top: -4px;
+          left: 50%;
+          width: 8px;
+          height: 8px;
+          border-radius: 9999px;
+          background: #C4B5FD;
+          box-shadow: 0 0 14px rgba(167,139,250,0.95), 0 0 4px rgba(167,139,250,0.7);
         }
 
         .hero-badge {
-          display: inline-flex; align-items: center; gap: 0.5rem;
-          border-radius: 9999px;
-          padding: 0.4rem 1rem;
-          font-size: 0.7rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
-          color: #d8d2f0;
           background: rgba(255,255,255,0.05);
           border: 1px solid rgba(255,255,255,0.12);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
         }
 
         .hero-gradient-text {
           background: linear-gradient(90deg,#C4B5FD 0%,#A78BFA 25%,#8B5CF6 50%,#C084FC 75%,#C4B5FD 100%);
           background-size: 220% 100%;
-          -webkit-background-clip: text; background-clip: text;
-          -webkit-text-fill-color: transparent; color: transparent;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
           animation: heroTextShift 6s linear infinite;
+          filter: drop-shadow(0 2px 18px rgba(139,92,246,0.35));
         }
         @keyframes heroTextShift {
           0% { background-position: 0% 50%; }
           100% { background-position: 220% 50%; }
+        }
+
+        .hero-float {
+          animation: heroFloat 7s ease-in-out infinite;
+        }
+        @keyframes heroFloat {
+          0%,100% { transform: translateY(0) rotate(-2deg); }
+          50% { transform: translateY(-16px) rotate(2deg); }
+        }
+
+        .hero-card-glow {
+          animation: heroCardGlow 5s ease-in-out infinite;
+        }
+        @keyframes heroCardGlow {
+          0%,100% { opacity: 0.55; }
+          50% { opacity: 0.9; }
         }
 
         .hero-btn-primary {
@@ -134,7 +147,7 @@ export function HeroSection() {
           box-shadow: 0 10px 30px -4px rgba(139,92,246,0.5), inset 0 1px 0 rgba(255,255,255,0.35);
         }
         .hero-btn-primary:hover {
-          box-shadow: 0 16px 46px -2px rgba(167,139,250,0.8), inset 0 1px 0 rgba(255,255,255,0.5);
+          box-shadow: 0 14px 44px -2px rgba(167,139,250,0.75), inset 0 1px 0 rgba(255,255,255,0.5);
         }
 
         .hero-btn-secondary {
@@ -148,46 +161,36 @@ export function HeroSection() {
           border-color: rgba(255,255,255,0.3);
         }
 
-        .hero-stat-card {
-          border-radius: 1rem;
-          border: 1px solid rgba(255,255,255,0.08);
-          background: rgba(255,255,255,0.035);
-          backdrop-filter: blur(8px);
-          padding: 1rem 1.25rem;
-        }
-
         .hero-fade {
-          position: absolute; left: 0; right: 0; bottom: 0;
-          height: 130px; pointer-events: none;
-          background: linear-gradient(180deg, rgba(23,15,60,0) 0%, rgba(11,6,24,0) 55%, rgba(5,1,12,0.95) 100%);
+          position: absolute;
+          left: 0; right: 0; bottom: 0;
+          height: 140px;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(26,16,69,0) 0%, rgba(11,6,24,0) 55%, rgba(5,1,12,0.9) 100%);
         }
       ` }} />
 
       {/* Background layers */}
       <div className="hero-radial" />
-      <div
-        className="hero-cursor-glow"
-        style={{ ["--cx" as any]: `${pointer.x}%`, ["--cy" as any]: `${pointer.y}%` }}
-      />
-      <div className="hero-noise" style={{ backgroundImage: noiseDataUri }} />
       <div className="hero-vignette" />
 
-      {/* Particles */}
-      <div className="hero-particle" style={{ top: "20%", left: "14%", width: 4, height: 4, animationDelay: "0s" }} />
-      <div className="hero-particle" style={{ top: "32%", right: "13%", width: 6, height: 6, animationDelay: "-4s" }} />
-      <div className="hero-particle" style={{ top: "60%", left: "9%", width: 3, height: 3, animationDelay: "-7s" }} />
-      <div className="hero-particle" style={{ bottom: "24%", right: "16%", width: 5, height: 5, animationDelay: "-10s" }} />
-      <div className="hero-particle" style={{ top: "46%", left: "22%", width: 3, height: 3, animationDelay: "-5.5s" }} />
+      {/* Floating particles */}
+      <div className="hero-particle" style={{ top: "18%", left: "16%", width: 4, height: 4, animationDelay: "0s" }} />
+      <div className="hero-particle" style={{ top: "30%", right: "12%", width: 6, height: 6, animationDelay: "-3s" }} />
+      <div className="hero-particle" style={{ top: "62%", left: "10%", width: 3, height: 3, animationDelay: "-6s" }} />
+      <div className="hero-particle" style={{ bottom: "22%", right: "18%", width: 5, height: 5, animationDelay: "-9s" }} />
+      <div className="hero-particle" style={{ top: "44%", left: "24%", width: 3, height: 3, animationDelay: "-4.5s" }} />
+      <div className="hero-particle" style={{ top: "24%", right: "26%", width: 4, height: 4, animationDelay: "-7.5s" }} />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center px-6 text-center">
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pt-6 pb-16 text-center">
         {/* Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <span className="hero-badge">
+          <span className="hero-badge inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-violet-200">
             <span className="h-1.5 w-1.5 rounded-full bg-violet-300 shadow-[0_0_8px_rgba(167,139,250,0.9)]" />
             Free Business Document Platform
           </span>
@@ -195,10 +198,10 @@ export function HeroSection() {
 
         {/* Heading */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.08 }}
-          className="mt-7 max-w-3xl text-4xl font-extrabold leading-[1.18] tracking-tight sm:text-5xl md:text-6xl"
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="mt-6 max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl md:text-6xl"
         >
           <span className="text-white">Professional Business Documents.</span>{" "}
           <span className="hero-gradient-text">Made Simple.</span>
@@ -206,38 +209,38 @@ export function HeroSection() {
 
         {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.18 }}
-          className="mt-5 max-w-[650px] text-[15px] leading-relaxed text-slate-400 sm:text-[17px]"
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mt-5 max-w-2xl text-[15px] text-violet-100/70 sm:text-[17px]"
         >
-          Create invoices, quotations, GST invoices, purchase orders and more in seconds.
+          Create invoices, quotations, GST invoices, purchase orders, delivery challans and more in seconds.
         </motion.p>
 
         {/* CTA Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.28 }}
-          className="mt-9 flex flex-col items-center gap-4 sm:flex-row"
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="mt-9 flex flex-col items-center gap-3 sm:flex-row"
         >
           <Link href="/invoice-generator" className="group relative">
             <span className="absolute -inset-0.5 rounded-full bg-violet-600/40 blur-lg opacity-50 transition-opacity duration-300 group-hover:opacity-90 pointer-events-none" />
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="hero-btn-primary relative flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-[15px] font-semibold text-white transition-all duration-300"
+              className="hero-btn-primary relative flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-[15px] font-semibold text-white transition-all duration-300"
             >
-              Start Creating
+              Create Free Invoice
               <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-1.5" />
             </motion.button>
           </Link>
 
-          <Link href="/invoice-generator">
+          <Link href="/#tools">
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="hero-btn-secondary flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-[15px] font-semibold text-white transition-all duration-300"
+              className="hero-btn-secondary flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-[15px] font-semibold text-white transition-all duration-300"
             >
               <LayoutTemplate size={18} className="text-violet-300" />
               Browse Templates
@@ -245,33 +248,31 @@ export function HeroSection() {
           </Link>
         </motion.div>
 
-        {/* Stats strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-12 grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4"
-        >
-          {stats.map((s) => (
-            <div key={s.label} className="hero-stat-card">
-              <p className="font-display text-xl font-extrabold text-white sm:text-2xl">{s.value}</p>
-              <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-slate-400">{s.label}</p>
-            </div>
-          ))}
-        </motion.div>
-
         {/* Center visual */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.45, ease: "easeOut" }}
-          className="relative mt-14 flex w-full items-center justify-center"
+          transition={{ duration: 1, delay: 0.35, ease: "easeOut" }}
+          className="relative mt-12 flex w-full max-w-[540px] items-center justify-center"
         >
-          <GlassInvoiceCard />
+          {/* Orbital rings */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="hero-ring hero-ring-1"><span className="hero-ring-dot" /></div>
+            <div className="hero-ring hero-ring-2"><span className="hero-ring-dot" style={{ background: "#A78BFA" }} /></div>
+            <div className="hero-ring hero-ring-3"><span className="hero-ring-dot" style={{ background: "#8B5CF6" }} /></div>
+          </div>
+
+          {/* Soft purple glow behind card */}
+          <div className="hero-card-glow pointer-events-none absolute h-[320px] w-[320px] rounded-full bg-violet-600/30 blur-3xl" />
+
+          {/* Glass invoice card */}
+          <div className="hero-float relative z-10">
+            <GlassInvoiceCard />
+          </div>
         </motion.div>
       </div>
 
-      {/* Fade into tools */}
+      {/* Smooth fade into the Tools section */}
       <div className="hero-fade" />
     </section>
   )
