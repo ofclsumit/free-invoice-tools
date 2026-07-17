@@ -1,58 +1,76 @@
 "use client"
 import Link from "next/link"
-import { Calculator, FileText, Search, Receipt, Package, ShoppingCart, TrendingUp, Hash, ClipboardList, ArrowRight, Landmark, Percent, Banknote, PieChart, Tag, DollarSign, StickyNote, FileEdit, PenTool, CreditCard, FileSignature, IndianRupee, Home, ArrowLeftRight, Building, CalendarDays } from "lucide-react"
+import { useState } from "react"
+import { Calculator, FileText, Search, Receipt, Package, ShoppingCart, TrendingUp, Hash, ClipboardList, ArrowRight, Landmark, Percent, Banknote, PieChart, Tag, DollarSign, StickyNote, FileEdit, PenTool, CreditCard, FileSignature, IndianRupee, Home, ArrowLeftRight, Building, CalendarDays, LayoutGrid } from "lucide-react"
 
 const toolCategories = [
   {
     label: "Document Generators",
     tools: [
-      { href: "/invoice-generator", icon: FileText, title: "Invoice Generator", desc: "Create professional GST invoices with instant PDF download", color: "from-violet-500 to-violet-600", bg: "bg-violet-50 dark:bg-violet-950/30" },
-      { href: "/quotation-generator", icon: ClipboardList, title: "Quotation Generator", desc: "Create professional quotations for your clients", color: "from-indigo-500 to-indigo-600", bg: "bg-indigo-50 dark:bg-indigo-950/30" },
-      { href: "/proforma-invoice", icon: FileEdit, title: "Proforma Invoice", desc: "Generate proforma invoices for advance billing", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/purchase-order", icon: ShoppingCart, title: "Purchase Order", desc: "Create professional purchase orders for suppliers", color: "from-teal-500 to-teal-600", bg: "bg-teal-50 dark:bg-teal-950/30" },
-      { href: "/delivery-challan", icon: Package, title: "Delivery Challan", desc: "Generate delivery challans for goods transport", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/payment-receipt", icon: IndianRupee, title: "Payment Receipt", desc: "Create formal payment receipts with transaction details", color: "from-cyan-500 to-blue-600", bg: "bg-cyan-50 dark:bg-cyan-950/30" },
-      { href: "/rent-receipt", icon: Home, title: "Rent Receipt", desc: "Create house rent receipts for HRA", color: "from-blue-500 to-teal-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/salary-slip", icon: FileText, title: "Salary Slip", desc: "Generate employee salary slips", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/estimate-generator", icon: PenTool, title: "Estimate Generator", desc: "Create project estimates for clients", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/credit-note", icon: FileSignature, title: "Credit Note", desc: "Generate credit notes for returns/refunds", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/debit-note", icon: FileEdit, title: "Debit Note", desc: "Generate debit notes for purchases", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/business-letter", icon: PenTool, title: "Business Letter", desc: "Create professional business letters", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
+      { href: "/invoice-generator", icon: FileText, title: "Invoice Generator", desc: "Create professional GST invoices with instant PDF download" },
+      { href: "/quotation-generator", icon: ClipboardList, title: "Quotation Generator", desc: "Create professional quotations for your clients" },
+      { href: "/proforma-invoice", icon: FileEdit, title: "Proforma Invoice", desc: "Generate proforma invoices for advance billing" },
+      { href: "/purchase-order", icon: ShoppingCart, title: "Purchase Order", desc: "Create professional purchase orders for suppliers" },
+      { href: "/delivery-challan", icon: Package, title: "Delivery Challan", desc: "Generate delivery challans for goods transport" },
+      { href: "/payment-receipt", icon: IndianRupee, title: "Payment Receipt", desc: "Create formal payment receipts with transaction details" },
+      { href: "/rent-receipt", icon: Home, title: "Rent Receipt", desc: "Create house rent receipts for HRA" },
+      { href: "/salary-slip", icon: FileText, title: "Salary Slip", desc: "Generate employee salary slips" },
+      { href: "/estimate-generator", icon: PenTool, title: "Estimate Generator", desc: "Create project estimates for your clients" },
+      { href: "/credit-note", icon: FileSignature, title: "Credit Note", desc: "Generate credit notes for returns/refunds" },
+      { href: "/debit-note", icon: FileEdit, title: "Debit Note", desc: "Generate debit notes for purchases" },
+      { href: "/business-letter", icon: PenTool, title: "Business Letter", desc: "Create professional business letters" },
     ],
   },
   {
     label: "Financial Calculators",
     tools: [
-      { href: "/gst-calculator", icon: Calculator, title: "GST Calculator", desc: "Calculate forward and reverse GST", color: "from-blue-500 to-indigo-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/reverse-gst-calculator", icon: ArrowLeftRight, title: "Reverse GST", desc: "Calculate base price from GST inclusive amount", color: "from-cyan-500 to-blue-600", bg: "bg-cyan-50 dark:bg-cyan-950/30" },
-      { href: "/gst-split-calculator", icon: PieChart, title: "GST Split Calculator", desc: "Split amounts across different GST rate categories", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/gst-rate-finder", icon: Search, title: "GST Rate Finder", desc: "Find GST rates by product or service category", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/emi-calculator", icon: CalendarDays, title: "EMI Calculator", desc: "Calculate loan EMIs and amortization", color: "from-indigo-500 to-blue-600", bg: "bg-indigo-50 dark:bg-indigo-950/30" },
-      { href: "/loan-calculator", icon: Building, title: "Loan Calculator", desc: "Detailed loan analysis and schedules", color: "from-teal-500 to-cyan-600", bg: "bg-teal-50 dark:bg-teal-950/30" },
-      { href: "/interest-calculator", icon: Percent, title: "Interest Calculator", desc: "Calculate simple and compound interest", color: "from-blue-500 to-cyan-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
-      { href: "/profit-margin", icon: TrendingUp, title: "Profit Margin Calculator", desc: "Calculate profit margin, markup, and selling price", color: "from-amber-500 to-amber-600", bg: "bg-amber-50 dark:bg-amber-950/30" },
-      { href: "/break-even-calculator", icon: TrendingUp, title: "Break-Even Calculator", desc: "Calculate break-even point in units and revenue", color: "from-rose-500 to-red-600", bg: "bg-rose-50 dark:bg-rose-950/30" },
-      { href: "/commission-calculator", icon: DollarSign, title: "Commission Calculator", desc: "Calculate sales commission amounts", color: "from-cyan-500 to-blue-600", bg: "bg-cyan-50 dark:bg-cyan-950/30" },
-      { href: "/discount-calculator", icon: Tag, title: "Discount Calculator", desc: "Calculate savings and final price after discount", color: "from-blue-500 to-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
+      { href: "/gst-calculator", icon: Calculator, title: "GST Calculator", desc: "Calculate forward and reverse GST" },
+      { href: "/reverse-gst-calculator", icon: ArrowLeftRight, title: "Reverse GST", desc: "Calculate base price from GST inclusive amount" },
+      { href: "/gst-split-calculator", icon: PieChart, title: "GST Split Calculator", desc: "Split amounts across different GST rate categories" },
+      { href: "/gst-rate-finder", icon: Search, title: "GST Rate Finder", desc: "Find GST rates by product or service category" },
+      { href: "/emi-calculator", icon: CalendarDays, title: "EMI Calculator", desc: "Calculate loan EMIs and amortization" },
+      { href: "/loan-calculator", icon: Building, title: "Loan Calculator", desc: "Detailed loan analysis and schedules" },
+      { href: "/interest-calculator", icon: Percent, title: "Interest Calculator", desc: "Calculate simple and compound interest" },
+      { href: "/profit-margin", icon: TrendingUp, title: "Profit Margin Calculator", desc: "Calculate profit margin, markup, and selling price" },
+      { href: "/break-even-calculator", icon: TrendingUp, title: "Break-Even Calculator", desc: "Calculate break-even point in units and revenue" },
+      { href: "/commission-calculator", icon: DollarSign, title: "Commission Calculator", desc: "Calculate sales commission amounts" },
+      { href: "/discount-calculator", icon: Tag, title: "Discount Calculator", desc: "Calculate savings and final price after discount" },
     ],
   },
   {
     label: "Utilities & Tools",
     tools: [
-      { href: "/hsn-finder", icon: Hash, title: "HSN Code Finder", desc: "Search HSN/SAC codes for products and services", color: "from-orange-500 to-orange-600", bg: "bg-orange-50 dark:bg-orange-950/30" },
-      { href: "/gstin-validator", icon: Search, title: "GSTIN Validator", desc: "Validate any GSTIN and identify state", color: "from-emerald-500 to-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
+      { href: "/hsn-finder", icon: Hash, title: "HSN Code Finder", desc: "Search HSN/SAC codes for products and services" },
+      { href: "/gstin-validator", icon: Search, title: "GSTIN Validator", desc: "Validate any GSTIN and identify state" },
     ],
   },
 ]
 
+const categoryIcons: Record<string, any> = {
+  "Document Generators": FileText,
+  "Financial Calculators": Calculator,
+  "Utilities & Tools": Search,
+}
+
+function iconTileClass(category: string) {
+  if (category === "Document Generators") return "doc-tile"
+  if (category === "Financial Calculators") return "calc-tile"
+  return "util-tile"
+}
+
 export function ToolsSection() {
+  const [active, setActive] = useState<string>("All")
+  const tabs = ["All", ...toolCategories.map((c) => c.label)]
+  const allTools = toolCategories.flatMap((c) => c.tools.map((t) => ({ ...t, category: c.label })))
+  const visible = active === "All" ? allTools : allTools.filter((t) => t.category === active)
+
   return (
     <section id="tools" className="tools-section-root">
       <style dangerouslySetInnerHTML={{ __html: `
         .tools-section-root {
           width: 100%;
           font-family: 'Inter', sans-serif;
-          padding: 5rem 1.25rem 5rem;
+          padding: 4.5rem 1.25rem 5rem;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -60,15 +78,15 @@ export function ToolsSection() {
           background: transparent;
           color: var(--foreground);
         }
-        
+
         .tools-section-container {
-          max-width: 920px;
+          max-width: 1080px;
           width: 100%;
         }
 
         .tools-section-header {
           text-align: center;
-          margin-bottom: 3.5rem;
+          margin-bottom: 2.5rem;
         }
 
         .tools-section-eyebrow {
@@ -79,192 +97,235 @@ export function ToolsSection() {
           color: #4f46e5;
           margin-bottom: .6rem;
         }
-        
+
         .dark .tools-section-eyebrow {
           color: #a78bfa;
         }
 
         .tools-section-title {
-          font-size: 2.4rem;
+          font-size: 2.2rem;
           font-weight: 700;
           color: var(--foreground);
           letter-spacing: -.03em;
-          line-height: 1.1;
+          line-height: 1.12;
         }
 
         .tools-section-sub {
           font-size: .95rem;
           color: var(--muted-foreground);
           margin-top: .55rem;
+          max-width: 46rem;
+          margin-left: auto;
+          margin-right: auto;
         }
 
-        .section {
-          margin-bottom: 2.5rem;
-          width: 100%;
-        }
-
-        .section-header {
+        /* Filter tab bar - iLovePDF style */
+        .tools-filter {
           display: flex;
+          flex-wrap: wrap;
           align-items: center;
-          gap: .65rem;
-          margin-bottom: 1.25rem;
+          justify-content: center;
+          gap: .5rem;
+          margin: 0 auto 2.5rem;
+          padding: .4rem;
+          max-width: max-content;
+          border-radius: 9999px;
+          border: 1px solid var(--border);
+          background: var(--card);
+          box-shadow: 0 1px 2px rgba(0,0,0,.04);
         }
 
-        .section-icon {
-          width: 28px;
-          height: 28px;
-          border-radius: .6rem;
+        .dark .tools-filter {
+          background: rgba(255,255,255,.03);
+          border-color: rgba(255,255,255,.1);
+        }
+
+        .tools-tab {
+          display: inline-flex;
+          align-items: center;
+          gap: .4rem;
+          padding: .55rem 1.05rem;
+          border-radius: 9999px;
+          font-size: .85rem;
+          font-weight: 600;
+          color: var(--muted-foreground);
+          cursor: pointer;
+          white-space: nowrap;
+          transition: all .2s ease;
+          border: 1px solid transparent;
+        }
+
+        .tools-tab:hover {
+          color: var(--foreground);
+          background: var(--secondary);
+        }
+
+        .tools-tab.active {
+          color: #fff;
+          background: linear-gradient(90deg,#8B5CF6,#7C3AED);
+          box-shadow: 0 6px 16px -4px rgba(139,92,246,.5);
+        }
+
+        .tools-tab svg {
+          width: 15px;
+          height: 15px;
+        }
+
+        /* Uniform grid */
+        .tools-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+          gap: 1rem;
+        }
+
+        @media (max-width: 520px) {
+          .tools-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem;
+          }
+          .tools-section-title { font-size: 1.7rem; }
+        }
+
+        /* iLovePDF-style cards: clean white card + colored icon tile */
+        .tool-card-il {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          text-decoration: none;
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 1rem;
+          padding: 1.25rem 1.1rem 1.1rem;
+          overflow: hidden;
+          transition: transform .25s cubic-bezier(.175,.885,.32,1.2), box-shadow .2s ease, border-color .2s ease;
+        }
+
+        .tool-card-il:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 14px 30px -10px rgba(124,58,237,.28);
+          border-color: rgba(139,92,246,.45);
+        }
+
+        .tool-icon-tile {
+          width: 48px;
+          height: 48px;
+          border-radius: .85rem;
           display: flex;
           align-items: center;
           justify-content: center;
+          margin-bottom: .9rem;
           flex-shrink: 0;
         }
 
-        .section-icon svg {
-          width: 16px;
-          height: 16px;
+        .tool-icon-tile svg {
+          width: 24px;
+          height: 24px;
         }
 
-        .section-title {
-          font-size: 1.05rem;
+        .doc-tile {
+          background: linear-gradient(135deg, rgba(139,92,246,.18), rgba(99,102,241,.1));
+          color: #7c3aed;
+        }
+        .dark .doc-tile {
+          background: linear-gradient(135deg, rgba(139,92,246,.3), rgba(99,102,241,.2));
+          color: #c4b5fd;
+        }
+
+        .calc-tile {
+          background: linear-gradient(135deg, rgba(59,130,246,.18), rgba(14,165,233,.1));
+          color: #2563eb;
+        }
+        .dark .calc-tile {
+          background: linear-gradient(135deg, rgba(59,130,246,.3), rgba(14,165,233,.2));
+          color: #93c5fd;
+        }
+
+        .util-tile {
+          background: linear-gradient(135deg, rgba(16,185,129,.18), rgba(52,211,153,.1));
+          color: #059669;
+        }
+        .dark .util-tile {
+          background: linear-gradient(135deg, rgba(16,185,129,.28), rgba(52,211,153,.18));
+          color: #6ee7b7;
+        }
+
+        .tool-title {
+          font-size: .98rem;
           font-weight: 700;
+          line-height: 1.3;
           color: var(--foreground);
-          letter-spacing: -.01em;
+          display: flex;
+          align-items: center;
+          gap: .4rem;
         }
 
-        .section-count {
-          font-size: .72rem;
-          font-weight: 600;
+        .tool-desc {
+          font-size: .8rem;
           color: var(--muted-foreground);
-          margin-left: auto;
-          background: var(--secondary);
-          border: 1px solid var(--border);
-          padding: .15rem .65rem;
-          border-radius: 2rem;
+          margin-top: .35rem;
+          line-height: 1.4;
         }
 
-        .tools-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-          gap: .75rem;
+        .tool-arrow {
+          margin-top: auto;
+          padding-top: .85rem;
+          color: #8b5cf6;
+          opacity: 0;
+          transform: translateX(-6px);
+          transition: all .25s ease;
         }
 
-        @media (max-width: 480px) {
-          .tools-grid {
-            grid-template-columns: 1fr 1fr;
-          }
-          .tools-section-title {
-            font-size: 1.75rem;
-          }
-        }
-
-        .section-divider {
-          width: 100%;
-          height: 1px;
-          background: linear-gradient(90deg, transparent, var(--border), transparent);
-          margin: 1.75rem 0;
-        }
-
-        .icon-calc {
-          background: linear-gradient(135deg, rgba(139,92,246,.2), rgba(59,130,246,.1));
-          color: #6366f1;
-        }
-        
-        .dark .icon-calc {
-          background: linear-gradient(135deg, rgba(139,92,246,.3), rgba(59,130,246,.2));
-          color: #a78bfa;
-        }
-
-        .icon-util {
-          background: linear-gradient(135deg, rgba(16,185,129,.2), rgba(52,211,153,.1));
-          color: #10b981;
-        }
-        
-        .dark .icon-util {
-          background: linear-gradient(135deg, rgba(16,185,129,.25), rgba(52,211,153,.15));
-          color: #34d399;
-        }
-
-        .icon-doc {
-          background: linear-gradient(135deg, rgba(251,191,36,.2), rgba(245,158,11,.1));
-          color: #d97706;
-        }
-        
-        .dark .icon-doc {
-          background: linear-gradient(135deg, rgba(251,191,36,.25), rgba(245,158,11,.15));
-          color: #fbbf24;
+        .tool-card-il:hover .tool-arrow {
+          opacity: 1;
+          transform: translateX(0);
         }
       ` }} />
 
-      <svg style={{ display: "none" }} aria-hidden="true">
-        <defs>
-          <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
-            <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
-            <feDisplacementMap in="SourceGraphic" in2="blurred" scale="70" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-      </svg>
-
       <div className="tools-section-container">
         <div className="tools-section-header">
-          <p className="tools-section-eyebrow">Tool Hub</p>
-          <h2 className="tools-section-title">Financial Calculators &amp; Tools</h2>
-          <p className="tools-section-sub">Everything you need to manage your business finances — all in one place</p>
+          <p className="tools-section-eyebrow">All-in-One Tool Hub</p>
+          <h2 className="tools-section-title">Every tool you need for your business documents</h2>
+          <p className="tools-section-sub">
+            Create invoices, quotations, GST documents and more — plus calculators and utilities to manage your finances. All 100% free and easy to use.
+          </p>
         </div>
 
-        {toolCategories.map((category, idx) => {
-          let CategoryIcon = FileText
-          let iconClass = "icon-doc"
-          if (category.label === "Financial Calculators") {
-            CategoryIcon = Calculator
-            iconClass = "icon-calc"
-          } else if (category.label === "Utilities & Tools") {
-            CategoryIcon = Search
-            iconClass = "icon-util"
-          }
+        {/* Filter tab bar */}
+        <div className="tools-filter">
+          {tabs.map((tab) => {
+            const Icon = tab === "All" ? LayoutGrid : categoryIcons[tab]
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActive(tab)}
+                className={`tools-tab ${active === tab ? "active" : ""}`}
+              >
+                {Icon && <Icon />}
+                {tab}
+              </button>
+            )
+          })}
+        </div>
 
-          return (
-            <div key={category.label}>
-              {idx > 0 && <div className="section-divider" />}
-              <div className="section">
-                <div className="section-header">
-                  <span className={`section-icon ${iconClass}`}>
-                    <CategoryIcon />
-                  </span>
-                  <span className="section-title">{category.label}</span>
-                  <span className="section-count">{category.tools.length} tools</span>
-                </div>
-                <div className="tools-grid">
-                  {category.tools.map((tool) => {
-                    const ToolIcon = tool.icon
-                    let badge = "Generator"
-                    if (category.label === "Financial Calculators") {
-                      badge = "Calculator"
-                    } else if (category.label === "Utilities & Tools") {
-                      badge = "Utility"
-                    }
-                    return (
-                      <Link key={tool.href} href={tool.href} className="tool-card">
-                        <div className="glass-filter" />
-                        <div className="glass-overlay" />
-                        <div className="glass-specular" />
-                        <div className="glass-content">
-                          <span className="tc-name">
-                            <ToolIcon />
-                            {tool.title}
-                          </span>
-                          <span className="tc-desc">{tool.desc}</span>
-                          <span className="tc-badge">{badge}</span>
-                        </div>
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          )
-        })}
+        {/* Grid */}
+        <div className="tools-grid">
+          {visible.map((tool) => {
+            const ToolIcon = tool.icon
+            return (
+              <Link key={tool.href} href={tool.href} className="tool-card-il">
+                <span className={`tool-icon-tile ${iconTileClass(tool.category)}`}>
+                  <ToolIcon />
+                </span>
+                <span className="tool-title">{tool.title}</span>
+                <span className="tool-desc">{tool.desc}</span>
+                <span className="tool-arrow">
+                  <ArrowRight size={18} />
+                </span>
+              </Link>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
