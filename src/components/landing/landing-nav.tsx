@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/shared/theme-toggle"
-import { Menu, X, Zap, ArrowRight } from "lucide-react"
+import { Menu, X, Zap } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { motion, useScroll, useTransform } from "framer-motion"
 
@@ -111,15 +111,6 @@ export function LandingNav() {
           {/* Right actions */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link href="/auth?tab=login" className="hidden md:inline-flex text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Login
-            </Link>
-            <Link href="/auth?tab=signup" className="hidden md:inline-flex">
-              <Button size="sm" className="h-9 px-5 text-sm font-semibold gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white shadow-md shadow-blue-500/20">
-                Sign Up
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
-            </Link>
             {/* Mobile menu */}
             <button
               className="md:hidden p-2 rounded-lg hover:bg-accent transition-colors"
@@ -144,21 +135,6 @@ export function LandingNav() {
                 {link.label}
               </a>
             ))}
-            <Link
-              href="/auth?tab=login"
-              className="block px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-all"
-              onClick={() => setIsMobileOpen(false)}
-            >
-              Login
-            </Link>
-            <Link
-              href="/auth?tab=signup"
-              className="flex items-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-violet-600 rounded-lg mt-2"
-              onClick={() => setIsMobileOpen(false)}
-            >
-              Sign Up
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
           </div>
         )}
         </div>

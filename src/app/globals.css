@@ -219,18 +219,33 @@ body {
   /* Gradient backgrounds */
   .bg-mesh {
     background:
-      radial-gradient(ellipse at 20% 10%, rgba(139, 92, 246, 0.08) 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 85%, rgba(16, 185, 129, 0.04) 0%, transparent 50%),
-      linear-gradient(160deg, #fbfaff 0%, #f7f5ff 40%, #f1edff 100%);
+      radial-gradient(ellipse at 15% 0%, rgba(139, 92, 246, 0.14) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 8%, rgba(99, 102, 241, 0.14) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(168, 85, 247, 0.1) 0%, transparent 55%),
+      linear-gradient(165deg, #fbfaff 0%, #f3eeff 38%, #ece4ff 70%, #e3d8ff 100%);
   }
 
   .dark .bg-mesh {
     background:
-      radial-gradient(ellipse at 20% 10%, rgba(139, 92, 246, 0.35) 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 0%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 85%, rgba(16, 185, 129, 0.2) 0%, transparent 50%),
-      linear-gradient(160deg, #050014 0%, #08001d 40%, #03000d 100%);
+      radial-gradient(ellipse at 15% 0%, rgba(139, 92, 246, 0.4) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 8%, rgba(99, 102, 241, 0.35) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(168, 85, 247, 0.28) 0%, transparent 55%),
+      linear-gradient(165deg, #050014 0%, #0a0220 40%, #140a2e 72%, #1a1045 100%);
+  }
+
+  /* Reusable brand gradient surface for tool sections / cards */
+  .brand-gradient {
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 50%, #A855F7 100%);
+  }
+  .dark .brand-gradient {
+    background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #9333ea 100%);
+  }
+
+  .section-gradient {
+    background: linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(99,102,241,0.06) 100%);
+  }
+  .dark .section-gradient {
+    background: linear-gradient(135deg, rgba(139,92,246,0.14) 0%, rgba(99,102,241,0.1) 100%);
   }
 
   /* Universal Responsive Liquid Glass Cards */

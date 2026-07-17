@@ -100,24 +100,25 @@ export function ToolLayout({
             {tool}
           </div>
 
-          {/* Long Form Content for SEO */}
-          <div className="max-w-4xl mx-auto space-y-16 text-foreground pb-12">
-            <article className="prose prose-gray dark:prose-invert max-w-none space-y-12 prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
-              
-              {/* How To Use */}
-              {howToUse.steps.length > 0 && (
-                <section>
-                  <h2 className="text-2xl font-bold font-display text-foreground">{howToUse.title}</h2>
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {howToUse.steps.map((step, idx) => (
-                      <div key={idx} className="saas-card-premium p-6">
-                        <div className="text-4xl font-bold text-indigo-600/30 dark:text-[#a78bfa]/40 mb-4">0{idx + 1}</div>
-                        <p className="font-medium text-foreground">{step}</p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
+           {/* Long Form Content for SEO */}
+           <div className="max-w-4xl mx-auto space-y-16 text-foreground pb-12">
+             <article className="prose prose-gray dark:prose-invert max-w-none space-y-12 prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
+               
+               {/* How To Use */}
+               {howToUse.steps.length > 0 && (
+                 <section>
+                   <h2 className="text-2xl font-bold font-display text-foreground">{howToUse.title}</h2>
+                   <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                     {howToUse.steps.map((step, idx) => (
+                       <div key={idx} className="saas-card-premium p-6 relative overflow-hidden">
+                         <div className="absolute inset-x-0 top-0 h-1 brand-gradient" />
+                         <div className="text-4xl font-bold text-indigo-600/30 dark:text-[#a78bfa]/40 mb-4">0{idx + 1}</div>
+                         <p className="font-medium text-foreground">{step}</p>
+                       </div>
+                     ))}
+                   </div>
+                 </section>
+               )}
 
               {/* Features & Benefits */}
               {(features.length > 0 || benefits.length > 0) && (
@@ -214,6 +215,9 @@ export function ToolLayout({
           </div>
             
             <div className="text-center space-y-4 mt-6">
+              <span className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white brand-gradient shadow-md shadow-violet-500/30">
+                QuoteFlow Tool
+              </span>
               <h1 className="text-3xl sm:text-5xl font-display font-bold tracking-tight text-gray-900 dark:text-white">
                 {h1}
               </h1>
@@ -234,17 +238,18 @@ export function ToolLayout({
             
 
             {/* How To Use */}
-            <section>
-              <h2 className="text-2xl font-bold font-display">{howToUse.title}</h2>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {howToUse.steps.map((step, idx) => (
-                  <div key={idx} className="saas-card-premium p-6">
-                    <div className="text-4xl font-bold text-primary/20 mb-4">0{idx + 1}</div>
-                    <p className="font-medium text-foreground">{step}</p>
+                <section>
+                  <h2 className="text-2xl font-bold font-display">{howToUse.title}</h2>
+                  <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {howToUse.steps.map((step, idx) => (
+                      <div key={idx} className="saas-card-premium p-6 relative overflow-hidden">
+                        <div className="absolute inset-x-0 top-0 h-1 brand-gradient" />
+                        <div className="text-4xl font-bold text-primary/20 mb-4">0{idx + 1}</div>
+                        <p className="font-medium text-foreground">{step}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </section>
+                </section>
 
             {/* Features & Benefits */}
             <div className="grid md:grid-cols-2 gap-8">

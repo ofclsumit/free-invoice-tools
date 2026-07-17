@@ -4,6 +4,7 @@ import Script from "next/script"
 import "./globals.css"
 import "@/components/invoice-templates/styles/print.css"
 import { ThemeProvider } from "@/components/shared/theme-provider"
+import { PageTransition } from "@/components/shared/page-transition"
 import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({
@@ -138,7 +139,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange={false}
         >
-          {children}
+          <PageTransition>{children}</PageTransition>
           <Toaster />
         </ThemeProvider>
       </body>
