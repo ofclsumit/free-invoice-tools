@@ -52,14 +52,19 @@ export function ToolsSection() {
         .tools-section-root {
           width: 100%;
           font-family: 'Inter', sans-serif;
-          padding: 5rem 1.25rem 5rem;
+          margin-top: -150px;
+          padding: 2rem 1.25rem 5rem;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: flex-start;
           background: transparent;
           color: var(--foreground);
+          position: relative;
+          z-index: 20;
         }
+        @media (max-width: 1023px) { .tools-section-root { margin-top: -110px; } }
+        @media (max-width: 639px) { .tools-section-root { margin-top: -70px; padding-top: 1rem; } }
         
         .tools-section-container {
           max-width: 920px;

@@ -12,7 +12,6 @@ const allTools = toolCategories.flatMap((c) =>
 
 export function HeroSection() {
   const [query, setQuery] = useState("")
-  const [mode, setMode] = useState<"optimised" | "raw">("optimised")
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -31,37 +30,27 @@ export function HeroSection() {
     if (!q) return []
     const lower = q.toLowerCase()
     return allTools
-      .filter((t) => {
-        if (mode === "raw") {
-          // Literal, case-sensitive substring match
-          return (
-            t.title.includes(q) ||
-            t.desc.includes(q) ||
-            t.category.includes(q)
-          )
-        }
-        // Optimised: case-insensitive match across title, desc, category
-        return (
+      .filter(
+        (t) =>
           t.title.toLowerCase().includes(lower) ||
           t.desc.toLowerCase().includes(lower) ||
           t.category.toLowerCase().includes(lower)
-        )
-      })
+      )
       .slice(0, 8)
-  }, [query, mode])
+  }, [query])
 
   return (
-    <section className="hero-root relative w-full overflow-hidden">
+    <section className="hero-root relative w-full">
       <style dangerouslySetInnerHTML={{ __html: `
         .hero-root {
           min-height: 70vh;
           padding-top: 8.5rem;
-          padding-bottom: 3rem;
-          background: linear-gradient(180deg,#05010C 0%,#0B0618 30%,#140A2E 70%,#1A1045 100%);
+          padding-bottom: 6rem;
+          background: transparent;
           color: #ECE9F5;
         }
         @media (max-width: 1023px) { .hero-root { min-height: 75vh; } }
-        @media (max-width: 639px) { .hero-root { min-height: auto; padding-bottom: 3rem; } }
+        @media (max-width: 639px) { .hero-root { min-height: auto; padding-bottom: 5rem; } }
 
         .hero-radial {
           position: absolute;
@@ -149,20 +138,6 @@ export function HeroSection() {
         }
         .hero-search-input::placeholder { color: rgba(196,181,253,0.55); }
 
-        .hero-search-modes { display: flex; gap: .4rem; flex-shrink: 0; }
-        .hero-mode-btn {
-          font-size: .72rem; font-weight: 600; padding: .3rem .65rem; border-radius: 9999px;
-          color: rgba(196,181,253,0.7);
-          border: 1px solid rgba(255,255,255,0.12);
-          background: rgba(255,255,255,0.03);
-          cursor: pointer; transition: all .2s ease; white-space: nowrap;
-        }
-        .hero-mode-btn.active {
-          color: #fff;
-          background: linear-gradient(90deg,#8B5CF6,#7C3AED);
-          border-color: transparent;
-        }
-
         .hero-search-clear {
           display: flex; align-items: center; justify-content: center;
           width: 28px; height: 28px; border-radius: 9999px; flex-shrink: 0;
@@ -200,14 +175,6 @@ export function HeroSection() {
         .hero-result-cat { font-size: .72rem; color: rgba(196,181,253,0.6); }
         .hero-result-arrow { margin-left: auto; color: rgba(196,181,253,0.5); }
         .hero-result-empty { padding: 1.25rem 1rem; text-align: center; color: rgba(196,181,253,0.6); font-size: .85rem; }
-
-        .hero-fade {
-          position: absolute;
-          left: 0; right: 0; bottom: 0;
-          height: 140px;
-          pointer-events: none;
-          background: linear-gradient(180deg, rgba(26,16,69,0) 0%, rgba(11,6,24,0) 55%, rgba(5,1,12,0.9) 100%);
-        }
       ` }} />
 
       {/* Background layers */}
@@ -290,22 +257,6 @@ export function HeroSection() {
                   <X size={16} />
                 </button>
               )}
-              <div className="hero-search-modes">
-                <button
-                  type="button"
-                  className={`hero-mode-btn ${mode === "optimised" ? "active" : ""}`}
-                  onClick={() => setMode("optimised")}
-                >
-                  Optimised
-                </button>
-                <button
-                  type="button"
-                  className={`hero-mode-btn ${mode === "raw" ? "active" : ""}`}
-                  onClick={() => setMode("raw")}
-                >
-                  Raw
-                </button>
-              </div>
             </div>
 
             {open && query.trim() && (
@@ -336,12 +287,19 @@ export function HeroSection() {
                 )}
               </div>
             )}
-          </div>
-        </motion.div>
-      </div>
+           </div>
+         </motion.div>
 
-      {/* Smooth fade into the Tools section */}
-      <div className="hero-fade" />
+        {/* Gentle cue to scroll into the tools below */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.45 }}
+          className="mt-10 text-center text-[13px] text-violet-100/45"
+        >
+          Explore all tools below — invoices, calculators, GST utilities &amp; more.
+        </motion.p>
+      </div>
     </section>
   )
 }

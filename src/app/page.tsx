@@ -8,7 +8,7 @@ import { LandingFooter } from "@/components/landing/landing-footer"
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-mesh overflow-x-hidden transition-colors duration-300">
+    <div className="home-bg min-h-screen overflow-x-hidden transition-colors duration-300">
       <LandingNav />
       <main>
         <HeroSection />
@@ -29,6 +29,13 @@ export default function LandingPage() {
           </filter>
         </defs>
       </svg>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .home-bg {
+          background: linear-gradient(180deg,#05010C 0%,#0B0618 22%,#140A2E 55%,#1A1045 100%);
+          color: #ECE9F5;
+        }
+      ` }} />
     </div>
   )
 }
