@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function BreakEvenCalculatorPage() {
   const content = toolContentDictionary["break-even-calculator"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<BreakEvenCalculatorClient />} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<BreakEvenCalculatorClient />} isUltra={true} />
   )
 }

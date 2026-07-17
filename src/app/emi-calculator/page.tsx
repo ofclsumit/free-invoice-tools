@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function EmiCalculatorPage() {
   const content = toolContentDictionary["emi-calculator"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<EmiCalculatorClient />} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<EmiCalculatorClient />} isUltra={true} />
   )
 }

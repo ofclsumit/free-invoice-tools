@@ -53,10 +53,10 @@ const testimonials = [
 
 export function TestimonialsSection() {
   return (
-    <section id="testimonials" className="py-16 sm:py-24 bg-gray-50/50 dark:bg-gray-900/30">
+    <section id="testimonials" className="py-16 sm:py-24 bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 tracking-widest uppercase">
+          <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 tracking-widest uppercase">
             Loved by thousands
           </p>
           <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight">
@@ -74,23 +74,28 @@ export function TestimonialsSection() {
           {testimonials.map((t) => (
             <div
               key={t.name}
-              className="break-inside-avoid bg-white dark:bg-gray-900 rounded-2xl border border-border p-6 space-y-4"
+              className="break-inside-avoid glass-card-liquid"
             >
-              <div className="flex items-center gap-3">
-                <div className={`h-10 w-10 rounded-full ${t.color} flex items-center justify-center text-white font-display font-bold text-sm flex-shrink-0`}>
-                  {t.avatar}
+              <div className="glass-filter" />
+              <div className="glass-overlay" />
+              <div className="glass-specular" />
+              <div className="glass-content p-6 space-y-4 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-full ${t.color} flex items-center justify-center text-white font-display font-bold text-sm flex-shrink-0`}>
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <p className="font-display font-semibold text-sm">{t.name}</p>
+                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-display font-semibold text-sm">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.role}</p>
+                <div className="flex gap-0.5">
+                  {[1,2,3,4,5].map(i => (
+                    <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                  ))}
                 </div>
+                <p className="text-sm text-foreground leading-relaxed">{t.content}</p>
               </div>
-              <div className="flex gap-0.5">
-                {[1,2,3,4,5].map(i => (
-                  <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed">{t.content}</p>
             </div>
           ))}
         </div>

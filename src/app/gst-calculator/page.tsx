@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function GstCalculatorPage() {
   const content = toolContentDictionary["gst-calculator"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<GstCalculatorClient />} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<GstCalculatorClient />} isUltra={true} />
   )
 }

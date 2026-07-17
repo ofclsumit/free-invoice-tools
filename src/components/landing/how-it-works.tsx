@@ -27,10 +27,10 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="py-16 sm:py-24">
+    <section id="how-it-works" className="py-16 sm:py-24 bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <p className="text-sm font-semibold text-violet-600 dark:text-violet-400 tracking-widest uppercase">Simple process</p>
+          <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 tracking-widest uppercase">Simple process</p>
           <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight">From zero to paid in 4 steps</h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
             Most users create their first invoice in under 2 minutes.
@@ -38,16 +38,21 @@ export function HowItWorksSection() {
         </div>
         <div className="flex flex-wrap justify-center gap-8">
           {steps.map((step, i) => (
-            <div key={step.number} className="relative w-full sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)] text-center">
+            <div key={step.number} className="relative w-full sm:w-[calc(50%-1rem)] lg:w-[calc(25%-1.5rem)]">
               {i < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-8 left-full w-[calc(100%+2rem)] h-px bg-gradient-to-r from-border to-transparent z-0" />
               )}
-              <div className="relative z-10">
-                <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 text-white font-display font-bold text-lg shadow-lg shadow-blue-500/25 mb-5">
-                  {step.number}
+              <div className="glass-card-liquid text-center h-full">
+                <div className="glass-filter" />
+                <div className="glass-overlay" />
+                <div className="glass-specular" />
+                <div className="glass-content p-6 relative z-10">
+                  <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-display font-bold text-lg shadow-lg shadow-blue-500/25 mb-5 mx-auto">
+                    {step.number}
+                  </div>
+                  <h3 className="font-display font-semibold text-base mb-2 text-foreground">{step.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
                 </div>
-                <h3 className="font-display font-semibold text-base mb-2">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
               </div>
             </div>
           ))}

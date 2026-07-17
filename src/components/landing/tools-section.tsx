@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link"
 import { Calculator, FileText, Search, Receipt, Package, ShoppingCart, TrendingUp, Hash, ClipboardList, ArrowRight, Landmark, Percent, Banknote, PieChart, Tag, DollarSign, StickyNote, FileEdit, PenTool, CreditCard, FileSignature, IndianRupee, Home, ArrowLeftRight, Building, CalendarDays } from "lucide-react"
 
@@ -46,43 +47,224 @@ const toolCategories = [
 
 export function ToolsSection() {
   return (
-    <section id="tools" className="py-16 sm:py-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-4 mb-16">
-          <p className="text-sm font-semibold text-blue-600 dark:text-blue-400 tracking-widest uppercase">Free Tools</p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold tracking-tight">
-            27+ free business tools
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            The most comprehensive free toolkit for Indian businesses. No signup required. Use anytime.
-          </p>
+    <section id="tools" className="tools-section-root">
+      <style dangerouslySetInnerHTML={{ __html: `
+        .tools-section-root {
+          width: 100%;
+          font-family: 'Inter', sans-serif;
+          padding: 5rem 1.25rem 5rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-start;
+          background: transparent;
+          color: var(--foreground);
+        }
+        
+        .tools-section-container {
+          max-width: 920px;
+          width: 100%;
+        }
+
+        .tools-section-header {
+          text-align: center;
+          margin-bottom: 3.5rem;
+        }
+
+        .tools-section-eyebrow {
+          font-size: .72rem;
+          font-weight: 700;
+          letter-spacing: .15em;
+          text-transform: uppercase;
+          color: #4f46e5;
+          margin-bottom: .6rem;
+        }
+        
+        .dark .tools-section-eyebrow {
+          color: #a78bfa;
+        }
+
+        .tools-section-title {
+          font-size: 2.4rem;
+          font-weight: 700;
+          color: var(--foreground);
+          letter-spacing: -.03em;
+          line-height: 1.1;
+        }
+
+        .tools-section-sub {
+          font-size: .95rem;
+          color: var(--muted-foreground);
+          margin-top: .55rem;
+        }
+
+        .section {
+          margin-bottom: 2.5rem;
+          width: 100%;
+        }
+
+        .section-header {
+          display: flex;
+          align-items: center;
+          gap: .65rem;
+          margin-bottom: 1.25rem;
+        }
+
+        .section-icon {
+          width: 28px;
+          height: 28px;
+          border-radius: .6rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .section-icon svg {
+          width: 16px;
+          height: 16px;
+        }
+
+        .section-title {
+          font-size: 1.05rem;
+          font-weight: 700;
+          color: var(--foreground);
+          letter-spacing: -.01em;
+        }
+
+        .section-count {
+          font-size: .72rem;
+          font-weight: 600;
+          color: var(--muted-foreground);
+          margin-left: auto;
+          background: var(--secondary);
+          border: 1px solid var(--border);
+          padding: .15rem .65rem;
+          border-radius: 2rem;
+        }
+
+        .tools-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: .75rem;
+        }
+
+        @media (max-width: 480px) {
+          .tools-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+          .tools-section-title {
+            font-size: 1.75rem;
+          }
+        }
+
+        .section-divider {
+          width: 100%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, var(--border), transparent);
+          margin: 1.75rem 0;
+        }
+
+        .icon-calc {
+          background: linear-gradient(135deg, rgba(139,92,246,.2), rgba(59,130,246,.1));
+          color: #6366f1;
+        }
+        
+        .dark .icon-calc {
+          background: linear-gradient(135deg, rgba(139,92,246,.3), rgba(59,130,246,.2));
+          color: #a78bfa;
+        }
+
+        .icon-util {
+          background: linear-gradient(135deg, rgba(16,185,129,.2), rgba(52,211,153,.1));
+          color: #10b981;
+        }
+        
+        .dark .icon-util {
+          background: linear-gradient(135deg, rgba(16,185,129,.25), rgba(52,211,153,.15));
+          color: #34d399;
+        }
+
+        .icon-doc {
+          background: linear-gradient(135deg, rgba(251,191,36,.2), rgba(245,158,11,.1));
+          color: #d97706;
+        }
+        
+        .dark .icon-doc {
+          background: linear-gradient(135deg, rgba(251,191,36,.25), rgba(245,158,11,.15));
+          color: #fbbf24;
+        }
+      ` }} />
+
+      <svg style={{ display: "none" }} aria-hidden="true">
+        <defs>
+          <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+            <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+            <feDisplacementMap in="SourceGraphic" in2="blurred" scale="70" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+      </svg>
+
+      <div className="tools-section-container">
+        <div className="tools-section-header">
+          <p className="tools-section-eyebrow">Tool Hub</p>
+          <h2 className="tools-section-title">Financial Calculators &amp; Tools</h2>
+          <p className="tools-section-sub">Everything you need to manage your business finances — all in one place</p>
         </div>
 
-        {toolCategories.map((category) => (
-          <div key={category.label} className="mb-14">
-            <h3 className="text-lg font-display font-semibold mb-6 text-muted-foreground">{category.label}</h3>
-            <div className="flex flex-wrap justify-center gap-4">
-              {category.tools.map((tool) => {
-                const Icon = tool.icon
-                return (
-                  <Link
-                    key={tool.href}
-                    href={tool.href}
-                    className="group bg-white dark:bg-gray-900 rounded-2xl border border-border p-5 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 w-full sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.75rem)] xl:w-[calc(25%-0.75rem)]"
-                  >
-                    <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${tool.bg} mb-4`}>
-                      <div className={`bg-gradient-to-br ${tool.color} rounded-lg p-1.5`}>
-                        <Icon className="h-4 w-4 text-white" />
-                      </div>
-                    </div>
-                    <h4 className="font-display font-semibold text-sm mb-2 group-hover:text-blue-600 transition-colors">{tool.title}</h4>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{tool.desc}</p>
-                  </Link>
-                )
-              })}
+        {toolCategories.map((category, idx) => {
+          let CategoryIcon = FileText
+          let iconClass = "icon-doc"
+          if (category.label === "Financial Calculators") {
+            CategoryIcon = Calculator
+            iconClass = "icon-calc"
+          } else if (category.label === "Utilities & Tools") {
+            CategoryIcon = Search
+            iconClass = "icon-util"
+          }
+
+          return (
+            <div key={category.label}>
+              {idx > 0 && <div className="section-divider" />}
+              <div className="section">
+                <div className="section-header">
+                  <span className={`section-icon ${iconClass}`}>
+                    <CategoryIcon />
+                  </span>
+                  <span className="section-title">{category.label}</span>
+                  <span className="section-count">{category.tools.length} tools</span>
+                </div>
+                <div className="tools-grid">
+                  {category.tools.map((tool) => {
+                    const ToolIcon = tool.icon
+                    let badge = "Generator"
+                    if (category.label === "Financial Calculators") {
+                      badge = "Calculator"
+                    } else if (category.label === "Utilities & Tools") {
+                      badge = "Utility"
+                    }
+                    return (
+                      <Link key={tool.href} href={tool.href} className="tool-card">
+                        <div className="glass-filter" />
+                        <div className="glass-overlay" />
+                        <div className="glass-specular" />
+                        <div className="glass-content">
+                          <span className="tc-name">
+                            <ToolIcon />
+                            {tool.title}
+                          </span>
+                          <span className="tc-desc">{tool.desc}</span>
+                          <span className="tc-badge">{badge}</span>
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </section>
   )

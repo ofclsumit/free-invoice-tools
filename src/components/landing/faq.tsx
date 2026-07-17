@@ -44,10 +44,10 @@ const faqs = [
 
 export function FaqSection() {
   return (
-    <section id="faq" className="py-16 sm:py-24 bg-gray-50/50 dark:bg-gray-900/30">
+    <section id="faq" className="py-16 sm:py-24 bg-transparent">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <p className="text-sm font-semibold text-violet-600 dark:text-violet-400 tracking-widest uppercase">FAQ</p>
+          <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 tracking-widest uppercase">FAQ</p>
           <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight">Questions & answers</h2>
           <p className="text-lg text-muted-foreground">Everything you need to know about QuoteFlow.</p>
         </div>
@@ -57,14 +57,19 @@ export function FaqSection() {
             <AccordionItem
               key={i}
               value={`item-${i}`}
-              className="bg-white dark:bg-gray-900 border border-border rounded-xl px-6 data-[state=open]:shadow-sm"
+              className="glass-card-liquid border border-transparent px-6 data-[state=open]:shadow-sm"
             >
-              <AccordionTrigger className="text-left font-display font-semibold text-sm hover:no-underline py-5">
-                {faq.q}
-              </AccordionTrigger>
-              <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-5">
-                {faq.a}
-              </AccordionContent>
+              <div className="glass-filter" />
+              <div className="glass-overlay" />
+              <div className="glass-specular" />
+              <div className="glass-content relative z-10 w-full">
+                <AccordionTrigger className="text-left font-display font-semibold text-sm hover:no-underline py-5">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-foreground leading-relaxed pb-5">
+                  {faq.a}
+                </AccordionContent>
+              </div>
             </AccordionItem>
           ))}
         </Accordion>

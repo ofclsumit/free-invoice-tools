@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function CommissionCalculatorPage() {
   const content = toolContentDictionary["commission-calculator"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<CommissionCalculatorClient />} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<CommissionCalculatorClient />} isUltra={true} />
   )
 }

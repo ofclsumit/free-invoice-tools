@@ -22,6 +22,7 @@ export interface ToolLayoutProps {
   faqs: { question: string; answer: string }[]
   relatedTools: RelatedTool[]
   schemaUrl: string
+  isUltra?: boolean
 }
 
 export function ToolLayout({
@@ -36,6 +37,7 @@ export function ToolLayout({
   faqs = [],
   relatedTools = [],
   schemaUrl,
+  isUltra = false,
 }: ToolLayoutProps) {
   // Generate Schemas
   const webAppSchema = {
@@ -73,6 +75,115 @@ export function ToolLayout({
       { "@type": "ListItem", position: 1, name: "Home", item: "https://quoteflow.in" },
       { "@type": "ListItem", position: 2, name: h1, item: schemaUrl },
     ],
+  }
+
+  if (isUltra) {
+    return (
+      <>
+        <JsonLd data={webAppSchema} />
+        <JsonLd data={faqSchema} />
+        <JsonLd data={breadcrumbSchema} />
+        
+        <div className="font-['Inter'] min-h-screen w-full text-foreground overflow-hidden py-8 px-4 sm:py-12 bg-mesh transition-colors duration-300">
+          <svg style={{display:"none"}} aria-hidden="true">
+            <defs>
+              <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise"/>
+                <feGaussianBlur in="noise" stdDeviation="2" result="blurred"/>
+                <feDisplacementMap in="SourceGraphic" in2="blurred" scale="70" xChannelSelector="R" yChannelSelector="G"/>
+              </filter>
+            </defs>
+          </svg>
+
+          {/* Main Tool Interface without outer border wrapper */}
+          <div className="w-full max-w-4xl mx-auto mb-16">
+            {tool}
+          </div>
+
+          {/* Long Form Content for SEO */}
+          <div className="max-w-4xl mx-auto space-y-16 text-foreground pb-12">
+            <article className="prose prose-gray dark:prose-invert max-w-none space-y-12 prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
+              
+              {/* How To Use */}
+              {howToUse.steps.length > 0 && (
+                <section>
+                  <h2 className="text-2xl font-bold font-display text-foreground">{howToUse.title}</h2>
+                  <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {howToUse.steps.map((step, idx) => (
+                      <div key={idx} className="saas-card-premium p-6">
+                        <div className="text-4xl font-bold text-indigo-600/30 dark:text-[#a78bfa]/40 mb-4">0{idx + 1}</div>
+                        <p className="font-medium text-foreground">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Features & Benefits */}
+              {(features.length > 0 || benefits.length > 0) && (
+                <div className="grid md:grid-cols-2 gap-8">
+                  {features.length > 0 && (
+                    <section>
+                      <h2 className="text-2xl font-bold font-display mb-6 text-foreground">Key Features</h2>
+                      <ul className="space-y-4">
+                        {features.map((feature, idx) => (
+                          <li key={idx} className="flex items-start gap-3">
+                            <CheckCircle2 className="h-5 w-5 text-indigo-600 dark:text-[#a78bfa] shrink-0 mt-0.5" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+
+                  {benefits.length > 0 && (
+                    <section>
+                      <h2 className="text-2xl font-bold font-display mb-6 text-foreground">Why Use This Tool?</h2>
+                      <ul className="space-y-4">
+                        {benefits.map((benefit, idx) => (
+                          <li key={idx} className="flex items-start gap-3">
+                            <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+                            <span>{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                  )}
+                </div>
+              )}
+
+              {/* FAQs */}
+              {faqs.length > 0 && (
+                <section className="border-t border-border pt-12">
+                  <h2 className="text-2xl font-bold font-display mb-8 text-foreground">Frequently Asked Questions</h2>
+                  <Accordion type="single" collapsible className="w-full">
+                    {faqs.map((faq, idx) => (
+                      <AccordionItem key={idx} value={`item-${idx}`} className="border-border">
+                        <AccordionTrigger className="text-left font-medium text-foreground hover:no-underline">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground leading-relaxed">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </section>
+              )}
+              
+            </article>
+
+            {/* Internal Linking */}
+            {relatedTools.length > 0 && (
+              <div className="border-t border-border pt-12">
+                <RelatedTools tools={relatedTools} isUltra={true} />
+              </div>
+            )}
+            
+          </div>
+        </div>
+      </>
+    )
   }
 
   return (
@@ -113,7 +224,7 @@ export function ToolLayout({
         </div>
 
         {/* Main Tool Interface */}
-        <div className="w-full max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-2xl border border-border p-4 sm:p-6 shadow-glass mb-16">
+        <div className="w-full max-w-4xl mx-auto saas-card-premium p-4 sm:p-6 mb-16">
           {tool}
         </div>
 
@@ -127,9 +238,9 @@ export function ToolLayout({
               <h2 className="text-2xl font-bold font-display">{howToUse.title}</h2>
               <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {howToUse.steps.map((step, idx) => (
-                  <div key={idx} className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-xl border border-border">
+                  <div key={idx} className="saas-card-premium p-6">
                     <div className="text-4xl font-bold text-primary/20 mb-4">0{idx + 1}</div>
-                    <p className="font-medium text-gray-900 dark:text-gray-100">{step}</p>
+                    <p className="font-medium text-foreground">{step}</p>
                   </div>
                 ))}
               </div>

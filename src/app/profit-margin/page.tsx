@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function ProfitMarginPage() {
   const content = toolContentDictionary["profit-margin"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<ProfitMarginClient />} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<ProfitMarginClient />} isUltra={true} />
   )
 }

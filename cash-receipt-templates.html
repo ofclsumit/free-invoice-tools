@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cash Receipt Templates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0f0f0;
+    font-family: 'DM Sans', sans-serif;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  .page-title {
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #888;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .template-section {
+    margin-bottom: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .template-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #aaa;
+  }
+
+  /* ─────────────────────────────────────────────────────── */
+  /* SHARED RECEIPT SHELL                                    */
+  /* ─────────────────────────────────────────────────────── */
+  .receipt {
+    width: 750px;
+    height: 320px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* TEMPLATE 1 — VELVET                                     */
+  /* Navy + Gold · Playfair Display · Luxury banking feel    */
+  /* ═══════════════════════════════════════════════════════ */
+  .velvet {
+    background: #0D1B3E;
+    border-radius: 12px;
+    font-family: 'Playfair Display', serif;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+  }
+
+  /* Geometric diamond watermark */
+  .velvet .watermark {
+    position: absolute;
+    left: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 300px;
+    height: 300px;
+  }
+  .velvet .watermark svg { width: 100%; height: 100%; }
+
+  .velvet .left-stripe {
+    width: 6px;
+    background: linear-gradient(180deg, #C9A84C 0%, #E8C97A 50%, #C9A84C 100%);
+    border-radius: 12px 0 0 12px;
+    flex-shrink: 0;
+  }
+
+  .velvet .body {
+    display: flex;
+    flex: 1;
+    padding: 32px 36px 28px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .velvet .col-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .velvet .title-row {
+    margin-bottom: 22px;
+  }
+
+  .velvet .receipt-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+    color: #E8C97A;
+    text-transform: uppercase;
+  }
+
+  .velvet .company-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-top: 3px;
+  }
+
+  .velvet .section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #C9A84C;
+    margin-bottom: 4px;
+  }
+
+  .velvet .section-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.45;
+  }
+
+  .velvet .received-from {
+    margin-bottom: 18px;
+  }
+
+  .velvet .bottom-fields {
+    display: flex;
+    gap: 48px;
+    margin-top: auto;
+  }
+
+  .velvet .field-block {}
+
+  .velvet .field-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    border-bottom: 1px solid rgba(201,168,76,0.35);
+    padding-bottom: 4px;
+    min-width: 140px;
+  }
+
+  .velvet .col-right {
+    width: 200px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 1px solid rgba(201,168,76,0.18);
+    padding-left: 28px;
+    gap: 16px;
+  }
+
+  .velvet .meta-row {}
+
+  .velvet .meta-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(201,168,76,0.7);
+    margin-bottom: 2px;
+  }
+
+  .velvet .meta-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+  }
+
+  .velvet .meta-amount .meta-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #E8C97A;
+  }
+
+  .velvet .sig-area {
+    width: 160px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 28px;
+    padding-right: 32px;
+    padding-left: 8px;
+  }
+
+  .velvet .sig-line {
+    width: 100%;
+    border-bottom: 1px solid rgba(201,168,76,0.4);
+    position: relative;
+    padding-bottom: 4px;
+  }
+  .velvet .sig-line .sig-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(201,168,76,0.6);
+    white-space: nowrap;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* TEMPLATE 2 — SAGE                                       */
+  /* Soft green + warm cream · DM Sans · Modern fintech      */
+  /* ═══════════════════════════════════════════════════════ */
+  .sage {
+    background: #FAFAF7;
+    border-radius: 16px;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+    border: 1px solid #E8EDE6;
+  }
+
+  .sage .watermark {
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 260px;
+    height: 260px;
+    opacity: 0.08;
+  }
+  .sage .watermark svg { width: 100%; height: 100%; }
+
+  .sage .left-accent {
+    width: 200px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #3D7A5C 0%, #5BA882 100%);
+    border-radius: 16px 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 28px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sage .left-accent::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+  }
+
+  .sage .left-accent::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .sage .company-block { position: relative; z-index: 2; }
+
+  .sage .company-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .sage .company-tagline {
+    font-size: 10px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.65);
+    margin-top: 3px;
+    letter-spacing: 0.04em;
+  }
+
+  .sage .body {
+    flex: 1;
+    display: flex;
+    padding: 28px 32px 24px;
+    position: relative;
+    z-index: 2;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .sage .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .sage .receipt-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #3D7A5C;
+    padding: 5px 10px;
+    background: #EBF5EE;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  .sage .meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+    text-align: right;
+  }
+
+  .sage .meta-item .meta-label {
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #9BB59A;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .sage .meta-item .meta-value {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #2A3D2F;
+  }
+
+  .sage .amount-value {
+    font-size: 18px !important;
+    color: #3D7A5C !important;
+  }
+
+  .sage .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #D4E4D8, transparent);
+    margin: 0;
+  }
+
+  .sage .middle-row {
+    display: flex;
+    gap: 32px;
+  }
+
+  .sage .field-block .field-label {
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #9BB59A;
+    margin-bottom: 3px;
+    display: block;
+  }
+
+  .sage .field-block .field-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #2A3D2F;
+    line-height: 1.4;
+  }
+
+  .sage .bottom-row {
+    display: flex;
+    gap: 32px;
+    align-items: flex-end;
+  }
+
+  .sage .for-field {
+    flex: 1;
+  }
+
+  .sage .for-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: #2A3D2F;
+    border-bottom: 1px solid #D4E4D8;
+    padding-bottom: 4px;
+  }
+
+  .sage .sig-block {
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .sage .sig-line {
+    width: 160px;
+    border-bottom: 1px solid #C5D9C8;
+    margin-bottom: 4px;
+    height: 24px;
+  }
+
+  .sage .sig-label {
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #9BB59A;
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* TEMPLATE 3 — CARBON                                     */
+  /* Near-black + electric teal · JetBrains Mono · Tech      */
+  /* ═══════════════════════════════════════════════════════ */
+  .carbon {
+    background: #111318;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,224,192,0.15);
+  }
+
+  .carbon .watermark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+  }
+  .carbon .watermark svg { width: 100%; height: 100%; }
+
+  .carbon .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  .carbon .left-panel {
+    width: 52px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgba(0,224,192,0.12);
+  }
+
+  .carbon .vertical-text {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(0,224,192,0.5);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .carbon .main-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 32px 24px;
+  }
+
+  .carbon .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .carbon .receipt-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .carbon .receipt-title span {
+    color: #00E0C0;
+  }
+
+  .carbon .meta-strip {
+    display: flex;
+    gap: 0;
+  }
+
+  .carbon .meta-cell {
+    text-align: right;
+    padding-left: 24px;
+    border-left: 1px solid rgba(0,224,192,0.12);
+    margin-left: 24px;
+  }
+
+  .carbon .meta-cell:first-child {
+    border-left: none;
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .carbon .meta-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(0,224,192,0.55);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .carbon .meta-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .carbon .amount-value {
+    font-size: 17px !important;
+    color: #00E0C0 !important;
+  }
+
+  .carbon .divider {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0,224,192,0.3), rgba(0,224,192,0.08), transparent);
+    margin-bottom: 18px;
+  }
+
+  .carbon .fields-row {
+    display: flex;
+    gap: 32px;
+    flex: 1;
+  }
+
+  .carbon .field-block {}
+
+  .carbon .field-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(0,224,192,0.5);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .carbon .field-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.5;
+  }
+
+  .carbon .bottom-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 32px;
+    margin-top: auto;
+  }
+
+  .carbon .for-block { flex: 1; }
+  .carbon .for-value {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+    border-bottom: 1px solid rgba(0,224,192,0.2);
+    padding-bottom: 4px;
+  }
+
+  .carbon .sig-block { text-align: right; }
+  .carbon .sig-line {
+    width: 150px;
+    border-bottom: 1px solid rgba(0,224,192,0.25);
+    margin-left: auto;
+    margin-bottom: 4px;
+    height: 24px;
+  }
+  .carbon .sig-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(0,224,192,0.45);
+  }
+
+  /* ═══════════════════════════════════════════════════════ */
+  /* TEMPLATE 4 — SAFFRON                                    */
+  /* Warm white + saffron orange · Poppins · Indian premium  */
+  /* ═══════════════════════════════════════════════════════ */
+  .saffron {
+    background: #FFFDF8;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 8px 40px rgba(211,120,20,0.12);
+    border: 1px solid #F5E8D0;
+  }
+
+  .saffron .watermark {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 280px;
+    height: 280px;
+    opacity: 0.06;
+  }
+  .saffron .watermark svg { width: 100%; height: 100%; }
+
+  .saffron .top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #D37814 0%, #F0A835 40%, #D37814 100%);
+    border-radius: 12px 12px 0 0;
+  }
+
+  .saffron .bottom-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #D37814 0%, #F0A835 50%, #D37814 100%);
+    border-radius: 0 0 12px 12px;
+    opacity: 0.5;
+  }
+
+  .saffron .content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    height: 100%;
+    padding: 28px 0;
+  }
+
+  .saffron .left-band {
+    width: 180px;
+    flex-shrink: 0;
+    padding: 0 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 2px solid #F5E8D0;
+    position: relative;
+  }
+
+  .saffron .receipt-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #D37814;
+    margin-bottom: 10px;
+  }
+
+  .saffron .company-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2C1A06;
+    line-height: 1.2;
+  }
+
+  .saffron .company-sub {
+    font-size: 10px;
+    font-weight: 400;
+    color: #B08050;
+    margin-top: 3px;
+  }
+
+  .saffron .ornament {
+    position: absolute;
+    bottom: 20px;
+    left: 28px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .saffron .ornament-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #D37814;
+    opacity: 0.4;
+  }
+  .saffron .ornament-dot.mid { opacity: 0.7; width: 8px; height: 8px; }
+
+  .saffron .body {
+    flex: 1;
+    padding: 0 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .saffron .top-meta {
+    display: flex;
+    justify-content: flex-end;
+    gap: 28px;
+  }
+
+  .saffron .meta-item .meta-label {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #D37814;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .saffron .meta-item .meta-value {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #2C1A06;
+    text-align: right;
+  }
+
+  .saffron .amount-value {
+    font-size: 18px !important;
+    color: #D37814 !important;
+  }
+
+  .saffron .divider {
+    height: 1px;
+    background: linear-gradient(90deg, #F5E8D0, #D37814 30%, #D37814 70%, #F5E8D0);
+    opacity: 0.5;
+  }
+
+  .saffron .received-from { }
+
+  .saffron .field-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #D37814;
+    margin-bottom: 3px;
+    display: block;
+  }
+
+  .saffron .field-value {
+    font-size: 12.5px;
+    font-weight: 400;
+    color: #3A2510;
+    line-height: 1.5;
+  }
+
+  .saffron .bottom-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+  }
+
+  .saffron .for-block { flex: 1; }
+  .saffron .for-value {
+    font-size: 13px;
+    color: #3A2510;
+    border-bottom: 1.5px solid #F0D8B0;
+    padding-bottom: 4px;
+  }
+
+  .saffron .sig-block { text-align: right; }
+  .saffron .sig-line {
+    width: 150px;
+    border-bottom: 1.5px solid #F0D8B0;
+    margin-left: auto;
+    margin-bottom: 4px;
+    height: 28px;
+  }
+  .saffron .sig-label {
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #D37814;
+    opacity: 0.7;
+  }
+
+  /* ─── Print styles ─────────────────────────────────── */
+  @media print {
+    body { background: white; padding: 20px; }
+    .page-title, .template-label { color: #888; }
+    .receipt { box-shadow: none !important; }
+  }
+
+  @media (max-width: 800px) {
+    .receipt { transform: scale(0.5); transform-origin: top center; }
+    .template-section { height: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<p class="page-title">Cash Receipt Templates</p>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TEMPLATE 1 — VELVET                                        -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="template-section">
+  <span class="template-label">01 — Velvet · Luxury Banking</span>
+  <div class="receipt velvet">
+
+    <!-- Geometric diamond watermark -->
+    <div class="watermark">
+      <svg viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- rotated square grid -->
+        <g opacity="0.25" stroke="#C9A84C" stroke-width="0.6">
+          <line x1="0" y1="150" x2="300" y2="150"/>
+          <line x1="150" y1="0" x2="150" y2="300"/>
+          <line x1="0" y1="0" x2="300" y2="300"/>
+          <line x1="300" y1="0" x2="0" y2="300"/>
+          <rect x="75" y="75" width="150" height="150" transform="rotate(45 150 150)"/>
+          <rect x="55" y="55" width="190" height="190" transform="rotate(45 150 150)"/>
+          <rect x="35" y="35" width="230" height="230" transform="rotate(45 150 150)"/>
+          <rect x="110" y="110" width="80" height="80" transform="rotate(45 150 150)"/>
+          <rect x="130" y="130" width="40" height="40" transform="rotate(45 150 150)"/>
+        </g>
+        <circle cx="150" cy="150" r="8" fill="#C9A84C" opacity="0.4"/>
+        <circle cx="150" cy="150" r="4" fill="#C9A84C" opacity="0.6"/>
+      </svg>
+    </div>
+
+    <div class="left-stripe"></div>
+
+    <div class="body">
+      <div class="col-left">
+        <div class="title-row">
+          <div class="receipt-title">Cash Receipt</div>
+          <div class="company-name">Northwind Enterprises</div>
+        </div>
+
+        <div class="received-from">
+          <div class="section-label">Received From</div>
+          <div class="section-value">
+            Kavindra Mannan<br/>
+            27, DLF City, Gupta Colony<br/>
+            Delhi, Delhi 40003
+          </div>
+        </div>
+
+        <div class="bottom-fields">
+          <div class="field-block">
+            <div class="section-label">For</div>
+            <div class="field-value">Gandhi Mouse Pad</div>
+          </div>
+          <div class="field-block">
+            <div class="section-label">Received By</div>
+            <div class="field-value">Saffron Design</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-right">
+        <div class="meta-row">
+          <div class="meta-label">Receipt No.</div>
+          <div class="meta-value">IN-001</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-label">Date</div>
+          <div class="meta-value">29 Jan 2024</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-label">Payment Method</div>
+          <div class="meta-value">Cash</div>
+        </div>
+        <div class="meta-row meta-amount">
+          <div class="meta-label">Amount</div>
+          <div class="meta-value">₹13,715.52</div>
+        </div>
+      </div>
+
+      <div class="sig-area">
+        <div class="sig-line">
+          <div class="sig-label">Signature</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TEMPLATE 2 — SAGE                                          -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="template-section">
+  <span class="template-label">02 — Sage · Modern Fintech</span>
+  <div class="receipt sage">
+
+    <!-- Organic blob watermark -->
+    <div class="watermark">
+      <svg viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="130" cy="130" r="120" stroke="#3D7A5C" stroke-width="1"/>
+        <circle cx="130" cy="130" r="95"  stroke="#3D7A5C" stroke-width="1"/>
+        <circle cx="130" cy="130" r="70"  stroke="#3D7A5C" stroke-width="1"/>
+        <circle cx="130" cy="130" r="45"  stroke="#3D7A5C" stroke-width="1"/>
+        <circle cx="130" cy="130" r="20"  fill="#3D7A5C" opacity="0.5"/>
+        <line x1="10" y1="130" x2="250" y2="130" stroke="#3D7A5C" stroke-width="0.8"/>
+        <line x1="130" y1="10" x2="130" y2="250" stroke="#3D7A5C" stroke-width="0.8"/>
+        <line x1="45" y1="45" x2="215" y2="215" stroke="#3D7A5C" stroke-width="0.5"/>
+        <line x1="215" y1="45" x2="45" y2="215" stroke="#3D7A5C" stroke-width="0.5"/>
+      </svg>
+    </div>
+
+    <div class="left-accent">
+      <div class="company-block">
+        <div class="company-name">Saffron Design</div>
+        <div class="company-tagline">Creative Studio</div>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="top-row">
+        <div class="receipt-title">Cash Receipt</div>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">No.</span>
+            <span class="meta-value">IN-001</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Date</span>
+            <span class="meta-value">29 Jan 2024</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Method</span>
+            <span class="meta-value">Cash</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Amount</span>
+            <span class="meta-value amount-value">₹13,715.52</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="middle-row">
+        <div class="field-block">
+          <span class="field-label">Received From</span>
+          <div class="field-value">Kavindra Mannan<br/>27, DLF City, Gupta Colony, Delhi</div>
+        </div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="for-block">
+          <span class="field-label" style="font-size:8.5px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#9BB59A;display:block;margin-bottom:3px;">For</span>
+          <div class="for-value">Gandhi Mouse Pad</div>
+        </div>
+        <div class="field-block">
+          <span class="field-label" style="font-size:8.5px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#9BB59A;display:block;margin-bottom:3px;">Received By</span>
+          <div class="for-value" style="min-width:120px;">Saffron Design</div>
+        </div>
+        <div class="sig-block">
+          <div class="sig-line"></div>
+          <div class="sig-label">Authorised Signature</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TEMPLATE 3 — CARBON                                        -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="template-section">
+  <span class="template-label">03 — Carbon · Tech / SaaS</span>
+  <div class="receipt carbon">
+
+    <!-- Grid circuit watermark -->
+    <div class="watermark">
+      <svg viewBox="0 0 750 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Subtle dot grid -->
+        <defs>
+          <pattern id="dotgrid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+            <circle cx="12" cy="12" r="1" fill="#00E0C0" opacity="0.15"/>
+          </pattern>
+        </defs>
+        <rect width="750" height="320" fill="url(#dotgrid)"/>
+        <!-- Corner brackets -->
+        <path d="M20 20 L20 50 M20 20 L50 20" stroke="#00E0C0" stroke-width="1.5" opacity="0.4"/>
+        <path d="M730 20 L730 50 M730 20 L700 20" stroke="#00E0C0" stroke-width="1.5" opacity="0.4"/>
+        <path d="M20 300 L20 270 M20 300 L50 300" stroke="#00E0C0" stroke-width="1.5" opacity="0.4"/>
+        <path d="M730 300 L730 270 M730 300 L700 300" stroke="#00E0C0" stroke-width="1.5" opacity="0.4"/>
+        <!-- Horizontal accent line -->
+        <line x1="52" y1="160" x2="200" y2="160" stroke="#00E0C0" stroke-width="0.5" opacity="0.2"/>
+        <circle cx="200" cy="160" r="2" fill="#00E0C0" opacity="0.3"/>
+        <line x1="202" y1="160" x2="220" y2="160" stroke="#00E0C0" stroke-width="0.5" opacity="0.1"/>
+      </svg>
+    </div>
+
+    <div class="content">
+      <div class="left-panel">
+        <div class="vertical-text">Payment Receipt</div>
+      </div>
+
+      <div class="main-body">
+        <div class="header-row">
+          <div>
+            <div class="receipt-title">CASH <span>RECEIPT</span></div>
+          </div>
+          <div class="meta-strip">
+            <div class="meta-cell">
+              <span class="meta-label">No.</span>
+              <span class="meta-value">IN-001</span>
+            </div>
+            <div class="meta-cell">
+              <span class="meta-label">Date</span>
+              <span class="meta-value">29 Jan 2024</span>
+            </div>
+            <div class="meta-cell">
+              <span class="meta-label">Method</span>
+              <span class="meta-value">Cash</span>
+            </div>
+            <div class="meta-cell">
+              <span class="meta-label">Amount</span>
+              <span class="meta-value amount-value">₹13,715.52</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="fields-row">
+          <div class="field-block">
+            <span class="field-label">Received From</span>
+            <div class="field-value">
+              Kavindra Mannan<br/>
+              27, DLF City, Gupta Colony<br/>
+              Delhi, Delhi 40003
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-row">
+          <div class="for-block">
+            <span class="field-label">For</span>
+            <div class="for-value">Gandhi Mouse Pad</div>
+          </div>
+          <div class="field-block">
+            <span class="field-label">Received By</span>
+            <div class="for-value" style="border-bottom:1px solid rgba(0,224,192,0.2);padding-bottom:4px;min-width:120px;">Saffron Design</div>
+          </div>
+          <div class="sig-block">
+            <div class="sig-line"></div>
+            <div class="sig-label">Authorised Signature</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- TEMPLATE 4 — SAFFRON                                       -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="template-section">
+  <span class="template-label">04 — Saffron · Indian Premium</span>
+  <div class="receipt saffron">
+
+    <!-- Mandala watermark -->
+    <div class="watermark">
+      <svg viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#D37814" stroke-width="1">
+          <circle cx="140" cy="140" r="130"/>
+          <circle cx="140" cy="140" r="110"/>
+          <circle cx="140" cy="140" r="88"/>
+          <circle cx="140" cy="140" r="66"/>
+          <circle cx="140" cy="140" r="44"/>
+          <circle cx="140" cy="140" r="22"/>
+          <!-- Spokes -->
+          <line x1="140" y1="10" x2="140" y2="270"/>
+          <line x1="10" y1="140" x2="270" y2="140"/>
+          <line x1="48" y1="48" x2="232" y2="232"/>
+          <line x1="232" y1="48" x2="48" y2="232"/>
+          <!-- Diamond petal shapes -->
+          <ellipse cx="140" cy="80" rx="8" ry="18" fill="#D37814" opacity="0.3"/>
+          <ellipse cx="140" cy="200" rx="8" ry="18" fill="#D37814" opacity="0.3"/>
+          <ellipse cx="80" cy="140" rx="18" ry="8" fill="#D37814" opacity="0.3"/>
+          <ellipse cx="200" cy="140" rx="18" ry="8" fill="#D37814" opacity="0.3"/>
+          <!-- Diagonal petals -->
+          <ellipse cx="99" cy="99" rx="8" ry="18" transform="rotate(45 99 99)" fill="#D37814" opacity="0.2"/>
+          <ellipse cx="181" cy="99" rx="8" ry="18" transform="rotate(-45 181 99)" fill="#D37814" opacity="0.2"/>
+          <ellipse cx="99" cy="181" rx="8" ry="18" transform="rotate(-45 99 181)" fill="#D37814" opacity="0.2"/>
+          <ellipse cx="181" cy="181" rx="8" ry="18" transform="rotate(45 181 181)" fill="#D37814" opacity="0.2"/>
+        </g>
+        <circle cx="140" cy="140" r="10" fill="#D37814" opacity="0.4"/>
+      </svg>
+    </div>
+
+    <div class="top-bar"></div>
+    <div class="bottom-bar"></div>
+
+    <div class="content">
+      <div class="left-band">
+        <div class="receipt-title">Cash Receipt</div>
+        <div class="company-name">Saffron Design</div>
+        <div class="company-sub">Creative Studio · Delhi</div>
+
+        <div class="ornament">
+          <div class="ornament-dot"></div>
+          <div class="ornament-dot mid"></div>
+          <div class="ornament-dot"></div>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="top-meta">
+          <div class="meta-item">
+            <span class="meta-label">Receipt No.</span>
+            <div class="meta-value">IN-001</div>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Date</span>
+            <div class="meta-value">29 Jan 2024</div>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Payment Method</span>
+            <div class="meta-value">Cash</div>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Amount</span>
+            <div class="meta-value amount-value">₹13,715.52</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="received-from">
+          <span class="field-label">Received From</span>
+          <div class="field-value">
+            Kavindra Mannan · 27, DLF City, Gupta Colony, Delhi – 40003
+          </div>
+        </div>
+
+        <div class="bottom-row">
+          <div class="for-block">
+            <span class="field-label">For</span>
+            <div class="for-value">Gandhi Mouse Pad</div>
+          </div>
+          <div class="field-block" style="flex-shrink:0;">
+            <span class="field-label">Received By</span>
+            <div class="for-value" style="border-bottom:1.5px solid #F0D8B0;padding-bottom:4px;font-size:13px;color:#3A2510;min-width:110px;">Saffron Design</div>
+          </div>
+          <div class="sig-block">
+            <div class="sig-line"></div>
+            <div class="sig-label">Authorised Signature</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

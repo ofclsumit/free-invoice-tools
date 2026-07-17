@@ -1,15 +1,42 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/shared/theme-toggle"
 import { Menu, X, Zap, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { motion, useScroll, useTransform } from "framer-motion"
 
 export function LandingNav() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const headerRef = useRef<HTMLDivElement>(null)
+
+  const { scrollY } = useScroll()
+  const headerBg = useTransform(
+    scrollY,
+    [0, 100],
+    ["rgba(255,255,255,0)", "rgba(255,255,255,0.8)"]
+  )
+  const headerBgDark = useTransform(
+    scrollY,
+    [0, 100],
+    ["rgba(3,0,20,0)", "rgba(3,0,20,0.8)"]
+  )
+  const headerBlur = useTransform(scrollY, [0, 100], [0, 24])
+  const headerBorder = useTransform(
+    scrollY,
+    [0, 100],
+    ["rgba(0,0,0,0)", "rgba(0,0,0,0.1)"]
+  )
+  const headerBorderDark = useTransform(
+    scrollY,
+    [0, 100],
+    ["rgba(255,255,255,0)", "rgba(255,255,255,0.08)"]
+  )
+  const headerY = useTransform(scrollY, [0, 100], [0, 0])
+  const headerScale = useTransform(scrollY, [0, 100], [1, 1])
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20)
@@ -23,14 +50,37 @@ export function LandingNav() {
   ]
 
   return (
-    <header
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled
-          ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-border shadow-sm"
-          : "bg-white dark:bg-gray-950 md:bg-transparent"
-      )}
+    <motion.header
+      ref={headerRef}
+      style={{
+        y: headerY,
+        scale: headerScale,
+      }}
+      className="fixed top-0 left-0 right-0 z-50"
     >
+      {/* Light mode background */}
+      <motion.div
+        className="absolute inset-0 dark:hidden"
+        style={{
+          background: headerBg,
+          backdropFilter: `blur(${headerBlur}px)`,
+          borderBottom: useTransform(headerBorder, v => `1px solid ${v}`),
+        }}
+      />
+      {/* Dark mode background */}
+      <motion.div
+        className="absolute inset-0 hidden dark:block"
+        style={{
+          background: headerBgDark,
+          backdropFilter: `blur(${headerBlur}px)`,
+          borderBottom: useTransform(headerBorderDark, v => `1px solid ${v}`),
+        }}
+      />
+      {/* Content */}
+      <div className={cn(
+        "relative transition-all duration-300",
+        isScrolled ? "shadow-sm" : ""
+      )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -99,7 +149,8 @@ export function LandingNav() {
             </Link>
           </div>
         )}
+        </div>
       </div>
-    </header>
+    </motion.header>
   )
 }

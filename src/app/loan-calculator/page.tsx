@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function LoanCalculatorPage() {
   const content = toolContentDictionary["loan-calculator"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<LoanCalculatorClient />} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<LoanCalculatorClient />} isUltra={true} />
   )
 }

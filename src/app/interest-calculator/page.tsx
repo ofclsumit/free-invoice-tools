@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function InterestCalculatorPage() {
   const content = toolContentDictionary["interest-calculator"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<InterestCalculatorClient />} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<InterestCalculatorClient />} isUltra={true} />
   )
 }

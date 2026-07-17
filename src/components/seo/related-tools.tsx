@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
@@ -7,8 +8,136 @@ export interface RelatedTool {
   href: string
 }
 
-export function RelatedTools({ tools }: { tools: RelatedTool[] }) {
+export interface RelatedTool {
+  title: string
+  description: string
+  href: string
+}
+
+export function RelatedTools({ tools, isUltra = false }: { tools: RelatedTool[]; isUltra?: boolean }) {
   if (!tools || tools.length === 0) return null
+
+  if (isUltra) {
+    return (
+      <section className="related-tools-root-glass">
+        <style dangerouslySetInnerHTML={{ __html: `
+          .related-tools-root-glass {
+            max-width: 920px;
+            width: 100%;
+            margin-top: 1.5rem;
+            font-family: 'Inter', sans-serif;
+          }
+          
+          .related-title {
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.35);
+            margin-bottom: .75rem;
+            text-align: center;
+          }
+
+          .related-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: .75rem;
+          }
+
+          @media (max-width: 580px) {
+            .related-grid {
+              grid-template-columns: repeat(2, 1fr);
+            }
+          }
+
+          .related-card {
+            position: relative;
+            display: block;
+            text-decoration: none;
+            color: #fff;
+            background: transparent;
+            border-radius: 1.1rem;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 4px 16px rgba(0,0,0,.35);
+            transition: transform .3s cubic-bezier(.175,.885,.32,2.2), box-shadow .25s ease;
+          }
+
+          .related-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 0 1px rgba(167,139,250,.3), 0 8px 24px rgba(0,0,0,.4);
+          }
+
+          .related-card .glass-filter {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            backdrop-filter: blur(10px) saturate(1.4);
+            -webkit-backdrop-filter: blur(10px) saturate(1.4);
+            filter: url(#lg-dist);
+            isolation: isolate;
+          }
+
+          .related-card .glass-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: rgba(255,255,255,.1);
+          }
+
+          .related-card .glass-specular {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            border-radius: inherit;
+            overflow: hidden;
+            box-shadow:
+              inset 1.5px 1.5px 0 rgba(255,255,255,.5),
+              inset -1px -1px 0 rgba(255,255,255,.08),
+              inset 0 0 8px rgba(255,255,255,.12);
+          }
+
+          .related-card .glass-content {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            padding: .85rem 1rem .8rem;
+            width: 100%;
+          }
+
+          .rc-name {
+            font-size: .82rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #fff;
+          }
+
+          .rc-desc {
+            font-size: .71rem;
+            font-weight: 400;
+            color: rgba(255,255,255,.45);
+            margin-top: .15rem;
+            line-height: 1.3;
+          }
+        ` }} />
+
+        <h2 className="related-title">Related Tools</h2>
+        <div className="related-grid">
+          {tools.map((tool) => (
+            <Link key={tool.href} href={tool.href} className="related-card">
+              <div className="glass-filter" />
+              <div className="glass-overlay" />
+              <div className="glass-specular" />
+              <div className="glass-content">
+                <span className="rc-name">{tool.title}</span>
+                <span className="rc-desc">{tool.description}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-12 border-t border-border mt-16">
