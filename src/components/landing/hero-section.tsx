@@ -2,17 +2,61 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, LayoutTemplate } from "lucide-react"
-import GlassInvoiceCard from "./GlassInvoiceCard"
+import { useState, useMemo, useRef, useEffect } from "react"
+import { Search, X, ArrowRight } from "lucide-react"
+import { toolCategories } from "./tools-section"
+
+const allTools = toolCategories.flatMap((c) =>
+  c.tools.map((t) => ({ ...t, category: c.label }))
+)
 
 export function HeroSection() {
+  const [query, setQuery] = useState("")
+  const [mode, setMode] = useState<"optimised" | "raw">("optimised")
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", onClick)
+    return () => document.removeEventListener("mousedown", onClick)
+  }, [])
+
+  const results = useMemo(() => {
+    const q = query.trim()
+    if (!q) return []
+    const lower = q.toLowerCase()
+    return allTools
+      .filter((t) => {
+        if (mode === "raw") {
+          // Literal, case-sensitive substring match
+          return (
+            t.title.includes(q) ||
+            t.desc.includes(q) ||
+            t.category.includes(q)
+          )
+        }
+        // Optimised: case-insensitive match across title, desc, category
+        return (
+          t.title.toLowerCase().includes(lower) ||
+          t.desc.toLowerCase().includes(lower) ||
+          t.category.toLowerCase().includes(lower)
+        )
+      })
+      .slice(0, 8)
+  }, [query, mode])
+
   return (
     <section className="hero-root relative w-full overflow-hidden">
       <style dangerouslySetInnerHTML={{ __html: `
         .hero-root {
           min-height: 70vh;
-          padding-top: 7.5rem;
-          padding-bottom: 0;
+          padding-top: 8.5rem;
+          padding-bottom: 3rem;
           background: linear-gradient(180deg,#05010C 0%,#0B0618 30%,#140A2E 70%,#1A1045 100%);
           color: #ECE9F5;
         }
@@ -57,52 +101,6 @@ export function HeroSection() {
           50% { transform: translateY(-22px) translateX(10px); opacity: 0.7; }
         }
 
-        .hero-ring {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          border-radius: 9999px;
-          border: 1px solid rgba(167,139,250,0.16);
-          transform: translate(-50%,-50%) rotateX(58deg);
-          transform-style: preserve-3d;
-          pointer-events: none;
-        }
-        .hero-ring-1 {
-          width: 360px;
-          height: 360px;
-          animation: heroRingSpin 26s linear infinite;
-        }
-        .hero-ring-2 {
-          width: 520px;
-          height: 520px;
-          border-color: rgba(139,92,246,0.12);
-          animation: heroRingSpinRev 34s linear infinite;
-        }
-        .hero-ring-3 {
-          width: 680px;
-          height: 680px;
-          border-color: rgba(124,58,237,0.08);
-          animation: heroRingSpin 44s linear infinite;
-        }
-        @keyframes heroRingSpin {
-          from { transform: translate(-50%,-50%) rotateX(58deg) rotateZ(0deg); }
-          to { transform: translate(-50%,-50%) rotateX(58deg) rotateZ(360deg); }
-        }
-        @keyframes heroRingSpinRev {
-          from { transform: translate(-50%,-50%) rotateX(58deg) rotateZ(360deg); }
-          to { transform: translate(-50%,-50%) rotateX(58deg) rotateZ(0deg); }
-        }
-        .hero-ring-dot {
-          position: absolute;
-          top: -4px;
-          left: 50%;
-          width: 8px;
-          height: 8px;
-          border-radius: 9999px;
-          background: #C4B5FD;
-          box-shadow: 0 0 14px rgba(167,139,250,0.95), 0 0 4px rgba(167,139,250,0.7);
-        }
-
         .hero-badge {
           background: rgba(255,255,255,0.05);
           border: 1px solid rgba(255,255,255,0.12);
@@ -126,40 +124,82 @@ export function HeroSection() {
           100% { background-position: 220% 50%; }
         }
 
-        .hero-float {
-          animation: heroFloat 7s ease-in-out infinite;
+        /* Search bar */
+        .hero-search-wrap { position: relative; width: 100%; max-width: 560px; margin: 0 auto; }
+        .hero-search-box {
+          display: flex; align-items: center; gap: .75rem;
+          width: 100%;
+          padding: .85rem 1rem;
+          border-radius: 9999px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.14);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          box-shadow: 0 10px 40px -12px rgba(124,58,237,0.4);
+          transition: border-color .2s ease, box-shadow .2s ease;
         }
-        @keyframes heroFloat {
-          0%,100% { transform: translateY(0) rotate(-2deg); }
-          50% { transform: translateY(-16px) rotate(2deg); }
+        .hero-search-box:focus-within {
+          border-color: rgba(167,139,250,0.6);
+          box-shadow: 0 0 0 4px rgba(139,92,246,0.18), 0 10px 40px -12px rgba(124,58,237,0.5);
+        }
+        .hero-search-box svg.search-ico { color: rgba(196,181,253,0.8); flex-shrink: 0; }
+        .hero-search-input {
+          flex: 1; background: transparent; border: none; outline: none;
+          color: #fff; font-size: .98rem;
+        }
+        .hero-search-input::placeholder { color: rgba(196,181,253,0.55); }
+
+        .hero-search-modes { display: flex; gap: .4rem; flex-shrink: 0; }
+        .hero-mode-btn {
+          font-size: .72rem; font-weight: 600; padding: .3rem .65rem; border-radius: 9999px;
+          color: rgba(196,181,253,0.7);
+          border: 1px solid rgba(255,255,255,0.12);
+          background: rgba(255,255,255,0.03);
+          cursor: pointer; transition: all .2s ease; white-space: nowrap;
+        }
+        .hero-mode-btn.active {
+          color: #fff;
+          background: linear-gradient(90deg,#8B5CF6,#7C3AED);
+          border-color: transparent;
         }
 
-        .hero-card-glow {
-          animation: heroCardGlow 5s ease-in-out infinite;
+        .hero-search-clear {
+          display: flex; align-items: center; justify-content: center;
+          width: 28px; height: 28px; border-radius: 9999px; flex-shrink: 0;
+          color: rgba(196,181,253,0.7); transition: background .2s ease, color .2s ease;
         }
-        @keyframes heroCardGlow {
-          0%,100% { opacity: 0.55; }
-          50% { opacity: 0.9; }
-        }
+        .hero-search-clear:hover { background: rgba(255,255,255,0.08); color: #fff; }
 
-        .hero-btn-primary {
-          background: linear-gradient(90deg,#8B5CF6,#A855F7,#7C3AED);
-          box-shadow: 0 10px 30px -4px rgba(139,92,246,0.5), inset 0 1px 0 rgba(255,255,255,0.35);
+        .hero-search-results {
+          position: absolute; top: calc(100% + .6rem); left: 0; right: 0;
+          background: rgba(13,8,30,0.92);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 1.1rem;
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+          box-shadow: 0 20px 50px -12px rgba(0,0,0,0.6);
+          overflow: hidden; z-index: 30;
+          max-height: 360px; overflow-y: auto;
         }
-        .hero-btn-primary:hover {
-          box-shadow: 0 14px 44px -2px rgba(167,139,250,0.75), inset 0 1px 0 rgba(255,255,255,0.5);
+        .hero-result-item {
+          display: flex; align-items: center; gap: .75rem;
+          padding: .8rem 1rem; text-align: left; width: 100%;
+          color: #ECE9F5; text-decoration: none;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          transition: background .15s ease;
         }
-
-        .hero-btn-secondary {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.16);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
+        .hero-result-item:last-child { border-bottom: none; }
+        .hero-result-item:hover { background: rgba(139,92,246,0.16); }
+        .hero-result-ico {
+          width: 34px; height: 34px; border-radius: .7rem; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+          background: rgba(139,92,246,0.18); color: #c4b5fd;
         }
-        .hero-btn-secondary:hover {
-          background: rgba(255,255,255,0.09);
-          border-color: rgba(255,255,255,0.3);
-        }
+        .hero-result-ico svg { width: 17px; height: 17px; }
+        .hero-result-title { font-size: .9rem; font-weight: 600; }
+        .hero-result-cat { font-size: .72rem; color: rgba(196,181,253,0.6); }
+        .hero-result-arrow { margin-left: auto; color: rgba(196,181,253,0.5); }
+        .hero-result-empty { padding: 1.25rem 1rem; text-align: center; color: rgba(196,181,253,0.6); font-size: .85rem; }
 
         .hero-fade {
           position: absolute;
@@ -183,7 +223,7 @@ export function HeroSection() {
       <div className="hero-particle" style={{ top: "24%", right: "26%", width: 4, height: 4, animationDelay: "-7.5s" }} />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pt-6 pb-16 text-center">
+      <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-6 pt-6 pb-16 text-center">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -217,57 +257,85 @@ export function HeroSection() {
           Create invoices, quotations, GST invoices, purchase orders, delivery challans and more in seconds.
         </motion.p>
 
-        {/* CTA Buttons */}
+        {/* Search bar to find tools */}
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-9 flex flex-col items-center gap-3 sm:flex-row"
+          className="mt-9 w-full"
+          ref={wrapRef}
         >
-          <Link href="/invoice-generator" className="group relative">
-            <span className="absolute -inset-0.5 rounded-full bg-violet-600/40 blur-lg opacity-50 transition-opacity duration-300 group-hover:opacity-90 pointer-events-none" />
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="hero-btn-primary relative flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-[15px] font-semibold text-white transition-all duration-300"
-            >
-              Create Free Invoice
-              <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-1.5" />
-            </motion.button>
-          </Link>
+          <div className="hero-search-wrap">
+            <div className="hero-search-box">
+              <Search size={20} className="search-ico" />
+              <input
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value)
+                  setOpen(true)
+                }}
+                onFocus={() => setOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && query.trim()) {
+                    setOpen(false)
+                    document.getElementById("tools")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                }}
+                placeholder="Search Invoice, GST, Quotation, PDF..."
+                className="hero-search-input"
+                aria-label="Search tools"
+              />
+              {query && (
+                <button className="hero-search-clear" onClick={() => setQuery("")} aria-label="Clear search">
+                  <X size={16} />
+                </button>
+              )}
+              <div className="hero-search-modes">
+                <button
+                  type="button"
+                  className={`hero-mode-btn ${mode === "optimised" ? "active" : ""}`}
+                  onClick={() => setMode("optimised")}
+                >
+                  Optimised
+                </button>
+                <button
+                  type="button"
+                  className={`hero-mode-btn ${mode === "raw" ? "active" : ""}`}
+                  onClick={() => setMode("raw")}
+                >
+                  Raw
+                </button>
+              </div>
+            </div>
 
-          <Link href="/#tools">
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="hero-btn-secondary flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-[15px] font-semibold text-white transition-all duration-300"
-            >
-              <LayoutTemplate size={18} className="text-violet-300" />
-              Browse Templates
-            </motion.button>
-          </Link>
-        </motion.div>
-
-        {/* Center visual */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.35, ease: "easeOut" }}
-          className="relative mt-12 flex w-full max-w-[540px] items-center justify-center"
-        >
-          {/* Orbital rings */}
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="hero-ring hero-ring-1"><span className="hero-ring-dot" /></div>
-            <div className="hero-ring hero-ring-2"><span className="hero-ring-dot" style={{ background: "#A78BFA" }} /></div>
-            <div className="hero-ring hero-ring-3"><span className="hero-ring-dot" style={{ background: "#8B5CF6" }} /></div>
-          </div>
-
-          {/* Soft purple glow behind card */}
-          <div className="hero-card-glow pointer-events-none absolute h-[320px] w-[320px] rounded-full bg-violet-600/30 blur-3xl" />
-
-          {/* Glass invoice card */}
-          <div className="hero-float relative z-10">
-            <GlassInvoiceCard />
+            {open && query.trim() && (
+              <div className="hero-search-results">
+                {results.length === 0 ? (
+                  <p className="hero-result-empty">No tools found for &ldquo;{query}&rdquo;.</p>
+                ) : (
+                  results.map((tool) => {
+                    const ToolIcon = tool.icon
+                    return (
+                      <Link
+                        key={tool.href}
+                        href={tool.href}
+                        className="hero-result-item"
+                        onClick={() => setOpen(false)}
+                      >
+                        <span className="hero-result-ico">
+                          <ToolIcon />
+                        </span>
+                        <span className="flex flex-col">
+                          <span className="hero-result-title">{tool.title}</span>
+                          <span className="hero-result-cat">{tool.category}</span>
+                        </span>
+                        <ArrowRight size={16} className="hero-result-arrow" />
+                      </Link>
+                    )
+                  })
+                )}
+              </div>
+            )}
           </div>
         </motion.div>
       </div>

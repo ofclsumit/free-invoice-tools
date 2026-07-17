@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { Calculator, FileText, Search, Receipt, Package, ShoppingCart, TrendingUp, Hash, ClipboardList, ArrowRight, Landmark, Percent, Banknote, PieChart, Tag, DollarSign, StickyNote, FileEdit, PenTool, CreditCard, FileSignature, IndianRupee, Home, ArrowLeftRight, Building, CalendarDays } from "lucide-react"
 
-const toolCategories = [
+export const toolCategories = [
   {
     label: "Document Generators",
     tools: [
