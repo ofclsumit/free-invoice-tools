@@ -52,7 +52,7 @@ export function ToolsSection() {
         .tools-section-root {
           width: 100%;
           font-family: 'Inter', sans-serif;
-          margin-top: -150px;
+          margin-top: -90px;
           padding: 2rem 1.25rem 5rem;
           display: flex;
           flex-direction: column;
@@ -63,44 +63,12 @@ export function ToolsSection() {
           position: relative;
           z-index: 20;
         }
-        @media (max-width: 1023px) { .tools-section-root { margin-top: -110px; } }
-        @media (max-width: 639px) { .tools-section-root { margin-top: -70px; padding-top: 1rem; } }
+        @media (max-width: 1023px) { .tools-section-root { margin-top: -60px; } }
+        @media (max-width: 639px) { .tools-section-root { margin-top: -40px; padding-top: 1rem; } }
         
         .tools-section-container {
           max-width: 920px;
           width: 100%;
-        }
-
-        .tools-section-header {
-          text-align: center;
-          margin-bottom: 3.5rem;
-        }
-
-        .tools-section-eyebrow {
-          font-size: .72rem;
-          font-weight: 700;
-          letter-spacing: .15em;
-          text-transform: uppercase;
-          color: #4f46e5;
-          margin-bottom: .6rem;
-        }
-        
-        .dark .tools-section-eyebrow {
-          color: #a78bfa;
-        }
-
-        .tools-section-title {
-          font-size: 2.4rem;
-          font-weight: 700;
-          color: var(--foreground);
-          letter-spacing: -.03em;
-          line-height: 1.1;
-        }
-
-        .tools-section-sub {
-          font-size: .95rem;
-          color: var(--muted-foreground);
-          margin-top: .55rem;
         }
 
         .section {
@@ -212,12 +180,6 @@ export function ToolsSection() {
       </svg>
 
       <div className="tools-section-container">
-        <div className="tools-section-header">
-          <p className="tools-section-eyebrow">Tool Hub</p>
-          <h2 className="tools-section-title">Financial Calculators &amp; Tools</h2>
-          <p className="tools-section-sub">Everything you need to manage your business finances — all in one place</p>
-        </div>
-
         {toolCategories.map((category, idx) => {
           let CategoryIcon = FileText
           let iconClass = "icon-doc"

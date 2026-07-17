@@ -48,6 +48,8 @@ export function HeroSection() {
           padding-bottom: 6rem;
           background: transparent;
           color: #ECE9F5;
+          position: relative;
+          z-index: 30;
         }
         @media (max-width: 1023px) { .hero-root { min-height: 75vh; } }
         @media (max-width: 639px) { .hero-root { min-height: auto; padding-bottom: 5rem; } }
@@ -74,7 +76,7 @@ export function HeroSection() {
           position: absolute;
           inset: 0;
           pointer-events: none;
-          background: radial-gradient(120% 90% at 50% 22%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%);
+          background: radial-gradient(120% 80% at 50% 12%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 55%);
         }
 
         .hero-particle {
@@ -147,13 +149,13 @@ export function HeroSection() {
 
         .hero-search-results {
           position: absolute; top: calc(100% + .6rem); left: 0; right: 0;
-          background: rgba(13,8,30,0.92);
-          border: 1px solid rgba(255,255,255,0.1);
+          background: rgba(10,6,24,0.98);
+          border: 1px solid rgba(167,139,250,0.28);
           border-radius: 1.1rem;
           backdrop-filter: blur(18px);
           -webkit-backdrop-filter: blur(18px);
-          box-shadow: 0 20px 50px -12px rgba(0,0,0,0.6);
-          overflow: hidden; z-index: 30;
+          box-shadow: 0 24px 60px -12px rgba(0,0,0,0.75), 0 0 0 1px rgba(139,92,246,0.12);
+          overflow: hidden; z-index: 40;
           max-height: 360px; overflow-y: auto;
         }
         .hero-result-item {
