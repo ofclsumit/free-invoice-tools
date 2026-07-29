@@ -1,17 +1,16 @@
 "use client"
 
-import { useState, useRef, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import {
-  Download, Eye, X, ZoomIn, ZoomOut, RotateCcw, Printer, Plus, Trash2, Save
+  Eye, RotateCcw, Plus, Trash2, Save
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { LoadingScreen } from "@/components/shared/loading-screen"
-import { ShareButton } from "@/components/shared/share-button"
-import { tryNativeShare, generateShareUrl, openWhatsApp, openEmail } from "@/lib/share-utils"
+import { savePreviewData } from "@/lib/preview-store"
 
 const STORAGE_KEY = "qf_salary_slip"
 
@@ -57,10 +56,7 @@ function saveData(data: SalarySlipData) {
 
 export function SalarySlipClient() {
   const { toast } = useToast()
-  const [showPreview, setShowPreview] = useState(false)
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [zoom, setZoom] = useState(1)
-  const previewContainerRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   const [companyName, setCompanyName] = useState("")
   const [companyLogo, setCompanyLogo] = useState("")
@@ -138,33 +134,6 @@ export function SalarySlipClient() {
     return true
   }, [employeeName, payPeriod, toast])
 
-  const togglePreview = useCallback(() => {
-    if (showPreview) {
-      setShowPreview(false)
-    } else if (validateEssentialFields()) {
-      setShowPreview(true)
-    }
-  }, [showPreview, validateEssentialFields])
-
-  const handleDownloadPDF = async (returnBlob?: boolean): Promise<Blob | void> => {
-    setIsGenerating(true)
-    try {
-      const { exportNodeToPdf } = await import("@/components/invoice-templates/components")
-      const node = document.getElementById("salary-slip-print-root")
-      if (node) {
-        const blob = await exportNodeToPdf(node, `salary-slip-${employeeName || "draft"}-${payPeriod}.pdf`, true)
-        if (returnBlob) return blob
-        toast({ title: "Salary slip PDF downloaded!" })
-      }
-    } catch {
-      toast({ title: "Error generating PDF", variant: "destructive" })
-    } finally {
-      setIsGenerating(false)
-    }
-  }
-
-  const handlePrint = () => { window.print() }
-
   const handleSave = () => {
     if (!validateEssentialFields()) return
     saveData(getState())
@@ -178,404 +147,215 @@ export function SalarySlipClient() {
     toast({ title: "Reverted to saved draft" })
   }
 
-  const handleWhatsAppShare = async () => {
-    if (!validateEssentialFields()) return
-    setIsGenerating(true)
-    try {
-      const { exportNodeToPdf } = await import("@/components/invoice-templates/components")
-      const node = document.getElementById("salary-slip-print-root")
-      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
-      const fileName = `salary-slip-${employeeName || "document"}-${payPeriod}.pdf`
-      const blob = await exportNodeToPdf(node, fileName, true)
-      const msg = `Hello,\n\nPlease find attached the salary slip.\n\nBest regards`
-      const shared = await tryNativeShare(blob, fileName, `Salary Slip ${employeeName || ""}`, msg)
-      if (!shared) {
-        const salaryData = { companyName, companyLogo, companyAddress, employeeName, employeeId, designation, department, pan, uan, bankName, bankAccount, payPeriod, paidDays, lopDays, payDate, basic, hra, da, conveyance, medical, special, pf, esi, profTax, tds, totalEarnings, totalDeductions, netSalary }
-        const url = await generateShareUrl(salaryData, "SalarySlip", `Salary Slip ${employeeName || ""}`)
-        if (url) {
-          openWhatsApp(`${msg}\n\nView online: ${url}`)
-        } else {
-          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
-          openWhatsApp(msg)
-        }
-      }
-    } catch { toast({ title: "Failed to share", variant: "destructive" }) }
-    finally { setIsGenerating(false) }
-  }
-
-  const handleEmailReceipt = async () => {
-    if (!validateEssentialFields()) return
-    setIsGenerating(true)
-    try {
-      const { exportNodeToPdf } = await import("@/components/invoice-templates/components")
-      const node = document.getElementById("salary-slip-print-root")
-      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
-      const fileName = `salary-slip-${employeeName || "document"}-${payPeriod}.pdf`
-      const blob = await exportNodeToPdf(node, fileName, true)
-      const body = `Dear Sir/Madam,\n\nPlease find attached the salary slip.\n\nBest regards`
-      const shared = await tryNativeShare(blob, fileName, `Salary Slip ${employeeName || ""}`, body)
-      if (!shared) {
-        const salaryData = { companyName, companyLogo, companyAddress, employeeName, employeeId, designation, department, pan, uan, bankName, bankAccount, payPeriod, paidDays, lopDays, payDate, basic, hra, da, conveyance, medical, special, pf, esi, profTax, tds, totalEarnings, totalDeductions, netSalary }
-        const url = await generateShareUrl(salaryData, "SalarySlip", `Salary Slip ${employeeName || ""}`)
-        if (url) {
-          openEmail("", `Salary Slip ${employeeName || ""}`, `${body}\n\nView online: ${url}`)
-        } else {
-          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
-          openEmail("", `Salary Slip ${employeeName || ""}`, body)
-        }
-      }
-    } catch { toast({ title: "Failed to send email", variant: "destructive" }) }
-    finally { setIsGenerating(false) }
-  }
-
   const resetForm = useCallback(() => {
     setCompanyName(""); setCompanyLogo(""); setCompanyAddress(""); setEmployeeName(""); setEmployeeId(""); setDesignation(""); setDepartment(""); setPan(""); setUan(""); setBankName(""); setBankAccount(""); setPayPeriod(new Date().toISOString().split("T")[0].slice(0, 7)); setPaidDays(""); setLopDays(""); setPayDate(new Date().toISOString().split("T")[0]); setBasic(""); setHra(""); setDa(""); setConveyance(""); setMedical(""); setSpecial(""); setPf(""); setEsi(""); setProfTax(""); setTds("")
   }, [])
 
-  useEffect(() => {
-    if (showPreview) {
-      document.body.style.overflow = "hidden"
-      document.documentElement.style.overflow = "hidden"
-      document.body.style.touchAction = "none"
-      document.documentElement.style.touchAction = "none"
-    } else {
-      document.body.style.overflow = ""
-      document.documentElement.style.overflow = ""
-      document.body.style.touchAction = ""
-      document.documentElement.style.touchAction = ""
-      setZoom(1)
-    }
-    return () => {
-      document.body.style.overflow = ""
-      document.documentElement.style.overflow = ""
-      document.body.style.touchAction = ""
-      document.documentElement.style.touchAction = ""
-    }
-  }, [showPreview])
+  const handleShowPreview = useCallback(() => {
+    if (!validateEssentialFields()) return
+    const id = savePreviewData({
+      docType: "salary-slip",
+      title: "Salary Slip Preview",
+      fileName: `salary-slip-${employeeName || "draft"}-${payPeriod}.pdf`,
+      data: { companyName, companyLogo, companyAddress, employeeName, employeeId, designation, department, pan, uan, bankName, bankAccount, payPeriod, paidDays, lopDays, payDate, basic, hra, da, conveyance, medical, special, pf, esi, profTax, tds },
+    })
+    router.push(`/preview/${id}`)
+  }, [validateEssentialFields, companyName, companyLogo, companyAddress, employeeName, employeeId, designation, department, pan, uan, bankName, bankAccount, payPeriod, paidDays, lopDays, payDate, basic, hra, da, conveyance, medical, special, pf, esi, profTax, tds, router])
 
   if (!mounted) return null
 
-  const renderPayslip = () => (
-    <div className="bg-white text-black p-8 sm:p-12 print:shadow-none print:p-0 print:rounded-none w-full" style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box" }}>
-      <div className="border-b-2 border-blue-600 pb-6 mb-6">
-        <div className="flex justify-between items-start">
-          <div className="max-w-[50%]">
-            {companyLogo && <img src={companyLogo} alt="Logo" className="h-14 object-contain mb-3" />}
-            <h2 className="text-xl font-bold text-gray-900">{companyName || "Company Name"}</h2>
-            {companyAddress && <p className="text-xs text-gray-500 mt-1 whitespace-pre-line">{companyAddress}</p>}
-          </div>
-          <div className="text-right">
-            <h1 className="text-2xl font-light text-blue-600 uppercase tracking-widest mb-1">Salary Slip</h1>
-            <p className="text-gray-500 text-xs">Pay Period: <span className="font-medium text-gray-900">{payPeriod}</span></p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-xl text-sm">
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Employee Name</p><p className="font-semibold text-gray-900">{employeeName || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Employee ID</p><p className="font-semibold text-gray-900">{employeeId || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Designation</p><p className="font-semibold text-gray-900">{designation || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Department</p><p className="font-semibold text-gray-900">{department || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">PAN</p><p className="font-semibold text-gray-900">{pan || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">UAN</p><p className="font-semibold text-gray-900">{uan || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Bank Name</p><p className="font-semibold text-gray-900">{bankName || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Bank A/c No.</p><p className="font-semibold text-gray-900">{bankAccount || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Paid Days</p><p className="font-semibold text-gray-900">{paidDays || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">LOP Days</p><p className="font-semibold text-gray-900">{lopDays || "-"}</p></div>
-        <div><p className="text-gray-500 text-xs uppercase tracking-wider mb-0.5">Pay Date</p><p className="font-semibold text-gray-900">{payDate || "-"}</p></div>
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-6 mb-6">
+  return (
+    <div className="flex flex-col min-h-[calc(100vh-8rem)]">
+      <div className="flex items-center justify-between mb-6 sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-border">
         <div>
-          <h3 className="font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2 text-sm uppercase tracking-wider">Earnings</h3>
-          <div className="space-y-2">
-            {[{ label: "Basic", val: b }, { label: "HRA", val: h }, { label: "DA", val: d }, { label: "Conveyance", val: c }, { label: "Medical", val: m }, { label: "Special Allowance", val: s }].map(item => (
-              <div key={item.label} className="flex justify-between text-sm">
-                <span className="text-gray-600">{item.label}</span>
-                <span className="font-medium text-gray-900">₹{fmt(item.val)}</span>
-              </div>
-            ))}
-            <div className="border-t border-gray-200 pt-2 flex justify-between font-semibold">
-              <span className="text-gray-800">Total Earnings</span>
-              <span className="text-blue-600">₹{fmt(totalEarnings)}</span>
-            </div>
-          </div>
+          <h1 className="text-xl font-display font-bold">New Salary Slip</h1>
+          <p className="text-xs text-muted-foreground">Generate professional salary slips for your employees</p>
         </div>
-        <div>
-          <h3 className="font-semibold text-gray-700 mb-3 border-b border-gray-200 pb-2 text-sm uppercase tracking-wider">Deductions</h3>
-          <div className="space-y-2">
-            {[{ label: "PF", val: pfAmt }, { label: "ESI", val: esiAmt }, { label: "Professional Tax", val: ptAmt }, { label: "TDS", val: tdsAmt }].map(item => (
-              <div key={item.label} className="flex justify-between text-sm">
-                <span className="text-gray-600">{item.label}</span>
-                <span className="font-medium text-gray-900">₹{fmt(item.val)}</span>
-              </div>
-            ))}
-            <div className="border-t border-gray-200 pt-2 flex justify-between font-semibold">
-              <span className="text-gray-800">Total Deductions</span>
-              <span className="text-red-600">₹{fmt(totalDeductions)}</span>
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleRevert} title="Revert to last saved">
+            <RotateCcw className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Revert</span>
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleSave}>
+            <Save className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Save Draft</span>
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={resetForm}>
+            <RotateCcw className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Reset</span>
+          </Button>
         </div>
       </div>
 
-      <div className="bg-blue-50 p-5 rounded-xl flex justify-between items-center">
-        <span className="font-bold text-lg text-gray-800">Net Salary</span>
-        <span className="font-bold text-2xl text-blue-600">₹{fmt(netSalary)}</span>
-      </div>
+      <div className="max-w-4xl mx-auto w-full">
+        <div className="space-y-6">
+          {/* Company Details */}
+          <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <div className="h-5 w-1 rounded-full bg-blue-500" />
+              Company Details
+            </h3>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Company Name</Label>
+                <Input placeholder="Your company name" value={companyName} onChange={e => setCompanyName(e.target.value)} className="h-9 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Company Logo (Optional)</Label>
+                <div className="relative border-2 border-dashed border-border rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group h-28 w-full max-w-[200px] overflow-hidden">
+                  {companyLogo ? (
+                    <>
+                      <img src={companyLogo} alt="Logo" className="max-h-full max-w-full object-contain p-2" />
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" onClick={(e) => { e.preventDefault(); setCompanyLogo("") }}>
+                        <Trash2 className="h-5 w-5 text-white" />
+                      </div>
+                    </>
+                  ) : (
+                    <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
+                      <Plus className="h-5 w-5 text-muted-foreground mb-1" />
+                      <span className="text-[10px] text-muted-foreground font-medium">Upload Logo</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                    </label>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Company Address (Optional)</Label>
+              <Textarea placeholder="Company address" value={companyAddress} onChange={e => setCompanyAddress(e.target.value)} className="min-h-16 text-sm" />
+            </div>
+          </section>
 
-      {netSalary > 0 && <p className="text-[10px] text-gray-400 mt-2">Amount in words: Rupees {fmt(netSalary)} only</p>}
+          {/* Employee Details */}
+          <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <div className="h-5 w-1 rounded-full bg-violet-500" />
+              Employee Details
+            </h3>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Employee Name *</Label>
+                <Input placeholder="Employee name" value={employeeName} onChange={e => setEmployeeName(e.target.value)} className="h-9 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Employee ID</Label>
+                <Input placeholder="EMP001" value={employeeId} onChange={e => setEmployeeId(e.target.value)} className="h-9 text-sm" />
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Designation</Label>
+                <Input placeholder="Software Engineer" value={designation} onChange={e => setDesignation(e.target.value)} className="h-9 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Department</Label>
+                <Input placeholder="Engineering" value={department} onChange={e => setDepartment(e.target.value)} className="h-9 text-sm" />
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">PAN</Label>
+                <Input placeholder="ABCDE1234F" value={pan} onChange={e => setPan(e.target.value.toUpperCase())} className="h-9 text-sm uppercase" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">UAN</Label>
+                <Input placeholder="123456789012" value={uan} onChange={e => setUan(e.target.value)} className="h-9 text-sm" />
+              </div>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Bank Name</Label>
+                <Input placeholder="State Bank of India" value={bankName} onChange={e => setBankName(e.target.value)} className="h-9 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Bank A/c No.</Label>
+                <Input placeholder="XXXXXX1234" value={bankAccount} onChange={e => setBankAccount(e.target.value)} className="h-9 text-sm" />
+              </div>
+            </div>
+          </section>
 
-      <div className="mt-8 pt-4 border-t border-gray-100 flex justify-between text-gray-400 text-xs">
-        <span>This is a computer-generated salary slip</span>
-        <span>Generated by QuoteFlow</span>
+          {/* Pay Period */}
+          <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <div className="h-5 w-1 rounded-full bg-emerald-500" />
+              Pay Period
+            </h3>
+            <div className="grid sm:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Pay Period (Month) *</Label>
+                <Input type="month" value={payPeriod} onChange={e => setPayPeriod(e.target.value)} className="h-9 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Paid Days</Label>
+                <Input type="number" placeholder="30" value={paidDays} onChange={e => setPaidDays(e.target.value)} className="h-9 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Loss of Pay Days</Label>
+                <Input type="number" placeholder="0" value={lopDays} onChange={e => setLopDays(e.target.value)} className="h-9 text-sm" />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Pay Date</Label>
+              <Input type="date" className="h-9 text-sm" value={payDate} onChange={e => setPayDate(e.target.value)} />
+            </div>
+          </section>
+
+          {/* Earnings */}
+          <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <div className="h-5 w-1 rounded-full bg-green-500" />
+              Earnings (₹)
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {[{ label: "Basic", val: basic, set: setBasic }, { label: "HRA", val: hra, set: setHra }, { label: "DA", val: da, set: setDa }, { label: "Conveyance", val: conveyance, set: setConveyance }, { label: "Medical", val: medical, set: setMedical }, { label: "Special Allowance", val: special, set: setSpecial }].map(item => (
+                <div key={item.label} className="space-y-1">
+                  <Label className="text-[10px] text-muted-foreground">{item.label}</Label>
+                  <Input type="number" placeholder="0" value={item.val} onChange={e => item.set(e.target.value)} className="h-8 text-xs" />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end text-xs font-semibold text-blue-600">Total: ₹{fmt(totalEarnings)}</div>
+          </section>
+
+          {/* Deductions */}
+          <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <div className="h-5 w-1 rounded-full bg-red-500" />
+              Deductions (₹)
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[{ label: "PF", val: pf, set: setPf }, { label: "ESI", val: esi, set: setEsi }, { label: "Professional Tax", val: profTax, set: setProfTax }, { label: "TDS", val: tds, set: setTds }].map(item => (
+                <div key={item.label} className="space-y-1">
+                  <Label className="text-[10px] text-muted-foreground">{item.label}</Label>
+                  <Input type="number" placeholder="0" value={item.val} onChange={e => item.set(e.target.value)} className="h-8 text-xs" />
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-end text-xs font-semibold text-red-600">Total: ₹{fmt(totalDeductions)}</div>
+          </section>
+
+          {/* Summary */}
+          <section className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900 p-5 rounded-2xl space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Gross Earnings</span>
+              <span className="font-semibold text-blue-600">₹{fmt(totalEarnings)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Total Deductions</span>
+              <span className="font-semibold text-red-600">₹{fmt(totalDeductions)}</span>
+            </div>
+            <div className="h-px bg-blue-200 dark:bg-blue-800" />
+            <div className="flex justify-between font-bold text-lg">
+              <span>Net Salary</span>
+              <span className="text-blue-600">₹{fmt(netSalary)}</span>
+            </div>
+          </section>
+
+          {/* Bottom Actions */}
+          <div className="flex flex-wrap gap-3 pb-6">
+            <Button onClick={handleShowPreview} className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-0 font-semibold flex-1">
+              <Eye className="h-4 w-4" /> SHOW PREVIEW
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
-  )
-
-  return (
-    <>
-      {isGenerating && <LoadingScreen message="Generating PDF..." />}
-
-      <div id="salary-slip-print-root" className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
-        {renderPayslip()}
-      </div>
-
-      {showPreview && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-start bg-black/80 backdrop-blur-md animate-in fade-in duration-300" style={{ overscrollBehavior: "contain" }}>
-          <div className="relative w-full h-full flex flex-col max-w-[1200px] mx-auto bg-white/5 dark:bg-black/5 shadow-2xl animate-in slide-in-from-bottom-8 zoom-in-95 duration-500 overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white dark:bg-gray-950 sticky top-0 z-10 shadow-sm">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" onClick={() => setShowPreview(false)} className="h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <X className="h-4 w-4" />
-                </Button>
-                <h2 className="text-lg font-display font-semibold hidden sm:block">Salary Slip Preview</h2>
-                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-900 rounded-lg p-1 ml-4 border border-border">
-                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md hover:bg-white dark:hover:bg-black shadow-sm" onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>
-                    <ZoomOut className="h-3.5 w-3.5" />
-                  </Button>
-                  <span className="text-xs font-medium w-12 text-center select-none">{Math.round(zoom * 100)}%</span>
-                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md hover:bg-white dark:hover:bg-black shadow-sm" onClick={() => setZoom(z => Math.min(3, z + 0.1))}>
-                    <ZoomIn className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button size="sm" className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-0 font-semibold" onClick={() => handleDownloadPDF()} disabled={isGenerating}>
-                  <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                </Button>
-              </div>
-            </div>
-            <div ref={previewContainerRef} className="flex-1 overflow-y-auto p-0 sm:p-2 md:p-4 flex flex-col items-center" style={{ cursor: "grab", overscrollBehavior: "contain" }}>
-              <div className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white" style={{ width: "100%", maxWidth: "210mm", transform: `scale(${zoom})`, transformOrigin: "top center", margin: "0 auto" }}>
-                {renderPayslip()}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="flex flex-col min-h-[calc(100vh-8rem)]">
-        <div className="flex items-center justify-between mb-6 sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-border">
-          <div>
-            <h1 className="text-xl font-display font-bold">New Salary Slip</h1>
-            <p className="text-xs text-muted-foreground">Generate professional salary slips for your employees</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleRevert} title="Revert to last saved">
-              <RotateCcw className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Revert</span>
-            </Button>
-            <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleSave}>
-              <Save className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Save Draft</span>
-            </Button>
-            <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={resetForm}>
-              <RotateCcw className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Reset</span>
-            </Button>
-          </div>
-        </div>
-
-        <div className="max-w-4xl mx-auto w-full">
-          <div className="space-y-6">
-            {/* Company Details */}
-            <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
-              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                <div className="h-5 w-1 rounded-full bg-blue-500" />
-                Company Details
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Company Name</Label>
-                  <Input placeholder="Your company name" value={companyName} onChange={e => setCompanyName(e.target.value)} className="h-9 text-sm" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Company Logo (Optional)</Label>
-                  <div className="relative border-2 border-dashed border-border rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group h-28 w-full max-w-[200px] overflow-hidden">
-                    {companyLogo ? (
-                      <>
-                        <img src={companyLogo} alt="Logo" className="max-h-full max-w-full object-contain p-2" />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" onClick={(e) => { e.preventDefault(); setCompanyLogo("") }}>
-                          <Trash2 className="h-5 w-5 text-white" />
-                        </div>
-                      </>
-                    ) : (
-                      <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
-                        <Plus className="h-5 w-5 text-muted-foreground mb-1" />
-                        <span className="text-[10px] text-muted-foreground font-medium">Upload Logo</span>
-                        <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
-                      </label>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Company Address (Optional)</Label>
-                <Textarea placeholder="Company address" value={companyAddress} onChange={e => setCompanyAddress(e.target.value)} className="min-h-16 text-sm" />
-              </div>
-            </section>
-
-            {/* Employee Details */}
-            <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
-              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                <div className="h-5 w-1 rounded-full bg-violet-500" />
-                Employee Details
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Employee Name *</Label>
-                  <Input placeholder="Employee name" value={employeeName} onChange={e => setEmployeeName(e.target.value)} className="h-9 text-sm" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Employee ID</Label>
-                  <Input placeholder="EMP001" value={employeeId} onChange={e => setEmployeeId(e.target.value)} className="h-9 text-sm" />
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Designation</Label>
-                  <Input placeholder="Software Engineer" value={designation} onChange={e => setDesignation(e.target.value)} className="h-9 text-sm" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Department</Label>
-                  <Input placeholder="Engineering" value={department} onChange={e => setDepartment(e.target.value)} className="h-9 text-sm" />
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">PAN</Label>
-                  <Input placeholder="ABCDE1234F" value={pan} onChange={e => setPan(e.target.value.toUpperCase())} className="h-9 text-sm uppercase" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">UAN</Label>
-                  <Input placeholder="123456789012" value={uan} onChange={e => setUan(e.target.value)} className="h-9 text-sm" />
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Bank Name</Label>
-                  <Input placeholder="State Bank of India" value={bankName} onChange={e => setBankName(e.target.value)} className="h-9 text-sm" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Bank A/c No.</Label>
-                  <Input placeholder="XXXXXX1234" value={bankAccount} onChange={e => setBankAccount(e.target.value)} className="h-9 text-sm" />
-                </div>
-              </div>
-            </section>
-
-            {/* Pay Period */}
-            <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
-              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                <div className="h-5 w-1 rounded-full bg-emerald-500" />
-                Pay Period
-              </h3>
-              <div className="grid sm:grid-cols-3 gap-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Pay Period (Month) *</Label>
-                  <Input type="month" value={payPeriod} onChange={e => setPayPeriod(e.target.value)} className="h-9 text-sm" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Paid Days</Label>
-                  <Input type="number" placeholder="30" value={paidDays} onChange={e => setPaidDays(e.target.value)} className="h-9 text-sm" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Loss of Pay Days</Label>
-                  <Input type="number" placeholder="0" value={lopDays} onChange={e => setLopDays(e.target.value)} className="h-9 text-sm" />
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Pay Date</Label>
-                <Input type="date" className="h-9 text-sm" value={payDate} onChange={e => setPayDate(e.target.value)} />
-              </div>
-            </section>
-
-            {/* Earnings */}
-            <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
-              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                <div className="h-5 w-1 rounded-full bg-green-500" />
-                Earnings (₹)
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {[{ label: "Basic", val: basic, set: setBasic }, { label: "HRA", val: hra, set: setHra }, { label: "DA", val: da, set: setDa }, { label: "Conveyance", val: conveyance, set: setConveyance }, { label: "Medical", val: medical, set: setMedical }, { label: "Special Allowance", val: special, set: setSpecial }].map(item => (
-                  <div key={item.label} className="space-y-1">
-                    <Label className="text-[10px] text-muted-foreground">{item.label}</Label>
-                    <Input type="number" placeholder="0" value={item.val} onChange={e => item.set(e.target.value)} className="h-8 text-xs" />
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end text-xs font-semibold text-blue-600">Total: ₹{fmt(totalEarnings)}</div>
-            </section>
-
-            {/* Deductions */}
-            <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
-              <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                <div className="h-5 w-1 rounded-full bg-red-500" />
-                Deductions (₹)
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[{ label: "PF", val: pf, set: setPf }, { label: "ESI", val: esi, set: setEsi }, { label: "Professional Tax", val: profTax, set: setProfTax }, { label: "TDS", val: tds, set: setTds }].map(item => (
-                  <div key={item.label} className="space-y-1">
-                    <Label className="text-[10px] text-muted-foreground">{item.label}</Label>
-                    <Input type="number" placeholder="0" value={item.val} onChange={e => item.set(e.target.value)} className="h-8 text-xs" />
-                  </div>
-                ))}
-              </div>
-              <div className="flex justify-end text-xs font-semibold text-red-600">Total: ₹{fmt(totalDeductions)}</div>
-            </section>
-
-            {/* Summary */}
-            <section className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900 p-5 rounded-2xl space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Gross Earnings</span>
-                <span className="font-semibold text-blue-600">₹{fmt(totalEarnings)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Total Deductions</span>
-                <span className="font-semibold text-red-600">₹{fmt(totalDeductions)}</span>
-              </div>
-              <div className="h-px bg-blue-200 dark:bg-blue-800" />
-              <div className="flex justify-between font-bold text-lg">
-                <span>Net Salary</span>
-                <span className="text-blue-600">₹{fmt(netSalary)}</span>
-              </div>
-            </section>
-
-            {/* Bottom Actions */}
-            <div className="flex flex-wrap gap-3 pb-6">
-              <Button onClick={togglePreview} className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white border-0 font-semibold flex-1">
-                <Eye className="h-4 w-4" /> SHOW PREVIEW
-              </Button>
-              <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
-                <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />
-              </button>
-              <button onClick={handleEmailReceipt} title="Email Salary Slip" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
-                <img src="/email.svg" alt="Email" className="h-5 w-5" />
-              </button>
-              <ShareButton invoiceData={{ companyName, companyLogo, companyAddress, employeeName, employeeId, designation, department, pan, uan, bankName, bankAccount, payPeriod, paidDays, lopDays, payDate, basic, hra, da, conveyance, medical, special, pf, esi, profTax, tds, totalEarnings, totalDeductions, netSalary }} template="SalarySlip" title={`Salary Slip ${employeeName || ""}`} />
-              <Button variant="outline" className="gap-2" onClick={handlePrint}>
-                <Printer className="h-4 w-4" /> Print
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
   )
 }

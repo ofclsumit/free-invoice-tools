@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useMemo, useEffect, useRef } from "react"
+import { useState, useCallback, useEffect, useMemo } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -14,27 +14,20 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import {
-  Plus, Trash2, Download, Eye, Save, Printer, FileText,
-  X, ZoomIn, ZoomOut, ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
+  Plus, Trash2, Eye, Save, FileText,
+  ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
   RotateCcw
 } from "lucide-react"
 import {
-  InvoicePreview,
-  StudioTemplate,
-  LedgerTemplate,
-  MinimalMonoTemplate,
-  VyaparDesiTemplate,
-  ClassicBooksTemplate,
   computeInvoiceTotals,
-  exportNodeToPdf,
   type InvoiceData as TemplateInvoiceData
 } from "@/components/invoice-templates/components"
 import { formatCurrency } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
-import { LoadingScreen } from "@/components/shared/loading-screen"
-import { ShareButton } from "@/components/shared/share-button"
+import { useRouter } from "next/navigation"
+import { savePreviewData } from "@/lib/preview-store"
 import { TemplateDialog, TemplateSelectorInline } from "@/components/template-selection"
-import { tryNativeShare, generateShareUrl, openWhatsApp, openEmail } from "@/lib/share-utils"
+
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -160,14 +153,11 @@ function savePOs(pos: SavedPO[]) {
 
 export function PurchaseOrderClient() {
   const { toast } = useToast()
-  const [showPreview, setShowPreview] = useState(false)
-  const [isGenerating, setIsGenerating] = useState(false)
+  const router = useRouter()
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
-  const [zoom, setZoom] = useState(1)
   const [showExtras, setShowExtras] = useState(false)
   const [savedOnce, setSavedOnce] = useState(false)
   const [savedPOs, setSavedPOs] = useState<SavedPO[]>([])
-  const previewContainerRef = useRef<HTMLDivElement>(null)
 
   const handleTemplateSelect = (templateId: string) => {
     const mapping: Record<string, string> = {
@@ -186,29 +176,6 @@ export function PurchaseOrderClient() {
   useEffect(() => {
     setSavedPOs(loadPOs())
   }, [])
-
-  useEffect(() => {
-    if (showPreview) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = ""
-      setZoom(1)
-    }
-    return () => { document.body.style.overflow = "" }
-  }, [showPreview])
-
-  useEffect(() => {
-    const container = previewContainerRef.current
-    if (!container || !showPreview) return
-    const handleWheel = (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault()
-        setZoom((prev) => Math.min(Math.max(0.3, prev - e.deltaY * 0.002), 3))
-      }
-    }
-    container.addEventListener("wheel", handleWheel, { passive: false })
-    return () => container.removeEventListener("wheel", handleWheel)
-  }, [showPreview])
 
   const today = new Date().toISOString().split("T")[0]
   const defaultDelivery = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
@@ -244,14 +211,6 @@ export function PurchaseOrderClient() {
     }
     return true
   }, [form, toast])
-
-  const togglePreview = useCallback(() => {
-    if (showPreview) {
-      setShowPreview(false)
-    } else if (validateEssentialFields()) {
-      setShowPreview(true)
-    }
-  }, [showPreview, validateEssentialFields])
 
   const { totals, invoiceData } = useMemo(() => {
     const templateData: TemplateInvoiceData = {
@@ -338,21 +297,6 @@ export function PurchaseOrderClient() {
     return { totals: uiTotals, invoiceData: templateData };
   }, [watchedValues]);
 
-  const handleDownloadPDF = async () => {
-    setIsGenerating(true)
-    try {
-      const node = document.getElementById("invoice-print-root");
-      if (node) {
-        await exportNodeToPdf(node, `purchase-order-${watchedValues.poNumber}.pdf`);
-        toast({ title: "Purchase Order PDF downloaded!" })
-      }
-    } catch {
-      toast({ title: "Error generating PDF", variant: "destructive" })
-    } finally {
-      setIsGenerating(false)
-    }
-  }
-
   const handleSavePO = () => {
     if (!validateEssentialFields()) return
     setSavedOnce(true)
@@ -385,6 +329,18 @@ export function PurchaseOrderClient() {
     }
   }
 
+  const handleShowPreview = useCallback(() => {
+    if (!validateEssentialFields()) return
+    const id = savePreviewData({
+      docType: "template",
+      templateName: watchedValues.template,
+      invoiceData,
+      title: "Purchase Order Preview",
+      fileName: `purchase-order-${watchedValues.poNumber || "draft"}.pdf`,
+    })
+    router.push(`/preview/${id}`)
+  }, [validateEssentialFields, watchedValues, invoiceData, router])
+
   const handleUseCurrency = (code: string) => {
     const currency = CURRENCIES.find(c => c.code === code)
     if (currency) {
@@ -393,124 +349,12 @@ export function PurchaseOrderClient() {
     }
   }
 
-  const handleEmailPO = async () => {
-    if (!validateEssentialFields()) return
-    setIsGenerating(true)
-    try {
-      const node = document.getElementById("po-print-root")
-      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
-      const fileName = `purchase-order-${watchedValues.poNumber}.pdf`
-      const blob = await exportNodeToPdf(node, fileName, true)
-      const body = `Dear ${watchedValues.supplierName || "Supplier"},\n\nPlease find attached the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)}.\n\nDelivery requested by ${watchedValues.deliveryDate || "the specified date"}.\n\nBest regards,\n${watchedValues.businessName}`
-      const shared = await tryNativeShare(blob, fileName, `Purchase Order ${watchedValues.poNumber}`, body)
-      if (!shared) {
-        const url = await generateShareUrl(invoiceData, watchedValues.template, `Purchase Order ${watchedValues.poNumber}`)
-        if (url) {
-          openEmail(watchedValues.supplierEmail || "", `Purchase Order ${watchedValues.poNumber} from ${watchedValues.businessName}`, `${body}\n\nView online: ${url}`)
-        } else {
-          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
-          openEmail(watchedValues.supplierEmail || "", `Purchase Order ${watchedValues.poNumber} from ${watchedValues.businessName}`, body)
-        }
-      }
-    } catch { toast({ title: "Failed to send email", variant: "destructive" }) }
-    finally { setIsGenerating(false) }
-  }
-
-  const handleWhatsAppShare = async () => {
-    if (!validateEssentialFields()) return
-    setIsGenerating(true)
-    try {
-      const node = document.getElementById("po-print-root")
-      if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
-      const fileName = `purchase-order-${watchedValues.poNumber}.pdf`
-      const blob = await exportNodeToPdf(node, fileName, true)
-      const msg = `Hello,\n\nPlease find the purchase order ${watchedValues.poNumber} for ${formatCurrency(totals.grandTotal, watchedValues.currencySymbol)} attached.\n\nThank you!\n\n${watchedValues.businessName}`
-      const shared = await tryNativeShare(blob, fileName, `Purchase Order ${watchedValues.poNumber}`, msg)
-      if (!shared) {
-        const url = await generateShareUrl(invoiceData, watchedValues.template, `Purchase Order ${watchedValues.poNumber}`)
-        if (url) {
-          openWhatsApp(`${msg}\n\nView online: ${url}`)
-        } else {
-          const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
-          openWhatsApp(msg)
-        }
-      }
-    } catch { toast({ title: "Failed to share", variant: "destructive" }) }
-    finally { setIsGenerating(false) }
-  }
-
-  const handlePrint = () => { window.print() }
-
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-
-  const renderTemplate = () => {
-    switch (watchedValues.template) {
-      case "LedgerTemplate": return <LedgerTemplate invoice={invoiceData} />
-      case "MinimalMonoTemplate": return <MinimalMonoTemplate invoice={invoiceData} />
-      case "VyaparDesiTemplate": return <VyaparDesiTemplate invoice={invoiceData} />
-      case "ClassicBooksTemplate": return <ClassicBooksTemplate invoice={invoiceData} />
-      default: return <StudioTemplate invoice={invoiceData} />
-    }
-  }
 
   if (!mounted) return null;
 
   return (
-    <>
-      {isGenerating && <LoadingScreen message="Generating Purchase Order PDF..." />}
-
-      {/* Preview Overlay */}
-      {showPreview && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-start bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="relative w-full h-full flex flex-col max-w-[1200px] mx-auto bg-white/5 dark:bg-black/5 shadow-2xl animate-in slide-in-from-bottom-8 zoom-in-95 duration-500 overflow-hidden">
-
-            <div className="flex items-center justify-between p-4 border-b border-white/10 bg-white dark:bg-gray-950 sticky top-0 z-10 shadow-sm">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" onClick={() => setShowPreview(false)} className="h-8 w-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-                  <X className="h-4 w-4" />
-                </Button>
-                <h2 className="text-lg font-display font-semibold hidden sm:block">Purchase Order Preview</h2>
-                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-900 rounded-lg p-1 ml-4 border border-border">
-                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md hover:bg-white dark:hover:bg-black shadow-sm" onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>
-                    <ZoomOut className="h-3.5 w-3.5" />
-                  </Button>
-                  <span className="text-xs font-medium w-12 text-center select-none">{Math.round(zoom * 100)}%</span>
-                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-md hover:bg-white dark:hover:bg-black shadow-sm" onClick={() => setZoom(z => Math.min(3, z + 0.1))}>
-                    <ZoomIn className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={handleSavePO} className="hidden sm:flex gap-2">
-                  <Save className="h-4 w-4" /> Save
-                </Button>
-                <Button size="sm" className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-semibold" onClick={handleDownloadPDF} disabled={isGenerating}>
-                  <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                </Button>
-              </div>
-            </div>
-
-            <div ref={previewContainerRef} className="flex-1 overflow-auto p-0 sm:p-2 md:p-4 flex flex-col items-center" style={{ cursor: "grab" }}>
-              <div className="shadow-2xl rounded-sm overflow-hidden border border-border/50 bg-white" style={{ width: "100%", maxWidth: "210mm", transform: `scale(${zoom})`, transformOrigin: "top center", margin: "0 auto" }}>
-                <InvoicePreview hideToolbar={true}>
-                  {renderTemplate()}
-                </InvoicePreview>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* Hidden print root - always rendered so window.print() works */}
-      <div id="invoice-print-wrapper" className="absolute -left-[9999px] -top-[9999px]" aria-hidden="true">
-        <div id="invoice-print-root">
-          <InvoicePreview hideToolbar={true}>
-            {renderTemplate()}
-          </InvoicePreview>
-        </div>
-      </div>
-
+    <div>
       <div className="flex flex-col min-h-[calc(100vh-8rem)]">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-border">
@@ -1087,18 +931,8 @@ export function PurchaseOrderClient() {
 
             {/* Actions */}
             <div className="flex flex-wrap gap-3 pb-4">
-              <Button className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-semibold" onClick={togglePreview}>
+              <Button className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 font-semibold" onClick={handleShowPreview}>
                 <Eye className="h-4 w-4" /> SHOW PREVIEW
-              </Button>
-              <button onClick={handleWhatsAppShare} title="Share on WhatsApp" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
-                <img src="/wh.svg" alt="WhatsApp" className="h-5 w-5" />
-              </button>
-              <button onClick={handleEmailPO} title="Email Purchase Order" className="h-9 w-9 inline-flex items-center justify-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-accent cursor-pointer">
-                <img src="/email.svg" alt="Email" className="h-5 w-5" />
-              </button>
-              <ShareButton invoiceData={invoiceData} template={watchedValues.template} title={`Purchase Order ${watchedValues.poNumber}`} />
-              <Button variant="outline" className="gap-2" onClick={handlePrint}>
-                <Printer className="h-4 w-4" /> Print
               </Button>
             </div>
 
@@ -1141,6 +975,6 @@ export function PurchaseOrderClient() {
         onSelect={handleTemplateSelect}
         documentType="purchase order"
       />
-    </>
+    </div>
   )
 }
