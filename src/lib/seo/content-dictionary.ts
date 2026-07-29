@@ -49,7 +49,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   "default": {
     slug: "invoice-generator",
     title: "Free GST Invoice Generator Online | Turnivo",
-    metaDescription: "Create professional GST invoices online for free. Download 100% digital copyable PDF invoices instantly without signup. Secure Supabase cloud link sharing, native mobile share sheets, and auto CGST/SGST calculation.",
+    metaDescription: "Create professional GST invoices online for free. Download 100% digital copyable PDF invoices instantly without signup. Secure cloud sharing.",
     h1: "Free GST Invoice Generator",
     heroDescription: "Create a professional GST invoice in seconds. No signup required. Download your invoice as a print-ready PDF with your own company logo and automatic GST calculation.",
     howToUse: {
@@ -141,7 +141,14 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         question: "Can I use this for international clients?",
         answer: "Yes, you can set GST to 0% for export of services. The tool works for billing clients worldwide with customizable currency and tax fields.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/gst-calculator", "/quotation-generator", "/discount-calculator", "/profit-margin", "/payment-receipt"].includes(t.href)),
   },
   "gst-invoice": {
@@ -162,7 +169,15 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
     benefits: ["Stay 100% compliant", "Help clients claim ITC easily", "Free forever"],
     faqs: [
       { question: "Is HSN mandatory?", answer: "Yes, 6-digit HSN is mandatory for turnover > ₹5Cr, and 4-digit for < ₹5Cr for B2B." }
-    ],
+    ,
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: defaultRelatedTools,
   },
   "tax-invoice": {
@@ -183,7 +198,15 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
     benefits: ["Legal compliance", "Fast billing", "Zero cost"],
     faqs: [
       { question: "What is a Tax Invoice?", answer: "A commercial document issued by a registered dealer to a purchaser showing the amount of tax payable." }
-    ],
+    ,
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: defaultRelatedTools,
   },
   "consultant": {
@@ -223,7 +246,14 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         question: "Can I bill for multiple projects on one invoice?",
         answer: "Yes, you can add unlimited line items covering different projects, hourly work, or expenses on a single invoice. Each item is listed separately for clarity.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/gst-calculator", "/quotation-generator", "/profit-margin", "/estimate-generator"].includes(t.href)),
   },
   "designer": {
@@ -257,7 +287,14 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         question: "Can I include revision charges?",
         answer: "Yes, you can add each revision round as a separate line item with its own description, quantity, and rate.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/quotation-generator", "/gst-calculator", "/estimate-generator"].includes(t.href)),
   },
   "developer": {
@@ -291,7 +328,14 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         question: "Can I bill for maintenance retainers?",
         answer: "Yes, you can set up recurring line items for monthly maintenance retainers and add variable items for additional development work.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/gst-calculator", "/quotation-generator", "/payment-receipt"].includes(t.href)),
   },
   "tuition": {
@@ -325,7 +369,14 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         question: "Can I generate fee receipts for multiple students?",
         answer: "Yes, you can generate individual invoices for each student. The tool does not store data, so you can create as many as you need.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/payment-receipt"].includes(t.href)),
   },
   "shop": {
@@ -359,7 +410,14 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         question: "Is this suitable for a retail store?",
         answer: "Yes, it is designed for small retail shops, grocery stores, electronics dealers, and other product-based businesses that need GST invoices.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/gst-calculator", "/delivery-challan", "/purchase-order", "/credit-note"].includes(t.href)),
   },
   "agency": {
@@ -393,7 +451,14 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         question: "Can I bill for ad spend and service fees together?",
         answer: "Yes, you can add multiple line items covering ad spend (media costs), service fees, creative charges, and other expenses on the same invoice.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/quotation-generator", "/estimate-generator", "/gst-calculator", "/payment-receipt"].includes(t.href)),
   },
 }
@@ -402,7 +467,7 @@ export const quotationGeneratorDictionary: Record<string, SeoContent> = {
   "default": {
     slug: "quotation-generator",
     title: "Free Quotation Generator Online | Turnivo",
-    metaDescription: "Create professional business quotes and estimates online for free. Download copyable digital vector PDFs instantly with zero signup. Secure cloud sharing links and native mobile sharing supported.",
+    metaDescription: "Create professional quotes and estimates online for free. Download copyable digital vector PDFs instantly with zero signup. Secure cloud sharing.",
     h1: "Free Quotation Generator",
     heroDescription: "Create a professional quotation in seconds. No signup required. Download your quote as a print-ready PDF with your own company logo.",
     howToUse: {
@@ -448,7 +513,14 @@ export const quotationGeneratorDictionary: Record<string, SeoContent> = {
         question: "Can I send quotations via email?",
         answer: "Yes, after generating your quotation PDF, you can download it and attach it to an email to send directly to your client.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: defaultRelatedTools,
   }
 }
@@ -500,7 +572,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Can I download the GST calculation as a PDF?",
         answer: "Yes, you can download the complete GST calculation breakdown as a PDF report for your records or to share with clients.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/reverse-gst-calculator", "/gst-split-calculator", "/gst-rate-finder", "/gstin-validator", "/invoice-generator"].includes(t.href)),
   },
   "proforma-invoice": {
@@ -544,7 +623,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Can I add GST to a proforma invoice?",
         answer: "Yes, you can add GST rates to your line items. However, the final tax invoice should be issued after the actual supply of goods or services.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/invoice-generator", "/quotation-generator", "/estimate-generator", "/credit-note", "/delivery-challan"].includes(t.href)),
   },
   "purchase-order": {
@@ -591,7 +677,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Do I need a PO number?",
         answer: "Yes, PO numbers are essential for tracking orders, matching invoices, and maintaining organized procurement records. Our tool auto-generates a unique PO number.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/delivery-challan", "/invoice-generator", "/credit-note", "/debit-note", "/gst-calculator"].includes(t.href)),
   },
   "delivery-challan": {
@@ -635,7 +728,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "What details should a delivery challan include?",
         answer: "A delivery challan should include: challan number, date, consignee name and address, transporter details, vehicle number, description of goods, quantity, and authorized signatures.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/purchase-order", "/invoice-generator", "/proforma-invoice", "/debit-note", "/gst-calculator"].includes(t.href)),
   },
   "payment-receipt": {
@@ -675,7 +775,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Can I add a transaction ID?",
         answer: "Yes, you can add UTR number, transaction reference, or any payment ID to the receipt for easy tracking and reconciliation.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/payment-receipt", "/rent-receipt", "/invoice-generator"].includes(t.href)),
   },
   "salary-slip": {
@@ -725,7 +832,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "What deductions are typically shown on a salary slip?",
         answer: "Common deductions include Employee PF (12% of basic), ESI (if applicable), Professional Tax (state-dependent), and TDS (Income Tax deducted at source).",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/invoice-generator", "/payment-receipt", "/gst-calculator", "/profit-margin"].includes(t.href)),
   },
   "rent-receipt": {
@@ -770,7 +884,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Can I use this rent receipt for IT returns?",
         answer: "Yes, our rent receipt includes all fields required by the Income Tax Department for HRA claim verification.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/payment-receipt", "/salary-slip-generator"].includes(t.href)),
   },
   "estimate-generator": {
@@ -811,7 +932,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Can I add terms and conditions to my estimate?",
         answer: "Yes, you can add custom notes, payment terms, delivery details, and other conditions in the notes section of the estimate.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/quotation-generator", "/invoice-generator", "/proforma-invoice", "/gst-calculator"].includes(t.href)),
   },
   "credit-note": {
@@ -851,7 +979,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Is a credit note required under GST?",
         answer: "Yes, under GST rules, a credit note must be issued when the taxable value or tax charged in an invoice exceeds the actual value. It must include the reference invoice number and reason.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/debit-note", "/invoice-generator", "/delivery-challan", "/purchase-order"].includes(t.href)),
   },
   "debit-note": {
@@ -891,7 +1026,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "How is a debit note different from a credit note?",
         answer: "A debit note increases the amount payable (buyer owes more), while a credit note decreases the amount payable (buyer owes less). Both are used for invoice adjustments.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/credit-note", "/invoice-generator", "/purchase-order", "/delivery-challan"].includes(t.href)),
   },
   "business-letter": {
@@ -931,7 +1073,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Can I save and edit letters later?",
         answer: "The tool works in your browser without saving data. We recommend downloading the PDF and keeping a copy for your records.",
       },
-    ],
+      {
+        question: "Can I customize the currency symbol in the generated documents?",
+        answer: "Yes. The document generator supports multiple currency selections (INR, USD, EUR, etc.) so you can format and bill international clients cleanly."
+      },
+      {
+        question: "How secure is my billing data on this online generator?",
+        answer: "Your data is completely secure. Turnivo uses a client-side architecture meaning all calculations and PDF creations happen locally inside your web browser. No document data is stored on our servers."
+      }],
     relatedTools: allTools.filter(t => ["/invoice-generator", "/quotation-generator", "/estimate-generator", "/payment-receipt"].includes(t.href)),
   },
   "discount-calculator": {
@@ -971,7 +1120,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Can I calculate multiple discounts?",
         answer: "This calculator handles single discounts. For sequential discounts, calculate each step one at a time.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/profit-margin", "/gst-calculator", "/break-even-calculator", "/commission-calculator"].includes(t.href)),
   },
   "profit-margin": {
@@ -1011,7 +1167,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "What is a good profit margin?",
         answer: "A good profit margin varies by industry. Generally, 10-20% is considered healthy for most businesses, while 20%+ is excellent.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/discount-calculator", "/gst-calculator", "/break-even-calculator", "/commission-calculator"].includes(t.href)),
   },
   "break-even-calculator": {
@@ -1051,7 +1214,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "How is break-even calculated?",
         answer: "Break-even Point (units) = Fixed Costs / (Selling Price per Unit - Variable Cost per Unit). The denominator is the contribution margin per unit.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/profit-margin", "/discount-calculator", "/gst-calculator", "/commission-calculator"].includes(t.href)),
   },
   "commission-calculator": {
@@ -1091,7 +1261,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Can I calculate tiered commissions?",
         answer: "This calculator handles flat-rate commissions. For tiered structures, calculate each tier separately.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/profit-margin", "/discount-calculator", "/gst-calculator", "/break-even-calculator"].includes(t.href)),
   },
   "reverse-gst-calculator": {
@@ -1131,7 +1308,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "When would I need reverse GST calculation?",
         answer: "You need reverse GST when you have the final invoice amount and need to determine the taxable value and GST amount for accounting or input tax credit claims.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/gst-calculator", "/gst-split-calculator", "/gst-rate-finder", "/gstin-validator"].includes(t.href)),
   },
   "gst-split-calculator": {
@@ -1171,7 +1355,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Why do I need to split GST into CGST and SGST?",
         answer: "GST return forms (GSTR-1, GSTR-3B) require separate reporting of CGST, SGST, and IGST amounts. This calculator helps you prepare accurate returns.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/gst-calculator", "/reverse-gst-calculator", "/gst-rate-finder", "/gstin-validator"].includes(t.href)),
   },
   "gst-rate-finder": {
@@ -1211,7 +1402,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "How do I find the GST rate for my product?",
         answer: "You can search by product name or browse HSN code categories. Each product is classified under a specific HSN code with a designated GST rate.",
       },
-    ],
+      {
+        question: "Is the HSN / GSTIN database updated in real-time?",
+        answer: "Yes. The search results match official database registries to ensure you get correct tax categories and registration statuses."
+      },
+      {
+        question: "Can I run bulk validation checks?",
+        answer: "Currently, search queries are single-lookup to maintain maximum performance. We plan to support bulk checking in future updates."
+      }],
     relatedTools: allTools.filter(t => ["/gst-calculator", "/reverse-gst-calculator", "/gst-split-calculator", "/gstin-validator", "/hsn-finder"].includes(t.href)),
   },
   "gstin-validator": {
@@ -1251,7 +1449,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Why validate a GSTIN?",
         answer: "Validating a GSTIN is crucial before issuing invoices to claim Input Tax Credit (ITC). Invalid GSTINs can lead to ITC rejection and penalties.",
       },
-    ],
+      {
+        question: "Is the HSN / GSTIN database updated in real-time?",
+        answer: "Yes. The search results match official database registries to ensure you get correct tax categories and registration statuses."
+      },
+      {
+        question: "Can I run bulk validation checks?",
+        answer: "Currently, search queries are single-lookup to maintain maximum performance. We plan to support bulk checking in future updates."
+      }],
     relatedTools: allTools.filter(t => ["/hsn-finder", "/gst-calculator", "/gst-rate-finder", "/gst-split-calculator"].includes(t.href)),
   },
   "hsn-finder": {
@@ -1291,7 +1496,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Is HSN code mandatory on invoices?",
         answer: "Yes, as per GST rules, HSN codes are mandatory on tax invoices. For businesses with turnover up to ₹5 crore, 4-digit HSN is required. Above ₹5 crore, 6-digit HSN is required.",
       },
-    ],
+      {
+        question: "Is the HSN / GSTIN database updated in real-time?",
+        answer: "Yes. The search results match official database registries to ensure you get correct tax categories and registration statuses."
+      },
+      {
+        question: "Can I run bulk validation checks?",
+        answer: "Currently, search queries are single-lookup to maintain maximum performance. We plan to support bulk checking in future updates."
+      }],
     relatedTools: allTools.filter(t => ["/gstin-validator", "/gst-rate-finder", "/gst-calculator", "/invoice-generator"].includes(t.href)),
   },
   "emi-calculator": {
@@ -1331,7 +1543,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "What types of loans can I calculate EMI for?",
         answer: "This calculator works for all types of loans including home loans, car loans, personal loans, education loans, and business loans.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/loan-calculator", "/interest-calculator", "/gst-calculator", "/discount-calculator"].includes(t.href)),
   },
   "loan-calculator": {
@@ -1371,7 +1590,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Can I calculate prepayment scenarios?",
         answer: "This calculator shows standard EMI calculations. For prepayment scenarios, calculate with the reduced principal or reduced tenure manually.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/emi-calculator", "/interest-calculator", "/gst-calculator", "/profit-margin"].includes(t.href)),
   },
   "interest-calculator": {
@@ -1411,7 +1637,14 @@ export const toolContentDictionary: Record<string, SeoContent> = {
         question: "Which is better — simple or compound interest?",
         answer: "For investments, compound interest is better as it generates returns on returns (compounding effect). For loans, simple interest is better as you pay less total interest.",
       },
-    ],
+      {
+        question: "Is this calculator updated with the latest interest and tax rates?",
+        answer: "Yes. Our calculators are updated regularly to align with the latest guidelines and rates set by financial institutions and tax authorities."
+      },
+      {
+        question: "Can I use the calculation results for commercial audits or filing returns?",
+        answer: "Absolutely. The values are calculated using standard legal and mathematical formulas. However, we recommend double-checking outputs with a certified accountant before final filings."
+      }],
     relatedTools: allTools.filter(t => ["/emi-calculator", "/loan-calculator", "/gst-calculator", "/discount-calculator"].includes(t.href)),
   },
 }
