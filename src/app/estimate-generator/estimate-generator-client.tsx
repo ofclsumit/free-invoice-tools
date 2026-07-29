@@ -12,6 +12,12 @@ import { useToast } from "@/hooks/use-toast"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { ShareButton } from "@/components/shared/share-button"
 import { tryNativeShare, generateShareUrl, openWhatsApp, openEmail } from "@/lib/share-utils"
+import {
+  computeInvoiceTotals,
+  MinimalMonoTemplate,
+  exportNodeToPdf,
+} from "@/components/invoice-templates/components"
+import type { InvoiceData as TemplateInvoiceData } from "@/components/invoice-templates/data/invoiceTypes"
 
 interface LineItem {
   id: string; description: string; quantity: number; rate: number
@@ -64,18 +70,20 @@ export function EstimateGeneratorClient() {
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2 })
 
-  const { totals } = useMemo(() => {
-    const { computeInvoiceTotals } = require("@/components/invoice-templates/components")
-    const d: any = {
-      invoiceNumber: estimateNo || "Draft", invoiceDate: estimateDate, dueDate: validUntil,
-      status: "Draft", currencySymbol: "₹", gstMode: "single",
-      company: { name: companyName || "Your Company Name", logoUrl: companyLogo, addressLines: [] },
-      billTo: { name: clientName || "Client Name", addressLines: [] },
-      items: items.map(i => ({ id: i.id, description: i.description, quantity: i.quantity, rate: i.rate, gstPercent: taxRate })),
-      notes,
-    }
-    return { totals: computeInvoiceTotals(d) }
-  }, [items, clientName, estimateNo, estimateDate, validUntil, taxRate, notes, companyName, companyLogo])
+  const invoiceData: TemplateInvoiceData = useMemo(() => ({
+    invoiceNumber: estimateNo || "Draft",
+    invoiceDate: estimateDate,
+    dueDate: validUntil,
+    status: "Draft",
+    currencySymbol: "₹",
+    gstMode: "single",
+    company: { name: companyName || "Your Company Name", logoUrl: companyLogo, addressLines: [] },
+    billTo: { name: clientName || "Client Name", addressLines: [] },
+    items: items.map(i => ({ id: i.id, description: i.description, quantity: i.quantity, rate: i.rate, gstPercent: taxRate })),
+    notes,
+  }), [items, clientName, estimateNo, estimateDate, validUntil, taxRate, notes, companyName, companyLogo])
+
+  const totals = useMemo(() => computeInvoiceTotals(invoiceData), [invoiceData])
 
   const getState = useCallback((): EstimateData => ({ companyName, companyLogo, clientName, estimateNo, estimateDate, validUntil, taxRate, notes, items }), [companyName, companyLogo, clientName, estimateNo, estimateDate, validUntil, taxRate, notes, items])
   const setState = useCallback((d: EstimateData) => {
@@ -177,13 +185,7 @@ export function EstimateGeneratorClient() {
 
   if (!mounted) return null
 
-  const invoiceData = useMemo(() => {
-    const { InvoicePreview: IP, MinimalMonoTemplate: MT, computeInvoiceTotals: CIT } = require("@/components/invoice-templates/components")
-    return { IP, MT, CIT }
-  }, [])
-
   const renderPreview = () => {
-    const { MinimalMonoTemplate } = require("@/components/invoice-templates/components")
     const d: any = {
       invoiceNumber: estimateNo || "Draft", invoiceDate: estimateDate, dueDate: validUntil,
       status: "Draft", currencySymbol: "₹", gstMode: "single",

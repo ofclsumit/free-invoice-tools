@@ -2,7 +2,6 @@
 import { useState, useRef } from "react"
 import { useReactToPrint } from "react-to-print"
 import { Download } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import {
   InvoicePreview,

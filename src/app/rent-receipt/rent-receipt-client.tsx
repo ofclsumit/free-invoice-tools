@@ -10,7 +10,7 @@ import {
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { LoadingScreen } from "@/components/shared/loading-screen"
-import { tryNativeShare, generateShareUrl, openWhatsApp, openEmail } from "@/lib/share-utils"
+import { tryNativeShare, openWhatsApp, openEmail } from "@/lib/share-utils"
 
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",

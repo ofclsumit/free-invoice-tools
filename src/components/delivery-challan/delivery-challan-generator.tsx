@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Plus, Trash2, Download, Eye, Save, Printer,
   X, ZoomIn, ZoomOut, ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
-  RotateCcw, Share2, Loader2, Truck, HelpCircle, LayoutTemplate
+  RotateCcw, Truck, LayoutTemplate
 } from "lucide-react"
 import {
   InvoicePreview,
@@ -30,7 +30,7 @@ import {
   exportNodeToPdf,
   type InvoiceData as TemplateInvoiceData
 } from "@/components/invoice-templates/components"
-import { formatCurrency } from "@/lib/utils"
+
 import { useToast } from "@/hooks/use-toast"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { tryNativeShare, generateShareUrl, openWhatsApp, openEmail } from "@/lib/share-utils"

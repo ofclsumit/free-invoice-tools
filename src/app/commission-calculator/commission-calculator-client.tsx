@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { Download } from "lucide-react"
+import { LoadingScreen } from "@/components/shared/loading-screen"
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
   UltraNav, UltraPage, UltraGrid,
@@ -13,6 +14,7 @@ export function CommissionCalculatorClient() {
   const [commissionRate, setCommissionRate] = useState("")
   const [splitRatio, setSplitRatio] = useState("100")
   const [calculated, setCalculated] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
 
   const sale = parseFloat(saleAmount) || 0
   const rate = parseFloat(commissionRate) || 0
@@ -39,7 +41,9 @@ export function CommissionCalculatorClient() {
   }
 
   return (
-    <UltraShell>
+    <>
+      {isGenerating && <LoadingScreen message="Generating Commission PDF..." />}
+      <UltraShell>
       <UltraNav />
       <UltraPage>
         <UltraHeader
@@ -130,17 +134,23 @@ export function CommissionCalculatorClient() {
 
                 <UltraPrimaryButton
                   onClick={async () => {
-                    const { generateCommissionPDF } = await import("@/lib/pdf/generate-commission");
-                    await generateCommissionPDF({
-                      sale,
-                      rate,
-                      split,
-                      commissionAmount,
-                      yourShare,
-                      otherShare,
-                      netAmount
-                    });
+                    setIsGenerating(true)
+                    try {
+                      const { generateCommissionPDF } = await import("@/lib/pdf/generate-commission");
+                      await generateCommissionPDF({
+                        sale,
+                        rate,
+                        split,
+                        commissionAmount,
+                        yourShare,
+                        otherShare,
+                        netAmount
+                      });
+                    } finally {
+                      setIsGenerating(false)
+                    }
                   }}
+                  disabled={isGenerating}
                   className="w-full mt-4"
                 >
                   <Download className="h-4 w-4" />
@@ -151,6 +161,7 @@ export function CommissionCalculatorClient() {
           </UltraCard>
         </UltraGrid>
       </UltraPage>
-    </UltraShell>
+        </UltraShell>
+    </>
   )
 }

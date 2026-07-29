@@ -147,7 +147,7 @@ export function ReverseGstCalculatorClient() {
                 placeholder="Total Amount (Inclusive of GST)"
                 currencySymbol="₹"
                 value={totalAmount}
-                onChange={e => setTotalAmount(e.target.value)}
+                onChange={e => { setTotalAmount(e.target.value); setCalculated(false) }}
               />
 
               <UltraRateSelector

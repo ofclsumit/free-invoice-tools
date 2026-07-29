@@ -94,8 +94,8 @@ export function GstCalculatorClient() {
 
   return (
     <>
+      {isGenerating && <LoadingScreen message="Generating GST Report PDF..." />}
       <div className="absolute -left-[9999px] -top-[9999px]">
-        {isGenerating && <LoadingScreen message="Generating GST Report PDF..." />}
         <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
           <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
             <div className="flex-1 overflow-auto rounded-2xl shadow-glass bg-white border border-border pb-8">

@@ -1,5 +1,5 @@
 "use client"
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Download } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import {
@@ -20,8 +20,6 @@ export function ProfitMarginClient() {
   const [companyLogo, setCompanyLogo] = useState("")
   const [calculated, setCalculated] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
-
-  const printRef = useRef<HTMLDivElement>(null)
 
   const c = parseFloat(cost) || 0
   const s = parseFloat(selling) || 0

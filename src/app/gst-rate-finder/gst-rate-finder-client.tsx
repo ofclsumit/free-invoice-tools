@@ -4,8 +4,10 @@ import { Search, Download } from "lucide-react"
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
   UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraTextInput, UltraPrimaryButton,
+  UltraHeader, UltraCard, UltraPrimaryButton,
 } from "@/components/ultra/ultra-components"
+import { LoadingScreen } from "@/components/shared/loading-screen"
+import { generateGstRatesPDF } from "@/lib/pdf/generate-gst-rates"
 
 const GST_RATE_DATA = [
   { category: "Food & Agriculture", hsn: "0101-2309", description: "Live animals, meat, fish, dairy, vegetables, grains", rate: 0, cgst: 0, sgst: 0 },
@@ -50,6 +52,7 @@ const GST_RATE_DATA = [
 export function GstRateFinderClient() {
   const [search, setSearch] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [isDownloading, setIsDownloading] = useState(false)
 
   const categories = ["All", ...new Set(GST_RATE_DATA.map(d => d.category))]
 
@@ -60,30 +63,52 @@ export function GstRateFinderClient() {
     return matchesSearch && matchesCategory
   })
 
+  const handleDownloadPDF = async () => {
+    setIsDownloading(true)
+    try {
+      await generateGstRatesPDF({
+        searchQuery: search,
+        category: selectedCategory,
+        items: filtered,
+      })
+    } catch (error) {
+      console.error("PDF generation failed:", error)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+
   return (
-    <UltraShell>
-      <UltraNav />
-      <UltraPage>
-        <UltraHeader badge="GST Rate Finder" title={<>GST Rate<br/>Finder</>} subtitle="Look up GST rates by category, HSN code, or product description." />
+    <>
+      {isDownloading && <LoadingScreen message="Generating GST Rates PDF..." />}
+      <UltraShell>
+        <UltraNav />
+        <UltraPage>
+          <UltraHeader badge="GST Rate Finder" title={<>GST Rate<br/>Finder</>} subtitle="Look up GST rates by category, HSN code, or product description." />
 
-        <UltraGrid>
-          {/* ─── SEARCH CARD ─── */}
-          <UltraCard>
-            <div className="flex items-center gap-2 mb-[1.35rem]">
-              <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-              <Search className="h-4 w-4 text-[#a78bfa]" />
-              <span className="text-[1rem] font-bold text-white/90">Search</span>
-            </div>
+          <UltraGrid>
+            {/* ─── SEARCH CARD ─── */}
+            <UltraCard>
+              <div className="flex items-center gap-2 mb-[1.35rem]">
+                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
+                <Search className="h-4 w-4 text-[#a78bfa]" />
+                <span className="text-[1rem] font-bold text-white/90">Search</span>
+              </div>
 
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#f1f5f9]/65 z-10" />
-              <UltraTextInput
-                placeholder="HSN code, description, or category..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+              <div className="mb-4">
+                <label className="block text-[.72rem] font-bold tracking-[.07em] uppercase text-[#a78bfa]/90 mb-[.4rem]">Search HSN or Category</label>
+                <div className="flex items-center bg-black/30 border border-white/[.12] rounded-[.75rem] overflow-hidden transition-all duration-300 focus-within:border-[#a78bfa]/60 focus-within:shadow-[0_0_0_3px_rgba(139,92,246,.2)]">
+                  <span className="px-[.7rem] py-[.7rem] text-[#a78bfa]/70 border-r border-white/[.08] shrink-0">
+                    <Search className="h-4 w-4" />
+                  </span>
+                  <input
+                    placeholder="HSN code, description, or category..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="flex-1 min-w-0 px-[.9rem] py-[.7rem] bg-transparent border-none text-white text-[.97rem] font-medium font-['Inter'] outline-none placeholder-white/25"
+                  />
+                </div>
+              </div>
 
             <div className="flex gap-2 flex-wrap">
               {categories.map(cat => (
@@ -135,8 +160,8 @@ export function GstRateFinderClient() {
             )}
 
             <div className="flex justify-center mt-5">
-              <UltraPrimaryButton className="!px-4 !py-2 !text-xs !rounded-lg">
-                <Download className="h-3 w-3" /> Export
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isDownloading || filtered.length === 0} className="!px-4 !py-2 !text-xs !rounded-lg">
+                <Download className="h-3 w-3" /> {isDownloading ? "Exporting..." : "Export"}
               </UltraPrimaryButton>
             </div>
 
@@ -145,5 +170,6 @@ export function GstRateFinderClient() {
         </UltraGrid>
       </UltraPage>
     </UltraShell>
+  </>
   )
 }

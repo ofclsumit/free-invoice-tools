@@ -218,7 +218,7 @@ export function PaymentReceiptClient() {
     if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
-      const node = document.getElementById("receipt-print-root")
+      const node = document.getElementById("invoice-print-root")
       if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
       const fileName = `payment-receipt-${receiptNo}.pdf`
       const blob = await exportNodeToPdf(node, fileName, true)
@@ -241,7 +241,7 @@ export function PaymentReceiptClient() {
     if (!validateEssentialFields()) return
     setIsGenerating(true)
     try {
-      const node = document.getElementById("receipt-print-root")
+      const node = document.getElementById("invoice-print-root")
       if (!node) { toast({ title: "Could not generate PDF", variant: "destructive" }); setIsGenerating(false); return }
       const fileName = `payment-receipt-${receiptNo}.pdf`
       const blob = await exportNodeToPdf(node, fileName, true)

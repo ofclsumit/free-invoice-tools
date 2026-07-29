@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Plus, Trash2, Download, Eye, Save, Printer, FileText,
   X, ZoomIn, ZoomOut, ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
-  RotateCcw, HelpCircle, Share2, Loader2
+  RotateCcw
 } from "lucide-react"
 import {
   InvoicePreview,
