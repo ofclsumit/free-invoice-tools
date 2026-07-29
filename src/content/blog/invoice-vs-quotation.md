@@ -62,4 +62,4 @@ An invoice creates a tax liability. If you send an invoice instead of a quote, y
 
 Creating both documents manually in Word means typing the same information twice, increasing the risk of data entry errors. 
 
-Using a platform like [QuoteStream](https://quotestream.com), you can manage this lifecycle effortlessly. You can generate a beautiful Quotation, send it to your client, and once approved, use the **"Convert to Invoice"** feature. This takes all the data from the quote and instantly generates a legally compliant tax invoice, saving you time and preventing errors.
+Using a platform like [Turnivo](https://Turnivo.com), you can manage this lifecycle effortlessly. You can generate a beautiful Quotation, send it to your client, and once approved, use the **"Convert to Invoice"** feature. This takes all the data from the quote and instantly generates a legally compliant tax invoice, saving you time and preventing errors.

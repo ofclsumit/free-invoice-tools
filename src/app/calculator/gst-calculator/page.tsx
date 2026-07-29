@@ -3,11 +3,11 @@ import Link from "next/link"
 import { ArrowLeft, Calculator, Percent, RefreshCw, Download, CheckCircle } from "lucide-react"
 
 export const metadata = {
-  title: "Free GST Calculator | Calculate GST Online | QuoteFlow",
+  title: "Free GST Calculator | Calculate GST Online | Turnivo",
   description:
     "Calculate GST inclusive and exclusive amounts instantly. Supports all GST rates (0%, 5%, 12%, 18%, 28%). Free online GST calculator for Indian businesses.",
   alternates: {
-    canonical: "https://quoteflow.in/calculator/gst-calculator",
+    canonical: "https://Turnivo.in/calculator/gst-calculator",
   },
 }
 

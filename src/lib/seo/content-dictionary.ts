@@ -48,8 +48,8 @@ const defaultRelatedTools: RelatedTool[] = allTools.slice(0, 6)
 export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   "default": {
     slug: "invoice-generator",
-    title: "Free GST Invoice Generator Online | QuickInvoicePro",
-    metaDescription: "Create professional GST invoices online for free. Download print-ready PDFs instantly without signup. Automatic GST calculation with CGST/SGST split.",
+    title: "Free GST Invoice Generator Online | Turnivo",
+    metaDescription: "Create professional GST invoices online for free. Download 100% digital copyable PDF invoices instantly without signup. Secure Supabase cloud link sharing, native mobile share sheets, and auto CGST/SGST calculation.",
     h1: "Free GST Invoice Generator",
     heroDescription: "Create a professional GST invoice in seconds. No signup required. Download your invoice as a print-ready PDF with your own company logo and automatic GST calculation.",
     howToUse: {
@@ -61,12 +61,12 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
       ],
     },
     features: [
-      "Custom company logo upload support",
+      "100% digital vector PDFs with selectable & copyable text",
+      "One-click native mobile PDF sharing sheet integration",
+      "Secure cloud-backed sharing links (Supabase database)",
       "Automatic GST calculation with CGST/SGST split",
-      "Print-ready clean PDF generation without watermarks",
-      "Unlimited line items with auto-calculated totals",
-      "Pre-filled client and company information fields",
-      "Works offline — all processing happens in your browser",
+      "Unlimited invoices with custom company logo support",
+      "Privacy-first: all processing runs locally inside your browser",
     ],
     benefits: [
       "Completely free to use forever with no hidden charges",
@@ -106,7 +106,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   },
   "freelancer": {
     slug: "freelancer-invoice-generator",
-    title: "Freelancer Invoice Generator | QuickInvoicePro",
+    title: "Freelancer Invoice Generator | Turnivo",
     metaDescription: "Free invoice generator customized for freelancers. Create professional invoices for your freelance services, track billable hours, and get paid faster.",
     h1: "Freelancer Invoice Generator",
     heroDescription: "The easiest way for freelancers to bill clients. Create, preview, and download your freelance invoices as clean PDFs instantly. No signup required.",
@@ -146,7 +146,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   },
   "gst-invoice": {
     slug: "gst-invoice-generator",
-    title: "Free GST Invoice Generator India | QuoteStream",
+    title: "Free GST Invoice Generator India | Turnivo",
     metaDescription: "Free online GST invoice generator for India. Create and download compliant GST invoices with CGST, SGST, IGST, and HSN codes.",
     h1: "GST Invoice Generator",
     heroDescription: "Create 100% compliant GST invoices in seconds. Auto-calculates CGST, SGST, IGST, and supports HSN/SAC codes.",
@@ -167,7 +167,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   },
   "tax-invoice": {
     slug: "tax-invoice-generator",
-    title: "Free Tax Invoice Generator | QuoteStream",
+    title: "Free Tax Invoice Generator | Turnivo",
     metaDescription: "Generate professional tax invoices for your business. Compliant with Indian tax laws. Free PDF download.",
     h1: "Tax Invoice Generator",
     heroDescription: "Generate legally compliant tax invoices for your clients. Easy to use, no signup required.",
@@ -188,7 +188,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   },
   "consultant": {
     slug: "consultant-invoice-generator",
-    title: "Consultant Invoice Generator | QuickInvoicePro",
+    title: "Consultant Invoice Generator | Turnivo",
     metaDescription: "Free invoice generator designed for consultants. Bill your consulting hours, retainers, and project fees professionally. Download PDF invoices instantly.",
     h1: "Consultant Invoice Generator",
     heroDescription: "Bill your consulting hours professionally. Generate beautiful, customized invoices that impress your corporate clients and streamline your monthly billing cycle.",
@@ -228,7 +228,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   },
   "designer": {
     slug: "designer-invoice-generator",
-    title: "Designer Invoice Generator | QuickInvoicePro",
+    title: "Designer Invoice Generator | Turnivo",
     metaDescription: "Free invoice generator made for designers. Create beautiful invoices for your graphic design, UI/UX, and creative services. Download as PDF.",
     h1: "Designer Invoice Generator",
     heroDescription: "Bill your creative projects professionally. Generate clean, modern invoices for your graphic design, UI/UX, branding, and illustration services.",
@@ -262,7 +262,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   },
   "developer": {
     slug: "developer-invoice-generator",
-    title: "Developer Invoice Generator | QuickInvoicePro",
+    title: "Developer Invoice Generator | Turnivo",
     metaDescription: "Free invoice generator built for developers and software engineers. Bill your coding projects, hourly development work, and consulting services.",
     h1: "Developer Invoice Generator",
     heroDescription: "Invoice your software development clients professionally. Perfect for freelance developers, software agencies, and tech consultants.",
@@ -296,7 +296,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   },
   "tuition": {
     slug: "tuition-invoice-generator",
-    title: "Tuition Invoice Generator | QuickInvoicePro",
+    title: "Tuition Invoice Generator | Turnivo",
     metaDescription: "Free invoice generator for tutors and coaching centers. Create fee invoices for tuition classes, coaching sessions, and educational services.",
     h1: "Tuition Invoice Generator",
     heroDescription: "Generate professional fee invoices for your tuition classes and coaching center. Bill students for monthly fees, course materials, and additional sessions.",
@@ -330,7 +330,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   },
   "shop": {
     slug: "shop-invoice-generator",
-    title: "Shop Invoice Generator | QuickInvoicePro",
+    title: "Shop Invoice Generator | Turnivo",
     metaDescription: "Free invoice generator for retail shops and small businesses. Create GST invoices for your store with inventory line items and instant PDF download.",
     h1: "Shop Invoice Generator",
     heroDescription: "Create professional GST invoices for your retail shop or small business. Add products, quantities, and prices — download as a print-ready PDF instantly.",
@@ -364,7 +364,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
   },
   "agency": {
     slug: "agency-invoice-generator",
-    title: "Agency Invoice Generator | QuickInvoicePro",
+    title: "Agency Invoice Generator | Turnivo",
     metaDescription: "Free invoice generator for digital agencies and marketing firms. Create professional invoices for campaigns, retainers, and creative services.",
     h1: "Agency Invoice Generator",
     heroDescription: "Invoice your agency clients professionally. Perfect for digital marketing agencies, creative studios, and advertising firms billing for campaigns and retainers.",
@@ -401,8 +401,8 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
 export const quotationGeneratorDictionary: Record<string, SeoContent> = {
   "default": {
     slug: "quotation-generator",
-    title: "Free Quotation Generator Online | QuoteFlow",
-    metaDescription: "Create professional quotes and estimates online for free. Download print-ready PDFs instantly without signup. Perfect for Indian businesses.",
+    title: "Free Quotation Generator Online | Turnivo",
+    metaDescription: "Create professional business quotes and estimates online for free. Download copyable digital vector PDFs instantly with zero signup. Secure cloud sharing links and native mobile sharing supported.",
     h1: "Free Quotation Generator",
     heroDescription: "Create a professional quotation in seconds. No signup required. Download your quote as a print-ready PDF with your own company logo.",
     howToUse: {
@@ -414,11 +414,11 @@ export const quotationGeneratorDictionary: Record<string, SeoContent> = {
       ],
     },
     features: [
-      "Custom Company Logo support",
-      "Automatic total calculation",
-      "Print-ready clean PDF generation without watermarks",
-      "Unlimited line items for complex quotes",
-      "Professional layout suitable for all industries",
+      "100% digital vector PDFs with copyable & selectable text",
+      "One-click native mobile PDF sharing sheet integration",
+      "Secure cloud-backed sharing links (Supabase database)",
+      "Custom Company Logo and automated subtotals calculation",
+      "Unlimited line items suitable for complex estimations",
     ],
     benefits: [
       "Completely free to use forever",
@@ -456,7 +456,7 @@ export const quotationGeneratorDictionary: Record<string, SeoContent> = {
 export const toolContentDictionary: Record<string, SeoContent> = {
   "gst-calculator": {
     slug: "gst-calculator",
-    title: "Free GST Calculator Online | Calculate GST Amount Instantly | QuoteFlow",
+    title: "Free GST Calculator Online | Calculate GST Amount Instantly | Turnivo",
     metaDescription: "Free online GST calculator for India. Calculate GST inclusive and exclusive amounts. Split into CGST and SGST automatically. No signup needed.",
     h1: "Free GST Calculator",
     heroDescription: "Calculate GST amounts instantly. Choose between GST exclusive and inclusive modes. See the split between CGST and SGST automatically.",
@@ -505,7 +505,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "proforma-invoice": {
     slug: "proforma-invoice",
-    title: "Free Proforma Invoice Generator | Create Preliminary Bills Online | QuoteFlow",
+    title: "Free Proforma Invoice Generator | Create Preliminary Bills Online | Turnivo",
     metaDescription: "Create professional proforma invoices online for free. Download as PDF with your company logo. Perfect for preliminary billing before final invoice.",
     h1: "Proforma Invoice Generator",
     heroDescription: "Create a preliminary bill for your clients before the final invoice. Download as a professional PDF with your company logo and branding.",
@@ -549,7 +549,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "purchase-order": {
     slug: "purchase-order",
-    title: "Free Purchase Order Generator Online | Create PO PDF | QuoteFlow",
+    title: "Free Purchase Order Generator Online | Create PO PDF | Turnivo",
     metaDescription: "Create professional purchase orders online for free. Download as PDF with company logo. Perfect for businesses to order goods from suppliers.",
     h1: "Purchase Order Generator",
     heroDescription: "Create purchase orders for your suppliers quickly and professionally. Download as a PDF with your company logo and purchase order details.",
@@ -596,7 +596,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "delivery-challan": {
     slug: "delivery-challan",
-    title: "Free Delivery Challan Generator | Create DC Online | QuoteFlow",
+    title: "Free Delivery Challan Generator | Create DC Online | Turnivo",
     metaDescription: "Generate delivery challans online for free. Download as PDF with company logo. Perfect for goods transport and delivery documentation.",
     h1: "Delivery Challan Generator",
     heroDescription: "Generate delivery challans for goods transport quickly. Include consignee details, transporter info, and vehicle number. Download as PDF.",
@@ -640,7 +640,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "payment-receipt": {
     slug: "payment-receipt",
-    title: "Free Payment Receipt Generator | Download PDF | QuoteFlow",
+    title: "Free Payment Receipt Generator | Download PDF | Turnivo",
     metaDescription: "Create formal payment receipts with transaction details. Download as PDF. Perfect for businesses tracking payments against invoices.",
     h1: "Payment Receipt Generator",
     heroDescription: "Create a formal payment receipt with transaction ID, payment method, and invoice reference. Perfect for businesses tracking payments against invoices.",
@@ -680,7 +680,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "salary-slip": {
     slug: "salary-slip",
-    title: "Free Salary Slip Generator | Create Payslips Online | QuoteFlow",
+    title: "Free Salary Slip Generator | Create Payslips Online | Turnivo",
     metaDescription: "Generate professional salary slips and payslips for employees online free. Download as PDF. Perfect for Indian employers and HR teams.",
     h1: "Salary Slip Generator",
     heroDescription: "Create professional salary slips and payslips for your employees. Add earnings, deductions, and net salary. Download as a print-ready PDF.",
@@ -730,7 +730,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "rent-receipt": {
     slug: "rent-receipt",
-    title: "Free Rent Receipt Generator | HRA Compliant | QuoteFlow",
+    title: "Free Rent Receipt Generator | HRA Compliant | Turnivo",
     metaDescription: "Generate professional rent receipts online free. HRA tax exemption compliant. Download as PDF. Perfect for tenants and landlords.",
     h1: "Rent Receipt Generator",
     heroDescription: "Create professional rent receipts for HRA tax exemption claims. Includes landlord name, tenant details, property address, and payment information.",
@@ -775,7 +775,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "estimate-generator": {
     slug: "estimate-generator",
-    title: "Free Estimate Generator Online | Create Cost Estimates | QuoteFlow",
+    title: "Free Estimate Generator Online | Create Cost Estimates | Turnivo",
     metaDescription: "Create professional cost estimates online for free. Download as PDF with company logo. Perfect for contractors, freelancers, and service businesses.",
     h1: "Estimate Generator",
     heroDescription: "Create professional cost estimates for your clients. Add line items, tax rates, and notes. Download as a polished PDF estimate.",
@@ -816,7 +816,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "credit-note": {
     slug: "credit-note",
-    title: "Free Credit Note Generator | Download PDF | QuoteFlow",
+    title: "Free Credit Note Generator | Download PDF | Turnivo",
     metaDescription: "Issue credit notes online for free. Download as PDF with company logo. Perfect for returns, refunds, and invoice adjustments.",
     h1: "Credit Note Generator",
     heroDescription: "Issue credit notes for returned goods, cancelled services, or invoice adjustments. Include reference invoice and reason for credit.",
@@ -856,7 +856,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "debit-note": {
     slug: "debit-note",
-    title: "Free Debit Note Generator | Download PDF | QuoteFlow",
+    title: "Free Debit Note Generator | Download PDF | Turnivo",
     metaDescription: "Raise debit notes online for free. Download as PDF with company logo. Perfect for additional charges, corrections, and invoice adjustments.",
     h1: "Debit Note Generator",
     heroDescription: "Raise debit notes for additional charges, corrections, or adjustments. Perfect for businesses needing to increase invoice amounts after billing.",
@@ -896,7 +896,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "business-letter": {
     slug: "business-letter",
-    title: "Free Business Letter Generator | Write Formal Letters | QuoteFlow",
+    title: "Free Business Letter Generator | Write Formal Letters | Turnivo",
     metaDescription: "Create formal business letters online for free. Download as PDF. Perfect for professional correspondence, cover letters, and official communication.",
     h1: "Business Letter Generator",
     heroDescription: "Write and print formal business correspondence. Perfect for cover letters, official communication, and professional correspondence with your clients and partners.",
@@ -936,7 +936,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "discount-calculator": {
     slug: "discount-calculator",
-    title: "Free Discount Calculator | Calculate Savings Online | QuoteFlow",
+    title: "Free Discount Calculator | Calculate Savings Online | Turnivo",
     metaDescription: "Calculate discount amount and final price instantly. Free online discount calculator with percentage off and savings breakdown.",
     h1: "Discount Calculator",
     heroDescription: "Calculate how much you save after a discount. Enter the original price and discount percentage to see the final price and total savings.",
@@ -976,7 +976,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "profit-margin": {
     slug: "profit-margin",
-    title: "Free Profit Margin Calculator | Calculate Markup Online | QuoteFlow",
+    title: "Free Profit Margin Calculator | Calculate Markup Online | Turnivo",
     metaDescription: "Calculate profit margin and markup percentage instantly. Free online calculator for cost price, selling price, and profit analysis.",
     h1: "Profit Margin Calculator",
     heroDescription: "Calculate profit margin, markup percentage, and profit/loss instantly. Enter cost price and selling price for a complete financial analysis.",
@@ -1016,7 +1016,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "break-even-calculator": {
     slug: "break-even-calculator",
-    title: "Free Break Even Calculator | Calculate BEP Online | QuoteFlow",
+    title: "Free Break Even Calculator | Calculate BEP Online | Turnivo",
     metaDescription: "Calculate your business break-even point online free. Determine how many units you need to sell to cover costs.",
     h1: "Break Even Calculator",
     heroDescription: "Calculate your break-even point — the number of units you need to sell to cover all costs. Essential for business planning and pricing decisions.",
@@ -1056,7 +1056,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "commission-calculator": {
     slug: "commission-calculator",
-    title: "Free Commission Calculator | Calculate Commission Online | QuoteFlow",
+    title: "Free Commission Calculator | Calculate Commission Online | Turnivo",
     metaDescription: "Calculate sales commissions easily online. Free commission calculator with rate-based and tier-based commission structures.",
     h1: "Commission Calculator",
     heroDescription: "Calculate commission amounts for your sales team or affiliates. Enter the sale amount and commission rate to see the commission earned.",
@@ -1096,7 +1096,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "reverse-gst-calculator": {
     slug: "reverse-gst-calculator",
-    title: "Free Reverse GST Calculator | Calculate Base Price | QuoteFlow",
+    title: "Free Reverse GST Calculator | Calculate Base Price | Turnivo",
     metaDescription: "Calculate original price before GST from the total GST-inclusive amount. Free online reverse GST calculator for India.",
     h1: "Reverse GST Calculator",
     heroDescription: "Find the original price before GST was added. Enter the total GST-inclusive amount and GST rate to get the base price and GST amount.",
@@ -1136,7 +1136,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "gst-split-calculator": {
     slug: "gst-split-calculator",
-    title: "Free GST Split Calculator | CGST SGST Split | QuoteFlow",
+    title: "Free GST Split Calculator | CGST SGST Split | Turnivo",
     metaDescription: "Split total GST amount into CGST and SGST components online free. Calculate tax breakdown for intra-state transactions instantly.",
     h1: "GST Split Calculator",
     heroDescription: "Split your total GST amount into CGST and SGST components automatically. Perfect for understanding your tax breakdown for intra-state transactions.",
@@ -1176,7 +1176,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "gst-rate-finder": {
     slug: "gst-rate-finder",
-    title: "Free GST Rate Finder | Find GST Rates for Products | QuoteFlow",
+    title: "Free GST Rate Finder | Find GST Rates for Products | Turnivo",
     metaDescription: "Find applicable GST rates for products and services in India. Free online GST rate lookup tool with complete rate list.",
     h1: "GST Rate Finder",
     heroDescription: "Find the correct GST rate for any product or service. Browse complete HSN code-wise GST rate list for India.",
@@ -1216,7 +1216,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "gstin-validator": {
     slug: "gstin-validator",
-    title: "Free GSTIN Validator | Verify GST Number Online | QuoteFlow",
+    title: "Free GSTIN Validator | Verify GST Number Online | Turnivo",
     metaDescription: "Validate GSTIN numbers online free. Check if a GST number is valid using checksum verification. Instant GSTIN validation tool.",
     h1: "GSTIN Validator",
     heroDescription: "Validate any GSTIN number instantly. Check the format and checksum of GST registration numbers to ensure they are correctly formatted.",
@@ -1256,7 +1256,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "hsn-finder": {
     slug: "hsn-finder",
-    title: "Free HSN Code Finder | Search HSN Codes Online | QuoteFlow",
+    title: "Free HSN Code Finder | Search HSN Codes Online | Turnivo",
     metaDescription: "Search HSN codes for GST classification online free. Find correct HSN codes for products and services with our comprehensive database.",
     h1: "HSN Code Finder",
     heroDescription: "Find the correct HSN code for your products. Search by product name, category, or code number for accurate GST classification.",
@@ -1296,7 +1296,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "emi-calculator": {
     slug: "emi-calculator",
-    title: "Free EMI Calculator | Calculate Monthly Loan EMI | QuoteFlow",
+    title: "Free EMI Calculator | Calculate Monthly Loan EMI | Turnivo",
     metaDescription: "Calculate monthly EMI for home loan, car loan, and personal loan online free. Instant EMI calculation with amortization schedule.",
     h1: "EMI Calculator",
     heroDescription: "Calculate your monthly EMI for any loan. Enter loan amount, interest rate, and tenure to see your monthly payment instantly.",
@@ -1336,7 +1336,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "loan-calculator": {
     slug: "loan-calculator",
-    title: "Free Loan Calculator | Calculate Loan Repayment | QuoteFlow",
+    title: "Free Loan Calculator | Calculate Loan Repayment | Turnivo",
     metaDescription: "Calculate loan repayment schedule online free. Plan your loan with EMI, total interest, and repayment breakdown.",
     h1: "Loan Calculator",
     heroDescription: "Plan your loan repayment with our comprehensive calculator. See EMI, total interest, and total payment for any loan amount and tenure.",
@@ -1376,7 +1376,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
   },
   "interest-calculator": {
     slug: "interest-calculator",
-    title: "Free Interest Calculator | Simple & Compound Interest | QuoteFlow",
+    title: "Free Interest Calculator | Simple & Compound Interest | Turnivo",
     metaDescription: "Calculate simple and compound interest online free. Find maturity amount and interest earned for any investment or loan.",
     h1: "Interest Calculator",
     heroDescription: "Calculate simple and compound interest for any principal amount, rate, and time period. Perfect for investments and loan planning.",

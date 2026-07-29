@@ -90,7 +90,7 @@ export function LoanCalculatorClient() {
                       <div className="bg-emerald-50 p-4 rounded-xl text-center"><p className="text-lg font-display font-bold text-emerald-700">₹{fmt(totalCost)}</p><p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">Total Cost</p></div>
                     </div>
                   </div>
-                  <div className="mt-16 pt-8 border-t border-gray-100 text-center"><p className="text-gray-400 text-xs italic">This report was generated using the QuoteFlow Loan Calculator.</p></div>
+                  <div className="mt-16 pt-8 border-t border-gray-100 text-center"><p className="text-gray-400 text-xs italic">This report was generated using the Turnivo Loan Calculator.</p></div>
                 </div>
               </InvoicePreview>
             </div>

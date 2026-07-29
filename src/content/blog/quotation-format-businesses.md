@@ -51,6 +51,6 @@ This is where you protect yourself. Include terms regarding:
 
 If you are using manual templates, creating detailed quotes with accurate math and terms takes far too long. 
 
-With QuoteStream's free [Quotation Generator](/quotation-generator), you can craft a professional PDF quote in minutes. You can save your standard terms and conditions, auto-calculate subtotals, and download a beautiful PDF that you can email straight to your prospect.
+With Turnivo's free [Quotation Generator](/quotation-generator), you can craft a professional PDF quote in minutes. You can save your standard terms and conditions, auto-calculate subtotals, and download a beautiful PDF that you can email straight to your prospect.
 
 Start impressing your clients from the very first interaction with a flawless quotation format!

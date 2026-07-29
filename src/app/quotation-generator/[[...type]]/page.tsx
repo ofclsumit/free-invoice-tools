@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ type?: st
       description: content.metaDescription,
     },
     alternates: {
-      canonical: `https://quoteflow.in/${content.slug}`,
+      canonical: `https://Turnivo.in/${content.slug}`,
     },
   }
 }
@@ -50,6 +50,6 @@ export default async function QuotationGeneratorDynamicPage({ params }: { params
   }
 
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<QuotationGenerator />} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://Turnivo.in/${content.slug}`} tool={<QuotationGenerator />} />
   )
 }

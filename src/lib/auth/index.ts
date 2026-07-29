@@ -12,7 +12,7 @@ async function ensureDefaultUser(): Promise<{ id: string }> {
   const user = await prisma.user.create({
     data: {
       name: "My Business",
-      email: "business@quoteflow.local",
+      email: "business@Turnivo.local",
       businessName: "My Business",
     },
   })

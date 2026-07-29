@@ -19,7 +19,7 @@ export function CtaSection() {
               Ready to get paid faster?
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Join 8,500+ Indian businesses using QuoteFlow to create professional invoices
+              Join 8,500+ Indian businesses using Turnivo to create professional invoices
               and collect payments without the hassle.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">

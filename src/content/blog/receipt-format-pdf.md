@@ -49,5 +49,5 @@ Depending on your business, you might need different types of receipts:
 
 Don't waste time formatting a receipt in Microsoft Word every time a client pays you. 
 
-Using QuoteStream's [Payment Receipt Generator](/payment-receipt), you can create a beautiful, professional PDF receipt in under a minute. 
+Using Turnivo's [Payment Receipt Generator](/payment-receipt), you can create a beautiful, professional PDF receipt in under a minute. 
 Simply enter the amount received, select the payment method, attach it to an invoice number, and hit download. Your client receives a flawless PDF, and your administrative work is done for the day!

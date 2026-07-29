@@ -9,7 +9,7 @@ import { SalarySlipView } from "@/components/preview/salary-slip-view"
 import { InvoicePreview } from "@/components/invoice-templates/components"
 import { StudioTemplate, LedgerTemplate, MinimalMonoTemplate, VyaparDesiTemplate, ClassicBooksTemplate } from "@/components/invoice-templates/components"
 import { VelvetReceipt, SageReceipt, CarbonReceipt, SaffronReceipt } from "@/components/cash-receipt-templates"
-import { loadPreviewData } from "@/lib/preview-store"
+import { fetchPreviewData } from "@/lib/preview-store"
 import type { PreviewStoreItem } from "@/lib/preview-store"
 import type { InvoiceData as TemplateInvoiceData } from "@/components/invoice-templates/data/invoiceTypes"
 
@@ -43,9 +43,10 @@ export default function PreviewPage() {
     if (!mounted) return
     if (!params?.id) { setError(true); return }
     const id = Array.isArray(params.id) ? params.id[0] : params.id
-    const item = loadPreviewData(id)
-    if (!item) { setError(true); return }
-    setData(item)
+    fetchPreviewData(id).then(item => {
+      if (item) setData(item)
+      else setError(true)
+    })
   }, [mounted, params])
 
   const handleBack = useCallback(() => {
@@ -113,6 +114,9 @@ export default function PreviewPage() {
       title={title}
       fileName={fileName}
       onBack={handleBack}
+      documentType={docType}
+      template={templateName || ""}
+      documentData={data}
     >
       {renderContent()}
     </PreviewShell>

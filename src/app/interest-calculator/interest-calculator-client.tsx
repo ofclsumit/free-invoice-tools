@@ -102,7 +102,7 @@ export function InterestCalculatorClient() {
                       <div className="bg-blue-50 p-6 rounded-xl text-center sm:col-span-1"><p className="text-3xl font-display font-bold text-blue-600">₹{fmt(maturity)}</p><p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">Maturity Amount</p></div>
                     </div>
                   </div>
-                  <div className="mt-16 pt-8 border-t border-gray-100 text-center"><p className="text-gray-400 text-xs italic">This report was generated using the QuoteFlow Interest Calculator.</p></div>
+                  <div className="mt-16 pt-8 border-t border-gray-100 text-center"><p className="text-gray-400 text-xs italic">This report was generated using the Turnivo Interest Calculator.</p></div>
                 </div>
               </InvoicePreview>
             </div>

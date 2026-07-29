@@ -2,9 +2,9 @@ import { FileText } from "lucide-react"
 import { SiteLogo } from "@/components/shared/site-logo"
 
 export const metadata = {
-  title: "Terms of Service | QuoteFlow",
+  title: "Terms of Service | Turnivo",
   description:
-    "QuoteFlow terms of service — the terms governing your use of our free GST invoice and quotation generator.",
+    "Turnivo terms of service — the terms governing your use of our free GST invoice and quotation generator.",
 }
 
 export default function TermsPage() {
@@ -25,13 +25,13 @@ export default function TermsPage() {
 
         <div className="prose prose-gray dark:prose-invert max-w-none space-y-6">
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Welcome to QuoteFlow. By using our website and tools, you agree to these terms. Please read them carefully.
+            Welcome to Turnivo. By using our website and tools, you agree to these terms. Please read them carefully.
           </p>
 
           <section>
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">1. Acceptance of Terms</h2>
             <p>
-              By accessing or using QuoteFlow (&ldquo;the Service&rdquo;), you acknowledge that you have read,
+              By accessing or using Turnivo (&ldquo;the Service&rdquo;), you acknowledge that you have read,
               understood, and agree to be bound by these Terms of Service. If you do not agree, please do not use the
               Service.
             </p>
@@ -40,7 +40,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">2. Description of Service</h2>
             <p>
-              QuoteFlow provides free online tools for generating GST invoices, quotations, receipts, and other
+              Turnivo provides free online tools for generating GST invoices, quotations, receipts, and other
               business documents. All document processing is performed client-side in your browser. We do not store your
               financial data on our servers. The Service is provided &ldquo;as is&rdquo; and &ldquo;as available&rdquo;
               without any warranty.
@@ -49,7 +49,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">3. User Responsibilities</h2>
-            <p>As a user of QuoteFlow, you agree to:</p>
+            <p>As a user of Turnivo, you agree to:</p>
             <ul className="list-disc pl-6 space-y-1.5 text-muted-foreground">
               <li>Provide accurate and complete information when using our tools.</li>
               <li>Comply with all applicable laws, including GST regulations in India.</li>
@@ -65,12 +65,12 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">4. Intellectual Property</h2>
             <p>
-              The QuoteFlow name, logo, design, and software code are the intellectual property of QuoteFlow. You may
+              The Turnivo name, logo, design, and software code are the intellectual property of Turnivo. You may
               not copy, modify, distribute, sell, or reverse-engineer any part of the Service without prior written
               consent.
             </p>
             <p className="mt-2">
-              However, the documents you create using QuoteFlow — invoices, quotations, receipts — are entirely your
+              However, the documents you create using Turnivo — invoices, quotations, receipts — are entirely your
               property. We claim no ownership over the content you generate.
             </p>
           </section>
@@ -78,7 +78,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">5. Limitation of Liability</h2>
             <p>
-              QuoteFlow is provided free of charge. To the maximum extent permitted by law, QuoteFlow and its creators
+              Turnivo is provided free of charge. To the maximum extent permitted by law, Turnivo and its creators
               shall not be liable for any direct, indirect, incidental, consequential, or special damages arising from
               your use of the Service.
             </p>
@@ -101,8 +101,8 @@ export default function TermsPage() {
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">7. Contact</h2>
             <p>
               For questions about these terms, please reach out at{" "}
-              <a href="mailto:support@quoteflow.in" className="text-primary hover:underline">
-                support@quoteflow.in
+              <a href="mailto:support@Turnivo.in" className="text-primary hover:underline">
+                support@Turnivo.in
               </a>
               .
             </p>

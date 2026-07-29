@@ -53,11 +53,11 @@ export function LandingFooter() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-1 space-y-4">
             <Link href="/" className="flex items-center gap-2 font-display font-bold text-lg">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600">
-                <Zap className="h-3.5 w-3.5 text-white" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg overflow-hidden shrink-0">
+                <img src="/logo.png" alt="Turnivo Logo" className="w-7 h-7 object-cover" />
               </div>
-              <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-                QuoteFlow
+              <span className="text-[#c084fc]">
+                {"\uD835\uDE1B\uD835\uDE1C\uD835\uDE19\uD835\uDE15\uD835\uDE10\uD835\uDE1D\uD835\uDE16"}
               </span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
@@ -89,7 +89,7 @@ export function LandingFooter() {
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} QuoteFlow. All rights reserved.
+            &copy; {new Date().getFullYear()} Turnivo. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
             27+ free business tools for India

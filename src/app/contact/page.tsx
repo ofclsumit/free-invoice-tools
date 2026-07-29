@@ -97,8 +97,8 @@ export default function ContactPage() {
 
         <div className="mt-8 text-center text-sm text-muted-foreground">
           Prefer email? Write to{" "}
-          <a href="mailto:support@quoteflow.in" className="text-primary hover:underline">
-            support@quoteflow.in
+          <a href="mailto:support@Turnivo.in" className="text-primary hover:underline">
+            support@Turnivo.in
           </a>
         </div>
       </div>

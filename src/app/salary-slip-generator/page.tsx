@@ -4,11 +4,11 @@ import { FileText, Download, Printer, Shield, CheckCircle } from "lucide-react"
 import { SiteLogo } from "@/components/shared/site-logo"
 
 export const metadata = {
-  title: "Free Salary Slip Generator | Download PDF | QuoteFlow",
+  title: "Free Salary Slip Generator | Download PDF | Turnivo",
   description:
     "Generate professional salary slips online for free. Download as PDF. Perfect for employers and employees. No signup needed.",
   alternates: {
-    canonical: "https://quoteflow.in/salary-slip-generator",
+    canonical: "https://Turnivo.in/salary-slip-generator",
   },
 }
 

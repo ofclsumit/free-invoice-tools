@@ -9,14 +9,14 @@ faqs:
   - question: "Is HSN code mandatory on GST invoices?"
     answer: "Yes, for businesses with a turnover above ₹5 Crores, a 6-digit HSN code is mandatory. For turnover below ₹5 Crores, a 4-digit HSN code is mandatory for B2B tax invoices."
   - question: "Can I use a free invoice generator for GST billing?"
-    answer: "Yes, tools like QuoteStream allow you to easily create, format, and download GST-compliant invoices for free without any registration."
+    answer: "Yes, tools like Turnivo allow you to easily create, format, and download GST-compliant invoices for free without any registration."
 ---
 
 # How to Create a GST Invoice in India
 
 If you are a freelancer or running a small business in India, issuing a **GST invoice** (Goods and Services Tax invoice) is a crucial part of your daily operations. A properly formatted GST invoice ensures legal compliance, helps your clients claim Input Tax Credit (ITC), and maintains a professional image for your brand.
 
-In this comprehensive 1500-word guide, we will break down exactly what a GST invoice is, what mandatory fields you must include, and how you can generate one in seconds using free tools like [QuoteStream](https://quotestream.com).
+In this comprehensive 1500-word guide, we will break down exactly what a GST invoice is, what mandatory fields you must include, and how you can generate one in seconds using free tools like [Turnivo](https://Turnivo.com).
 
 ## What is a GST Invoice?
 
@@ -66,14 +66,14 @@ Understanding when to apply which tax is the most common hurdle for new business
 - **Intra-state Supply (Same State)**: If you and your buyer are in the same state (e.g., both in Maharashtra), you must split the GST equally into **CGST** (Central) and **SGST** (State). For an 18% item, charge 9% CGST and 9% SGST.
 - **Inter-state Supply (Different States)**: If you are in Maharashtra and your buyer is in Delhi, you charge a single **IGST** (Integrated) at the full 18%.
 
-*Tip: Using a smart invoice generator like QuoteStream will automatically calculate this based on your and your client's state codes.*
+*Tip: Using a smart invoice generator like Turnivo will automatically calculate this based on your and your client's state codes.*
 
 ## How to Generate a GST Invoice Quickly
 
 Gone are the days of manually calculating taxes in Excel or writing out paper bills. With modern SaaS tools, you can create a compliant invoice in under a minute.
 
 ### Step 1: Use a Free GST Invoice Generator
-Navigate to the [QuoteStream GST Invoice Generator](/gst-invoice-generator). This tool is built specifically for Indian businesses and requires no signup.
+Navigate to the [Turnivo GST Invoice Generator](/gst-invoice-generator). This tool is built specifically for Indian businesses and requires no signup.
 
 ### Step 2: Enter Business and Client Details
 Fill in your business name, GSTIN, and address. Do the same for your client. If your client provides a GSTIN, ensure it is accurate so they can claim ITC.
@@ -93,6 +93,6 @@ Add any specific terms (e.g., "Payment due within 15 days") and your bank/UPI de
 
 ## Conclusion
 
-Creating a GST invoice doesn't have to be a complicated, time-consuming process. By understanding the mandatory fields and utilizing free, efficient tools like QuoteStream, you can streamline your billing process, ensure 100% legal compliance, and get paid faster. 
+Creating a GST invoice doesn't have to be a complicated, time-consuming process. By understanding the mandatory fields and utilizing free, efficient tools like Turnivo, you can streamline your billing process, ensure 100% legal compliance, and get paid faster. 
 
 Start generating your professional business documents today!

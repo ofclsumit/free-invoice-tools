@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://quoteflow.in/sitemap.xml
+Sitemap: https://Turnivo.in/sitemap.xml

@@ -18,7 +18,7 @@ export const Footer: React.FC<SectionProps> = ({
         .
       </p>
       <p className="text-[9px] text-stone-400 dark:text-stone-500 mt-1">
-        Generated electronically via QuoteFlow.
+        Generated electronically via Turnivo.
       </p>
     </footer>
   );

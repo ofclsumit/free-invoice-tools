@@ -131,7 +131,7 @@ export function GstSplitCalculatorClient() {
 
                   <div className="mt-16 pt-8 border-t border-gray-100 text-center">
                     <p className="text-gray-400 text-xs italic">
-                      This report was generated using the QuoteFlow GST Split Calculator.
+                      This report was generated using the Turnivo GST Split Calculator.
                     </p>
                   </div>
                 </div>

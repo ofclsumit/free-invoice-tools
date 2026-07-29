@@ -3,7 +3,7 @@ import { getAllPosts } from '@/lib/blog'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Blog | QuoteStream',
+  title: 'Blog | Turnivo',
   description: 'Learn how to create professional GST invoices, quotations, and manage your business billing.',
 }
 

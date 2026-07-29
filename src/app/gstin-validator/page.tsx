@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function GstinValidatorPage() {
   const content = toolContentDictionary["gstin-validator"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<GstinValidatorClient />} isUltra={true} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://Turnivo.in/${content.slug}`} tool={<GstinValidatorClient />} isUltra={true} />
   )
 }

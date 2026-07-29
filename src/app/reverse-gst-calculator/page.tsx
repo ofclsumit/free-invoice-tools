@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function ReverseGstCalculatorPage() {
   const content = toolContentDictionary["reverse-gst-calculator"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<ReverseGstCalculatorClient />} isUltra={true} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://Turnivo.in/${content.slug}`} tool={<ReverseGstCalculatorClient />} isUltra={true} />
   )
 }

@@ -13,7 +13,7 @@ export function generateToolMetadata(content: SeoContent): Metadata {
       title: content.title,
       description: content.metaDescription,
       type: "website",
-      siteName: "QuoteFlow",
+      siteName: "Turnivo",
       locale: "en_IN",
     },
     twitter: {
@@ -22,7 +22,7 @@ export function generateToolMetadata(content: SeoContent): Metadata {
       description: content.metaDescription,
     },
     alternates: {
-      canonical: `https://quoteflow.in/${content.slug}`,
+      canonical: `https://Turnivo.in/${content.slug}`,
     },
   }
 }

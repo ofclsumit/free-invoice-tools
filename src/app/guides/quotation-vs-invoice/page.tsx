@@ -4,11 +4,11 @@ import { FileText, ClipboardList, ArrowRight } from "lucide-react"
 import { SiteLogo } from "@/components/shared/site-logo"
 
 export const metadata = {
-  title: "Quotation vs Invoice | Guide | QuoteFlow",
+  title: "Quotation vs Invoice | Guide | Turnivo",
   description:
     "Understand the key differences between a quotation and an invoice. Learn when to use each document for your Indian business.",
   alternates: {
-    canonical: "https://quoteflow.in/guides/quotation-vs-invoice",
+    canonical: "https://Turnivo.in/guides/quotation-vs-invoice",
   },
 }
 
@@ -149,7 +149,7 @@ export default function QuotationVsInvoicePage() {
           <div className="glass-card p-8 mb-10">
             <h2 className="text-xl font-display font-semibold mb-2">Pro Tip: Convert Quotations to Invoices</h2>
             <p className="text-sm text-muted-foreground mb-4">
-              With QuoteFlow, you can create a quotation first, and when the client accepts, convert it to an invoice
+              With Turnivo, you can create a quotation first, and when the client accepts, convert it to an invoice
               with one click — all line items, pricing, and terms carry over automatically.
             </p>
             <div className="flex flex-wrap gap-3">

@@ -4,11 +4,11 @@ import { FileText, CheckCircle, AlertCircle } from "lucide-react"
 import { SiteLogo } from "@/components/shared/site-logo"
 
 export const metadata = {
-  title: "How to Create an Invoice | Guide | QuoteFlow",
+  title: "How to Create an Invoice | Guide | Turnivo",
   description:
     "Learn how to create a professional invoice step by step. Includes GST invoice requirements, key elements, and tips for Indian freelancers and businesses.",
   alternates: {
-    canonical: "https://quoteflow.in/guides/how-to-create-invoice",
+    canonical: "https://Turnivo.in/guides/how-to-create-invoice",
   },
 }
 
@@ -45,7 +45,7 @@ const faqSchema = {
       name: "What software can I use to create invoices for free?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "QuoteFlow is a free online invoice generator that works in your browser. No signup needed, no data stored on servers, and instant PDF download.",
+        text: "Turnivo is a free online invoice generator that works in your browser. No signup needed, no data stored on servers, and instant PDF download.",
       },
     },
     {
@@ -203,7 +203,7 @@ export default function HowToCreateInvoicePage() {
                 { q: "What is the difference between an invoice and a bill?", a: "An invoice is a request for payment sent by a seller to a buyer, while a bill is the document a buyer receives as a record of what they owe. In practice they refer to the same document." },
                 { q: "Do I need to include GST on my invoice?", a: "If your business is registered under GST and your annual turnover exceeds the threshold (₹40 lakh for goods, ₹20 lakh for services), you must charge GST and issue a GST-compliant invoice." },
                 { q: "Can I create an invoice without a GST number?", a: "Yes. If you are not GST-registered, you can still issue a regular invoice. However, you cannot charge GST or claim input tax credit." },
-                { q: "What software can I use to create invoices for free?", a: "QuoteFlow is a free online invoice generator that works in your browser. No signup needed, no data stored on servers, and instant PDF download." },
+                { q: "What software can I use to create invoices for free?", a: "Turnivo is a free online invoice generator that works in your browser. No signup needed, no data stored on servers, and instant PDF download." },
                 { q: "Is an invoice a legal document?", a: "Yes, an invoice is a legally recognized document that serves as evidence of a transaction between a seller and a buyer. It is used for accounting, tax filing, and dispute resolution." },
               ].map((faq, i) => (
                 <details key={i} className="glass-card p-5 group open:shadow-sm">

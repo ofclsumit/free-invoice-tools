@@ -1,4 +1,4 @@
-# QuoteFlow — GST Invoice & Quotation Generator
+# Turnivo — GST Invoice & Quotation Generator
 
 A modern, fast, mobile-first SaaS application for creating GST-compliant invoices and quotations, built for Indian freelancers and businesses. Built to be faster and simpler than Zoho Invoice, Refrens, Vyapar, and Invoicely.
 
@@ -19,7 +19,7 @@ A modern, fast, mobile-first SaaS application for creating GST-compliant invoice
 ## Project Structure
 
 ```
-quoteflow/
+Turnivo/
 ├── prisma/
 │   └── schema.prisma          # Full DB schema: Users, Clients, Invoices, Quotations, Items, Templates, Settings
 ├── public/
@@ -139,7 +139,7 @@ Visit `http://localhost:3000`.
 
 ## PDF Generation Approach
 
-PDFs are generated **entirely client-side** with `jsPDF` + `jspdf-autotable` (`src/lib/pdf/generate-invoice.ts`, `generate-quotation.ts`). This is the single biggest speed differentiator vs. competitors that round-trip to a server (often via headless Chrome/Puppeteer) to render PDFs — QuoteFlow's "Download PDF" is instant because the browser does the rendering work directly from the already-computed form state.
+PDFs are generated **entirely client-side** with `jsPDF` + `jspdf-autotable` (`src/lib/pdf/generate-invoice.ts`, `generate-quotation.ts`). This is the single biggest speed differentiator vs. competitors that round-trip to a server (often via headless Chrome/Puppeteer) to render PDFs — Turnivo's "Download PDF" is instant because the browser does the rendering work directly from the already-computed form state.
 
 The UPI QR code is generated with the `qrcode` package using the standard `upi://pay?pa=...&pn=...&am=...&cu=INR` deep-link format, which is scannable by any UPI app (GPay, PhonePe, Paytm, BHIM).
 

@@ -1,6 +1,6 @@
 {
-  "name": "QuoteStream - Free Invoice & Quotation Generator",
-  "short_name": "QuoteStream",
+  "name": "Turnivo - Free Invoice & Quotation Generator",
+  "short_name": "Turnivo",
   "description": "Create professional invoices, quotations, and GST bills in seconds",
   "start_url": "/",
   "display": "standalone",

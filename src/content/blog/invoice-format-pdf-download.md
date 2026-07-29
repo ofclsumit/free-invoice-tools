@@ -5,7 +5,7 @@ description: "Looking for a professional invoice format PDF download? Discover t
 category: "Templates & Formats"
 faqs:
   - question: "How can I download a free invoice format in PDF?"
-    answer: "You can use a free tool like QuoteStream to enter your billing details and instantly download a professional invoice format in PDF without any registration."
+    answer: "You can use a free tool like Turnivo to enter your billing details and instantly download a professional invoice format in PDF without any registration."
   - question: "What is the standard format for an invoice?"
     answer: "A standard invoice format includes your business details, client details, a unique invoice number, date, itemized list of goods/services, total amount, and payment terms."
   - question: "Are PDF invoices legally accepted?"
@@ -65,12 +65,12 @@ If you download a static PDF, you have to use a PDF editor to overlay text, whic
 
 Instead of downloading a blank template, modern businesses use **Dynamic Invoice Generators**. 
 
-Tools like [QuoteStream](https://quotestream.com) allow you to:
+Tools like [Turnivo](https://Turnivo.com) allow you to:
 1. Enter your details in a clean, modern web interface.
 2. Let the software do the math (calculating taxes, discounts, and totals instantly).
 3. Click one button to instantly **download a perfectly formatted PDF**.
 
-### How to use QuoteStream for your Invoices
+### How to use Turnivo for your Invoices
 1. Go to our [Free Invoice Generator](/invoice-generator).
 2. Fill in your company and client details.
 3. Add your line items and pricing.

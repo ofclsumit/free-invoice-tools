@@ -55,4 +55,4 @@ This is the most critical distinction for your accounting:
 
 A proforma invoice contains almost the exact same fields as a regular invoice (Business details, client details, line items, totals). The only major difference is that it MUST clearly state **"PROFORMA INVOICE"** at the very top. 
 
-Instead of building one from scratch, you can use QuoteStream's [Proforma Invoice Generator](/proforma-invoice). It provides the exact layout required by international and domestic clients, ensuring you look professional while keeping your accounting clean.
+Instead of building one from scratch, you can use Turnivo's [Proforma Invoice Generator](/proforma-invoice). It provides the exact layout required by international and domestic clients, ensuring you look professional while keeping your accounting clean.

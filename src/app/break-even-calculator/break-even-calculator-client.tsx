@@ -153,7 +153,7 @@ export function BreakEvenCalculatorClient() {
 
       <div className="mt-16 pt-8 border-t border-gray-100 text-center">
         <p className="text-gray-400 text-xs italic">
-          This report was generated using the QuoteFlow Break-Even Calculator.
+          This report was generated using the Turnivo Break-Even Calculator.
         </p>
       </div>
     </div>

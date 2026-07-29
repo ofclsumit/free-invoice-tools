@@ -2,9 +2,9 @@ import { Shield } from "lucide-react"
 import { SiteLogo } from "@/components/shared/site-logo"
 
 export const metadata = {
-  title: "Privacy Policy | QuoteFlow",
+  title: "Privacy Policy | Turnivo",
   description:
-    "QuoteFlow privacy policy — how we handle, store, and protect your data. All processing is done client-side in your browser.",
+    "Turnivo privacy policy — how we handle, store, and protect your data. All processing is done client-side in your browser.",
 }
 
 export default function PrivacyPage() {
@@ -25,14 +25,14 @@ export default function PrivacyPage() {
 
         <div className="prose prose-gray dark:prose-invert max-w-none space-y-6">
           <p className="text-lg text-muted-foreground leading-relaxed">
-            At QuoteFlow, your privacy matters. This policy explains what data we collect, how we use it, and your
+            At Turnivo, your privacy matters. This policy explains what data we collect, how we use it, and your
             rights. The short version: <strong>all invoice data stays in your browser</strong> — we never see it.
           </p>
 
           <section>
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">Information We Collect</h2>
             <p>
-              QuoteFlow is designed to work without an account. We collect the bare minimum needed to provide the
+              Turnivo is designed to work without an account. We collect the bare minimum needed to provide the
               service:
             </p>
             <ul className="list-disc pl-6 space-y-1.5 text-muted-foreground">
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">How We Use Your Information</h2>
             <ul className="list-disc pl-6 space-y-1.5 text-muted-foreground">
-              <li>To provide and improve the QuoteFlow application.</li>
+              <li>To provide and improve the Turnivo application.</li>
               <li>To respond to support requests and feedback.</li>
               <li>To analyze aggregate usage patterns so we can build better features.</li>
             </ul>
@@ -64,7 +64,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">Data Storage &amp; Processing</h2>
             <p>
-              QuoteFlow uses a <strong>client-first architecture</strong>. Every invoice, quotation, receipt, and
+              Turnivo uses a <strong>client-first architecture</strong>. Every invoice, quotation, receipt, and
               document you create is generated and rendered inside your browser using JavaScript. Your data is saved to{" "}
               <code className="text-sm bg-muted px-1.5 py-0.5 rounded">localStorage</code> — the same storage websites
               use to remember your preferences. It never touches our servers.
@@ -94,7 +94,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">Third-Party Services</h2>
-            <p>QuoteFlow uses the following third-party services:</p>
+            <p>Turnivo uses the following third-party services:</p>
             <ul className="list-disc pl-6 space-y-1.5 text-muted-foreground">
               <li>
                 <strong>Vercel</strong> — hosting provider. Vercel may collect standard server logs (IP address, request
@@ -118,7 +118,7 @@ export default function PrivacyPage() {
                 → Local Storage.
               </li>
               <li>
-                <strong>Deletion</strong> — clear all QuoteFlow data by going to Settings → Clear Data, or clearing your
+                <strong>Deletion</strong> — clear all Turnivo data by going to Settings → Clear Data, or clearing your
                 browser&apos;s localStorage for this site.
               </li>
               <li>
@@ -134,8 +134,8 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-display font-semibold mt-8 mb-3">Contact</h2>
             <p>
               If you have questions about this policy or your data, reach out at{" "}
-              <a href="mailto:support@quoteflow.in" className="text-primary hover:underline">
-                support@quoteflow.in
+              <a href="mailto:support@Turnivo.in" className="text-primary hover:underline">
+                support@Turnivo.in
               </a>
               .
             </p>

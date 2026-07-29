@@ -9,12 +9,12 @@ import {
 
 const faqs = [
   {
-    q: "Is QuoteFlow really free?",
+    q: "Is Turnivo really free?",
     a: "Yes! Our free plan lets you create 25 invoices and 10 quotations per month — more than enough for most freelancers and small businesses. There are no watermarks, no hidden charges, and no credit card required.",
   },
   {
-    q: "Is QuoteFlow compliant with Indian GST rules?",
-    a: "Yes. QuoteFlow automatically calculates CGST, SGST, and IGST based on whether the transaction is within the same state or interstate. It supports all GST rates (0%, 5%, 12%, 18%, 28%) and generates invoices in the format required by GST law.",
+    q: "Is Turnivo compliant with Indian GST rules?",
+    a: "Yes. Turnivo automatically calculates CGST, SGST, and IGST based on whether the transaction is within the same state or interstate. It supports all GST rates (0%, 5%, 12%, 18%, 28%) and generates invoices in the format required by GST law.",
   },
   {
     q: "Can I add my company logo and signature?",
@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: "How does the UPI QR code work?",
-    a: "Enter your UPI ID in your profile settings, and QuoteFlow will automatically generate a payment QR code and embed it inside every PDF invoice. Your clients can scan it directly from the invoice to pay you instantly.",
+    a: "Enter your UPI ID in your profile settings, and Turnivo will automatically generate a payment QR code and embed it inside every PDF invoice. Your clients can scan it directly from the invoice to pay you instantly.",
   },
   {
     q: "Can I convert a quotation to an invoice?",
@@ -37,8 +37,8 @@ const faqs = [
     a: "Your security is our top priority. All data is encrypted in transit and at rest. We never share your data with third parties. You can also export and delete all your data at any time.",
   },
   {
-    q: "Can I use QuoteFlow on my phone?",
-    a: "Yes! QuoteFlow is built mobile-first and works perfectly on all smartphones. You can create and send invoices on the go. You can also install it as a PWA (Progressive Web App) on your home screen.",
+    q: "Can I use Turnivo on my phone?",
+    a: "Yes! Turnivo is built mobile-first and works perfectly on all smartphones. You can create and send invoices on the go. You can also install it as a PWA (Progressive Web App) on your home screen.",
   },
 ]
 
@@ -49,7 +49,7 @@ export function FaqSection() {
         <div className="text-center space-y-4 mb-16">
           <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 tracking-widest uppercase">FAQ</p>
           <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight">Questions & answers</h2>
-          <p className="text-lg text-muted-foreground">Everything you need to know about QuoteFlow.</p>
+          <p className="text-lg text-muted-foreground">Everything you need to know about Turnivo.</p>
         </div>
 
         <Accordion type="single" collapsible className="space-y-3">

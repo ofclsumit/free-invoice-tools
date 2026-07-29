@@ -3,11 +3,11 @@ import Link from "next/link"
 import { ArrowLeft, Calculator, TrendingDown, Calendar, Download, CheckCircle } from "lucide-react"
 
 export const metadata = {
-  title: "Free EMI Calculator | Calculate Loan EMI Online | QuoteFlow",
+  title: "Free EMI Calculator | Calculate Loan EMI Online | Turnivo",
   description:
     "Calculate your monthly EMI for home loan, car loan, personal loan instantly. Free online EMI calculator with amortization schedule. No signup needed.",
   alternates: {
-    canonical: "https://quoteflow.in/calculator/emi-calculator",
+    canonical: "https://Turnivo.in/calculator/emi-calculator",
   },
 }
 

@@ -111,7 +111,7 @@ export default function GlassInvoiceCard() {
                 INVOICE
               </h3>
               <p className="text-[11px] md:text-[12px] text-slate-400 tracking-wide mt-1">
-                QuickInvoice Pro Inc.
+                Turnivo Inc.
               </p>
             </div>
             <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-gradient-to-tr from-violet-500/20 to-indigo-500/20 border border-violet-500/30 flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.15)]">

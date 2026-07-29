@@ -16,12 +16,12 @@ const steps = [
   {
     number: "03",
     title: "Preview & download PDF",
-    description: "See a live preview of your invoice as you type. Download a professional PDF in one click.",
+    description: "View dynamic layouts instantly. Export crystal-clear, 100% digital vector PDFs with fully copyable and searchable text.",
   },
   {
     number: "04",
     title: "Share & get paid",
-    description: "Send via email, WhatsApp, or share a public link. Track when clients view your invoice.",
+    description: "Generate secure cloud-backed database sharing links with Copy URL, or launch native device file-share sheets in one click.",
   },
 ]
 

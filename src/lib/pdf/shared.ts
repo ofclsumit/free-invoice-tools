@@ -311,7 +311,7 @@ export function drawFooter(
   doc.setFont("Inter", "normal")
   doc.setFontSize(7)
   doc.setTextColor(160, 160, 160)
-  doc.text("Create your own billing documents at quoteflow.in", pageW / 2, bottomY + 1, { align: "center" })
+  doc.text("Create your own billing documents at Turnivo.in", pageW / 2, bottomY + 1, { align: "center" })
 }
 
 export function drawSignatureArea(

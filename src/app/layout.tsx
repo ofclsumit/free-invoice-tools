@@ -27,15 +27,15 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://quotestream.com"),
+  metadataBase: new URL("https://Turnivo.com"),
   title: {
-    default: "QuoteStream — Free Professional Invoice & Quotation Generator",
-    template: "%s | QuoteStream",
+    default: "Turnivo — Free Professional Invoice & Quotation Generator",
+    template: "%s | Turnivo",
   },
   description:
     "Create professional invoices, quotations, and GST bills in seconds. The best free online platform for generating business documents in India. Fast, mobile-friendly, and SEO-optimized.",
   keywords: [
-    "QuoteStream",
+    "Turnivo",
     "GST invoice generator",
     "quotation generator India",
     "free invoice maker",
@@ -47,24 +47,24 @@ export const metadata: Metadata = {
     "Indian invoice software",
     "free GST billing",
   ],
-  authors: [{ name: "QuoteStream" }],
-  creator: "QuoteStream",
-  publisher: "QuoteStream",
+  authors: [{ name: "Turnivo" }],
+  creator: "Turnivo",
+  publisher: "Turnivo",
   alternates: {
-    canonical: "https://quotestream.com",
+    canonical: "https://Turnivo.com",
   },
   openGraph: {
     type: "website",
     locale: "en_IN",
-    siteName: "QuoteStream",
-    title: "QuoteStream — Create Professional Invoices & Quotations in Seconds",
+    siteName: "Turnivo",
+    title: "Turnivo — Create Professional Invoices & Quotations in Seconds",
     description:
       "Create professional GST invoices and quotations in seconds. Free forever. Instant PDF download. No signup needed.",
-    url: "https://quotestream.com",
+    url: "https://Turnivo.com",
   },
   twitter: {
     card: "summary_large_image",
-    title: "QuoteStream — Free Professional Invoice Generator",
+    title: "Turnivo — Free Professional Invoice Generator",
     description: "Create professional GST invoices and quotations in seconds. Free forever. No signup needed.",
   },
   manifest: "/manifest.json",
@@ -107,8 +107,8 @@ export default function RootLayout({
               {
                 "@context": "https://schema.org",
                 "@type": "Organization",
-                name: "QuoteStream",
-                url: "https://quotestream.com",
+                name: "Turnivo",
+                url: "https://Turnivo.com",
                 description:
                   "Create professional GST invoices and quotations in seconds. The best free online platform for generating business documents in India.",
                 foundingDate: "2024",
@@ -116,13 +116,13 @@ export default function RootLayout({
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                name: "QuoteStream",
-                url: "https://quotestream.com",
+                name: "Turnivo",
+                url: "https://Turnivo.com",
                 description:
                   "Free GST invoice generator for Indian businesses. Create invoices, quotations, receipts, and more.",
                 potentialAction: {
                   "@type": "SearchAction",
-                  target: "https://quotestream.com/search?q={search_term_string}",
+                  target: "https://Turnivo.com/search?q={search_term_string}",
                   "query-input": "required name=search_term_string",
                 },
               },
@@ -135,7 +135,7 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange={false}
         >

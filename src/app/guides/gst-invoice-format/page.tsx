@@ -4,11 +4,11 @@ import { FileText, CheckCircle } from "lucide-react"
 import { SiteLogo } from "@/components/shared/site-logo"
 
 export const metadata = {
-  title: "GST Invoice Format | Guide | QuoteFlow",
+  title: "GST Invoice Format | Guide | Turnivo",
   description:
     "Complete guide to GST invoice format in India. Learn about mandatory fields, CGST/SGST/IGST, HSN codes, and download a free GST invoice template.",
   alternates: {
-    canonical: "https://quoteflow.in/guides/gst-invoice-format",
+    canonical: "https://Turnivo.in/guides/gst-invoice-format",
   },
 }
 
@@ -172,7 +172,7 @@ export default function GSTInvoiceFormatPage() {
           <div className="glass-card p-8 mb-10 text-center">
             <h2 className="text-xl font-display font-semibold mb-2">Generate GST-Compliant Invoices Free</h2>
             <p className="text-muted-foreground mb-4">
-              Use QuoteFlow to create professional GST invoices instantly. Auto-calculates CGST/SGST/IGST.
+              Use Turnivo to create professional GST invoices instantly. Auto-calculates CGST/SGST/IGST.
             </p>
             <Link
               href="/tools/invoice-generator"

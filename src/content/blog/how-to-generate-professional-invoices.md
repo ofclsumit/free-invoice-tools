@@ -7,7 +7,7 @@ faqs:
   - question: "What makes an invoice look professional?"
     answer: "A professional invoice is clean, easy to read, features your brand logo, clearly itemizes the services, and explicitly states the payment terms and due date."
   - question: "How can I generate invoices for free?"
-    answer: "You can use QuoteStream's free online invoice generator to create, customize, and download professional PDF invoices without paying any subscription fees."
+    answer: "You can use Turnivo's free online invoice generator to create, customize, and download professional PDF invoices without paying any subscription fees."
 ---
 
 # How to Generate Professional Invoices for Your Business
@@ -58,9 +58,9 @@ For decades, businesses used Microsoft Word or Excel templates. While accessible
 - It is incredibly time-consuming to copy-paste client details every time.
 
 ### The New Way: Cloud-Based Invoice Generators
-Today, the standard is to use a dedicated invoice generator. Tools like [QuoteStream](https://quotestream.com) have revolutionized billing for small businesses.
+Today, the standard is to use a dedicated invoice generator. Tools like [Turnivo](https://Turnivo.com) have revolutionized billing for small businesses.
 
-Here is how you generate a professional invoice using QuoteStream:
+Here is how you generate a professional invoice using Turnivo:
 1. **Open the Generator**: No login required, just open the web app.
 2. **Input Data**: Fill in the intuitive form fields for your business, the client, and the items.
 3. **Auto-Calculate**: The software instantly calculates all taxes, discounts, and totals without any spreadsheet formulas.

@@ -12,6 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function GstRateFinderPage() {
   const content = toolContentDictionary["gst-rate-finder"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<GstRateFinderClient />} isUltra={true} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://Turnivo.in/${content.slug}`} tool={<GstRateFinderClient />} isUltra={true} />
   )
 }

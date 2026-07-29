@@ -6,7 +6,7 @@ const testimonials = [
     role: "Freelance Designer, Mumbai",
     avatar: "PS",
     rating: 5,
-    content: "I was using Zoho Invoice before and it was so complicated. QuoteFlow is insanely simple. I created my first GST invoice in literally 90 seconds. The WhatsApp sharing feature is a game changer.",
+    content: "I was using Zoho Invoice before and it was so complicated. Turnivo is insanely simple. I created my first GST invoice in literally 90 seconds. The WhatsApp sharing feature is a game changer.",
     color: "bg-violet-600",
   },
   {
@@ -22,7 +22,7 @@ const testimonials = [
     role: "Boutique Owner, Ahmedabad",
     avatar: "AP",
     rating: 5,
-    content: "As a small business owner, I was doing invoices in Excel. QuoteFlow made everything professional overnight. The auto GST calculation alone saves me hours every month.",
+    content: "As a small business owner, I was doing invoices in Excel. Turnivo made everything professional overnight. The auto GST calculation alone saves me hours every month.",
     color: "bg-emerald-600",
   },
   {
@@ -38,7 +38,7 @@ const testimonials = [
     role: "Marketing Agency, Delhi",
     avatar: "DJ",
     rating: 5,
-    content: "We manage 50+ clients and QuoteFlow's client management keeps everything organized. The revenue tracking gives us a clear picture of our finances every month.",
+    content: "We manage 50+ clients and Turnivo's client management keeps everything organized. The revenue tracking gives us a clear picture of our finances every month.",
     color: "bg-pink-600",
   },
   {
@@ -60,7 +60,7 @@ export function TestimonialsSection() {
             Loved by thousands
           </p>
           <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight">
-            Indian businesses love QuoteFlow
+            Indian businesses love Turnivo
           </h2>
           <div className="flex items-center justify-center gap-1">
             {[1,2,3,4,5].map(i => (

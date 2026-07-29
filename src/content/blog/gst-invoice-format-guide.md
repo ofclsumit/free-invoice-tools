@@ -61,7 +61,7 @@ You cannot issue an invoice whenever you feel like it. There are strict timeline
 
 Manually tracking all 16 mandatory fields in Word or Excel is risky. A single missing field can result in the invoice being deemed invalid, which means your client cannot claim Input Tax Credit (ITC)—leading to disputes and delayed payments.
 
-The easiest way to ensure 100% compliance is by using a dedicated **GST Invoice Generator** like [QuoteStream](https://quotestream.com). 
+The easiest way to ensure 100% compliance is by using a dedicated **GST Invoice Generator** like [Turnivo](https://Turnivo.com). 
 
 Our software is pre-coded with all CBIC rules. It forces you to input the necessary details (like GSTINs and HSN codes) and automatically calculates the complex CGST/SGST vs IGST math based on state codes. 
 

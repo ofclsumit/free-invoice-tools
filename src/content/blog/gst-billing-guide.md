@@ -62,6 +62,6 @@ When selling to an end-consumer or an unregistered business, they do not have a 
 
 The easiest way to ensure you are following all these rules is to use a dedicated software tool rather than manual spreadsheets. 
 
-Using the free [GST Invoice Generator](https://quotestream.com/gst-invoice-generator) by QuoteStream, you can automate this entire process. You just enter the base price and select the tax rate. The software automatically handles the CGST/SGST splitting or the IGST application based on the addresses provided. It also ensures all mandatory fields (like HSN codes and sequential invoice numbers) are present before you download the final PDF.
+Using the free [GST Invoice Generator](https://Turnivo.com/gst-invoice-generator) by Turnivo, you can automate this entire process. You just enter the base price and select the tax rate. The software automatically handles the CGST/SGST splitting or the IGST application based on the addresses provided. It also ensures all mandatory fields (like HSN codes and sequential invoice numbers) are present before you download the final PDF.
 
 Stay compliant, avoid penalties, and make your billing process seamless!

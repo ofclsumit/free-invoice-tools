@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: content.metaDescription,
     },
     alternates: {
-      canonical: `https://quoteflow.in/${content.slug}`,
+      canonical: `https://Turnivo.in/${content.slug}`,
     },
   }
 }
@@ -27,6 +27,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function PaymentReceiptPage() {
   const content = toolContentDictionary["payment-receipt"]
   return (
-    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://quoteflow.in/${content.slug}`} tool={<PaymentReceiptClient />} />
+    <ToolLayout {...content} description={content.metaDescription} schemaUrl={`https://Turnivo.in/${content.slug}`} tool={<PaymentReceiptClient />} />
   )
 }

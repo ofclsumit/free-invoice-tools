@@ -2,6 +2,7 @@ import React from "react"
 import Link from "next/link"
 import { ArrowLeft, CheckCircle2 } from "lucide-react"
 import { JsonLd } from "./json-ld"
+import { ThemeToggle } from "@/components/shared/theme-toggle"
 import { RelatedTools, RelatedTool } from "./related-tools"
 import {
   Accordion,
@@ -72,7 +73,7 @@ export function ToolLayout({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://quoteflow.in" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://Turnivo.in" },
       { "@type": "ListItem", position: 2, name: h1, item: schemaUrl },
     ],
   }
@@ -84,7 +85,32 @@ export function ToolLayout({
         <JsonLd data={faqSchema} />
         <JsonLd data={breadcrumbSchema} />
         
-        <div className="font-['Inter'] min-h-screen w-full text-foreground overflow-hidden py-8 px-4 sm:py-12 bg-mesh transition-colors duration-300">
+        <div className="font-['Inter'] min-h-screen w-full text-foreground overflow-hidden py-8 px-4 sm:py-12 bg-mesh transition-colors duration-300 relative">
+          <style dangerouslySetInnerHTML={{ __html: `
+            .tool-particle {
+              position: absolute;
+              border-radius: 9999px;
+              background: rgba(196,181,253,0.9);
+              box-shadow: 0 0 8px rgba(167,139,250,0.9);
+              pointer-events: none;
+              animation: toolParticleFloat 14s ease-in-out infinite;
+            }
+            @keyframes toolParticleFloat {
+              0%,100% { transform: translateY(0) translateX(0); opacity: 0.25; }
+              50% { transform: translateY(-22px) translateX(10px); opacity: 0.7; }
+            }
+          `}} />
+          <div className="tool-particle" style={{ top: "18%", left: "16%", width: 4, height: 4, animationDelay: "0s" }} />
+          <div className="tool-particle" style={{ top: "30%", right: "12%", width: 6, height: 6, animationDelay: "-3s" }} />
+          <div className="tool-particle" style={{ top: "62%", left: "10%", width: 3, height: 3, animationDelay: "-6s" }} />
+          <div className="tool-particle" style={{ bottom: "22%", right: "18%", width: 5, height: 5, animationDelay: "-9s" }} />
+          <div className="tool-particle" style={{ top: "44%", left: "24%", width: 3, height: 3, animationDelay: "-4.5s" }} />
+          <div className="tool-particle" style={{ top: "24%", right: "26%", width: 4, height: 4, animationDelay: "-7.5s" }} />
+
+          <div className="fixed top-4 right-4 z-50">
+            <ThemeToggle />
+          </div>
+
           <svg style={{display:"none"}} aria-hidden="true">
             <defs>
               <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
@@ -193,30 +219,51 @@ export function ToolLayout({
       <JsonLd data={faqSchema} />
       <JsonLd data={breadcrumbSchema} />
       
-      <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12">
-        
+      <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 relative">
+        <style dangerouslySetInnerHTML={{ __html: `
+          .tool-particle {
+            position: absolute;
+            border-radius: 9999px;
+            background: rgba(196,181,253,0.9);
+            box-shadow: 0 0 8px rgba(167,139,250,0.9);
+            pointer-events: none;
+            animation: toolParticleFloat 14s ease-in-out infinite;
+          }
+          @keyframes toolParticleFloat {
+            0%,100% { transform: translateY(0) translateX(0); opacity: 0.25; }
+            50% { transform: translateY(-22px) translateX(10px); opacity: 0.7; }
+          }
+        `}} />
+        <div className="tool-particle" style={{ top: "18%", left: "16%", width: 4, height: 4, animationDelay: "0s" }} />
+        <div className="tool-particle" style={{ top: "30%", right: "12%", width: 6, height: 6, animationDelay: "-3s" }} />
+        <div className="tool-particle" style={{ top: "62%", left: "10%", width: 3, height: 3, animationDelay: "-6s" }} />
+        <div className="tool-particle" style={{ bottom: "22%", right: "18%", width: 5, height: 5, animationDelay: "-9s" }} />
+        <div className="tool-particle" style={{ top: "44%", left: "24%", width: 3, height: 3, animationDelay: "-4.5s" }} />
+        <div className="tool-particle" style={{ top: "24%", right: "26%", width: 4, height: 4, animationDelay: "-7.5s" }} />
+
         {/* Header & Navigation */}
-        <div className="max-w-4xl mx-auto mb-10 px-1">
+          <div className="max-w-4xl mx-auto mb-10 px-1">
           <div className="flex items-center justify-between">
             <Link href="/" className="inline-flex items-center gap-2.5 font-display font-bold text-xl hover:opacity-90 transition-opacity">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-violet-600 shadow-glow-sm shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                </svg>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden shrink-0">
+                <img src="/logo.png" alt="Turnivo Logo" className="w-8 h-8 object-cover" />
               </div>
-              <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-                QuoteFlow
+              <span className="text-[#c084fc]">
+                {"\uD835\uDE1B\uD835\uDE1C\uD835\uDE19\uD835\uDE15\uD835\uDE10\uD835\uDE1D\uD835\uDE16"}
               </span>
             </Link>
-            <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
-              Back to Home
-            </Link>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Home
+              </Link>
+            </div>
           </div>
             
             <div className="text-center space-y-4 mt-6">
               <span className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white brand-gradient shadow-md shadow-violet-500/30">
-                QuoteFlow Tool
+                Turnivo Tool
               </span>
               <h1 className="text-3xl sm:text-5xl font-display font-bold tracking-tight text-gray-900 dark:text-white">
                 {h1}
@@ -298,7 +345,7 @@ export function ToolLayout({
           </article>
 
           {/* Internal Linking */}
-          <RelatedTools tools={relatedTools} />
+          <RelatedTools tools={relatedTools} isUltra={true} />
           
         </div>
       </div>

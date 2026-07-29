@@ -77,17 +77,17 @@ export interface CompanyProfile {
 }
 
 export function useDocumentStorage() {
-  return useLocalStorage<SavedDocument[]>("quoteflow_documents", [])
+  return useLocalStorage<SavedDocument[]>("Turnivo_documents", [])
 }
 
 export function useCustomerStorage() {
-  return useLocalStorage<SavedCustomer[]>("quoteflow_customers", [])
+  return useLocalStorage<SavedCustomer[]>("Turnivo_customers", [])
 }
 
 export function useCompanyProfile() {
-  return useLocalStorage<CompanyProfile | null>("quoteflow_company", null)
+  return useLocalStorage<CompanyProfile | null>("Turnivo_company", null)
 }
 
 export function useRecentDocuments() {
-  return useLocalStorage<SavedDocument[]>("quoteflow_recent", [])
+  return useLocalStorage<SavedDocument[]>("Turnivo_recent", [])
 }

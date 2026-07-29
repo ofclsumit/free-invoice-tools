@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   try {
     const post = getPostBySlug(params.slug)
     return {
-      title: `${post.title} | QuoteStream Blog`,
+      title: `${post.title} | Turnivo Blog`,
       description: post.description,
       openGraph: {
         title: post.title,
@@ -49,7 +49,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     datePublished: post.date,
     author: {
       "@type": "Organization",
-      name: "QuoteStream"
+      name: "Turnivo"
     }
   }
 
