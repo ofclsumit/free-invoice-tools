@@ -17,14 +17,14 @@ import { Badge } from "@/components/ui/badge"
 import {
   Plus, Trash2, Eye, Save, FileText,
   ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
-  RotateCcw
+  RotateCcw, LayoutTemplate
 } from "lucide-react"
 import {
   computeInvoiceTotals,
   type InvoiceData as TemplateInvoiceData
 } from "@/components/invoice-templates/components"
 import { useToast } from "@/hooks/use-toast"
-import { TemplateDialog, TemplateSelectorInline } from "@/components/template-selection"
+import { TemplateDialog } from "@/components/template-selection"
 import { savePreviewData } from "@/lib/preview-store"
 
 const itemSchema = z.object({
@@ -347,13 +347,18 @@ export function ProformaInvoiceClient() {
             {/* Settings Section */}
             <section className="form-section">
               <div className="grid sm:grid-cols-3 gap-4">
-                <div className="space-y-1.5 sm:col-span-3 border-b border-stone-100 dark:border-stone-850 pb-4 mb-2">
-                  <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template Selection</Label>
-                  <TemplateSelectorInline
-                    currentValue={form.watch("template")}
-                    onSelect={(v) => form.setValue("template", v as any)}
-                    onOpenDialog={() => setIsTemplateDialogOpen(true)}
-                  />
+                <div className="sm:col-span-3 border-b border-stone-100 dark:border-stone-850 pb-4 mb-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template</Label>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        Current: <span className="font-semibold text-foreground">{watchedValues.template === "StudioTemplate" ? "Modern" : watchedValues.template === "LedgerTemplate" ? "Corporate" : watchedValues.template === "MinimalMonoTemplate" ? "Minimal" : watchedValues.template === "ClassicBooksTemplate" ? "Creative" : watchedValues.template === "VyaparDesiTemplate" ? "GST India" : "Modern"}</span>
+                      </p>
+                    </div>
+                    <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsTemplateDialogOpen(true)}>
+                      <LayoutTemplate className="h-4 w-4" /> Change Template
+                    </Button>
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Currency</Label>

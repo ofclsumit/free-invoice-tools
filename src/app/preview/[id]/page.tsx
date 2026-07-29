@@ -113,8 +113,6 @@ export default function PreviewPage() {
       title={title}
       fileName={fileName}
       onBack={handleBack}
-      invoiceData={invoiceData as TemplateInvoiceData | undefined}
-      templateName={templateName}
     >
       {renderContent()}
     </PreviewShell>

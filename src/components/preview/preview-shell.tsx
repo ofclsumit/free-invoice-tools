@@ -4,19 +4,14 @@ import { useState, useCallback, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Download, Printer, ZoomIn, ZoomOut } from "lucide-react"
 import { exportNodeToPdf } from "@/components/invoice-templates/components"
-import { tryNativeShare, openWhatsApp, openEmail } from "@/lib/share-utils"
-import { ShareButton } from "@/components/shared/share-button"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { useToast } from "@/hooks/use-toast"
-import type { InvoiceData as TemplateInvoiceData } from "@/components/invoice-templates/data/invoiceTypes"
 
 interface PreviewShellProps {
   children: React.ReactNode
   title: string
   fileName: string
   onBack: () => void
-  invoiceData?: TemplateInvoiceData
-  templateName?: string
   printRootId?: string
 }
 
@@ -25,8 +20,6 @@ export function PreviewShell({
   title,
   fileName,
   onBack,
-  invoiceData,
-  templateName,
   printRootId = "preview-print-root",
 }: PreviewShellProps) {
   const { toast } = useToast()
@@ -51,43 +44,6 @@ export function PreviewShell({
 
   const handlePrint = useCallback(() => window.print(), [])
 
-  const generateBlob = useCallback(async () => {
-    const node = document.getElementById(printRootId)
-    if (!node) return null
-    const { exportNodeToPdf: pdf } = await import("@/components/invoice-templates/components")
-    return pdf(node, fileName, true) as Promise<Blob>
-  }, [fileName, printRootId])
-
-  const handleWhatsAppShare = useCallback(async () => {
-    setIsGenerating(true)
-    try {
-      const blob = await generateBlob()
-      if (!blob) { setIsGenerating(false); return }
-      const msg = `Please find attached: ${title}`
-      const shared = await tryNativeShare(blob, fileName, title, msg)
-      if (!shared) {
-        const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
-        openWhatsApp(msg)
-      }
-    } catch { toast({ title: "Failed to share", variant: "destructive" }) }
-    finally { setIsGenerating(false) }
-  }, [fileName, title, generateBlob, toast])
-
-  const handleEmailShare = useCallback(async () => {
-    setIsGenerating(true)
-    try {
-      const blob = await generateBlob()
-      if (!blob) { setIsGenerating(false); return }
-      const body = `Dear Sir/Madam,\n\nPlease find attached the document.\n\nBest regards`
-      const shared = await tryNativeShare(blob, fileName, title, body)
-      if (!shared) {
-        const dlUrl = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = dlUrl; a.download = fileName; a.click(); URL.revokeObjectURL(dlUrl)
-        openEmail("", title, body)
-      }
-    } catch { toast({ title: "Failed to send email", variant: "destructive" }) }
-    finally { setIsGenerating(false) }
-  }, [fileName, title, generateBlob, toast])
-
   return (
     <>
       {isGenerating && <LoadingScreen message="Generating PDF..." />}
@@ -111,15 +67,6 @@ export function PreviewShell({
                 </button>
               </div>
               <div className="flex items-center gap-1">
-                {invoiceData && templateName && (
-                  <ShareButton invoiceData={invoiceData} template={templateName} title={title} />
-                )}
-                <button onClick={handleWhatsAppShare} title="WhatsApp" className="h-8 w-8 flex items-center justify-center rounded-lg border border-input bg-background shadow-sm hover:bg-accent transition-colors">
-                  <img src="/wh.svg" alt="WhatsApp" className="h-4 w-4" />
-                </button>
-                <button onClick={handleEmailShare} title="Email" className="h-8 w-8 flex items-center justify-center rounded-lg border border-input bg-background shadow-sm hover:bg-accent transition-colors">
-                  <img src="/email.svg" alt="Email" className="h-4 w-4" />
-                </button>
                 <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs" onClick={handlePrint}>
                   <Printer className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Print</span>
@@ -138,6 +85,10 @@ export function PreviewShell({
               {children}
             </div>
           </div>
+          <footer className="w-full max-w-[210mm] mt-8 pb-4 text-center text-xs text-gray-400 border-t border-gray-200 pt-4">
+            <p className="mb-1">Made with <span className="text-red-400">&hearts;</span> in India</p>
+            <p>&copy; {new Date().getFullYear()} quickinvoicepro.vercel.app &mdash; All rights reserved.</p>
+          </footer>
         </div>
       </div>
     </>
