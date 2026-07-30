@@ -10,6 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { StarsBackground } from "../shared/stars-background"
 
 export interface ToolLayoutProps {
   title: string
@@ -149,28 +150,7 @@ export function ToolLayout({
         {faqs.length > 0 && <JsonLd data={faqSchema} />}
         {howToUse.steps.length > 0 && <JsonLd data={howToSchema} />}
         
-        <div className="font-['Inter'] min-h-screen w-full text-foreground overflow-hidden py-8 px-4 sm:py-12 bg-mesh transition-colors duration-300 relative">
-          <style dangerouslySetInnerHTML={{ __html: `
-            .tool-particle {
-              position: absolute;
-              border-radius: 9999px;
-              background: rgba(196,181,253,0.9);
-              box-shadow: 0 0 8px rgba(167,139,250,0.9);
-              pointer-events: none;
-              animation: toolParticleFloat 14s ease-in-out infinite;
-            }
-            @keyframes toolParticleFloat {
-              0%,100% { transform: translateY(0) translateX(0); opacity: 0.25; }
-              50% { transform: translateY(-22px) translateX(10px); opacity: 0.7; }
-            }
-          `}} />
-          <div className="tool-particle" style={{ top: "18%", left: "16%", width: 4, height: 4, animationDelay: "0s" }} />
-          <div className="tool-particle" style={{ top: "30%", right: "12%", width: 6, height: 6, animationDelay: "-3s" }} />
-          <div className="tool-particle" style={{ top: "62%", left: "10%", width: 3, height: 3, animationDelay: "-6s" }} />
-          <div className="tool-particle" style={{ bottom: "22%", right: "18%", width: 5, height: 5, animationDelay: "-9s" }} />
-          <div className="tool-particle" style={{ top: "44%", left: "24%", width: 3, height: 3, animationDelay: "-4.5s" }} />
-          <div className="tool-particle" style={{ top: "24%", right: "26%", width: 4, height: 4, animationDelay: "-7.5s" }} />
-
+        <StarsBackground className="font-['Inter'] min-h-screen w-full text-foreground py-8 px-4 sm:py-12 relative">
           <div className="fixed top-4 right-4 z-50">
             <ThemeToggle />
           </div>
@@ -272,7 +252,7 @@ export function ToolLayout({
             )}
             
           </div>
-        </div>
+        </StarsBackground>
       </>
     )
   }
@@ -287,27 +267,7 @@ export function ToolLayout({
       {faqs.length > 0 && <JsonLd data={faqSchema} />}
       {howToUse.steps.length > 0 && <JsonLd data={howToSchema} />}
       
-      <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 relative">
-        <style dangerouslySetInnerHTML={{ __html: `
-          .tool-particle {
-            position: absolute;
-            border-radius: 9999px;
-            background: rgba(196,181,253,0.9);
-            box-shadow: 0 0 8px rgba(167,139,250,0.9);
-            pointer-events: none;
-            animation: toolParticleFloat 14s ease-in-out infinite;
-          }
-          @keyframes toolParticleFloat {
-            0%,100% { transform: translateY(0) translateX(0); opacity: 0.25; }
-            50% { transform: translateY(-22px) translateX(10px); opacity: 0.7; }
-          }
-        `}} />
-        <div className="tool-particle" style={{ top: "18%", left: "16%", width: 4, height: 4, animationDelay: "0s" }} />
-        <div className="tool-particle" style={{ top: "30%", right: "12%", width: 6, height: 6, animationDelay: "-3s" }} />
-        <div className="tool-particle" style={{ top: "62%", left: "10%", width: 3, height: 3, animationDelay: "-6s" }} />
-        <div className="tool-particle" style={{ bottom: "22%", right: "18%", width: 5, height: 5, animationDelay: "-9s" }} />
-        <div className="tool-particle" style={{ top: "44%", left: "24%", width: 3, height: 3, animationDelay: "-4.5s" }} />
-        <div className="tool-particle" style={{ top: "24%", right: "26%", width: 4, height: 4, animationDelay: "-7.5s" }} />
+      <StarsBackground className="min-h-screen py-8 px-4 sm:py-12 relative text-foreground">
 
         {/* Header & Navigation */}
         <div className="max-w-4xl mx-auto mb-10 px-1">
@@ -424,7 +384,7 @@ export function ToolLayout({
           <RelatedTools tools={relatedTools} isUltra={true} />
           
         </div>
-      </div>
+      </StarsBackground>
     </>
   )
 }

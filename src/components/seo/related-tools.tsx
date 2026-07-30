@@ -33,9 +33,12 @@ export function RelatedTools({ tools, isUltra = false }: { tools: RelatedTool[];
             font-weight: 700;
             letter-spacing: .12em;
             text-transform: uppercase;
-            color: rgba(255,255,255,.35);
+            color: rgba(15, 23, 42, 0.45);
             margin-bottom: .75rem;
             text-align: center;
+          }
+          .dark .related-title {
+            color: rgba(255,255,255,.35);
           }
 
           .related-grid {
@@ -54,16 +57,23 @@ export function RelatedTools({ tools, isUltra = false }: { tools: RelatedTool[];
             position: relative;
             display: block;
             text-decoration: none;
-            color: #fff;
+            color: #1e293b;
             background: transparent;
             border-radius: 1.1rem;
             overflow: hidden;
-            box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 4px 16px rgba(0,0,0,.35);
+            box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
             transition: transform .3s cubic-bezier(.175,.885,.32,2.2), box-shadow .25s ease;
+          }
+          .dark .related-card {
+            color: #fff;
+            box-shadow: 0 0 0 1px rgba(255,255,255,.1), 0 4px 16px rgba(0,0,0,.35);
           }
 
           .related-card:hover {
             transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 0 1px rgba(109,40,217,.25), 0 8px 24px rgba(109,40,217,.1);
+          }
+          .dark .related-card:hover {
             box-shadow: 0 0 0 1px rgba(167,139,250,.3), 0 8px 24px rgba(0,0,0,.4);
           }
 
@@ -81,6 +91,9 @@ export function RelatedTools({ tools, isUltra = false }: { tools: RelatedTool[];
             position: absolute;
             inset: 0;
             z-index: 1;
+            background: rgba(255,255,255,.55);
+          }
+          .dark .related-card .glass-overlay {
             background: rgba(255,255,255,.1);
           }
 
@@ -90,6 +103,12 @@ export function RelatedTools({ tools, isUltra = false }: { tools: RelatedTool[];
             z-index: 2;
             border-radius: inherit;
             overflow: hidden;
+            box-shadow:
+              inset 1.5px 1.5px 0 rgba(255,255,255,.75),
+              inset -1px -1px 0 rgba(0,0,0,.04),
+              inset 0 0 8px rgba(255,255,255,.2);
+          }
+          .dark .related-card .glass-specular {
             box-shadow:
               inset 1.5px 1.5px 0 rgba(255,255,255,.5),
               inset -1px -1px 0 rgba(255,255,255,.08),
@@ -109,15 +128,21 @@ export function RelatedTools({ tools, isUltra = false }: { tools: RelatedTool[];
             font-size: .82rem;
             font-weight: 700;
             line-height: 1.3;
+            color: #1e293b;
+          }
+          .dark .rc-name {
             color: #fff;
           }
 
           .rc-desc {
             font-size: .71rem;
             font-weight: 400;
-            color: rgba(255,255,255,.45);
+            color: rgba(30, 41, 59, 0.65);
             margin-top: .15rem;
             line-height: 1.3;
+          }
+          .dark .rc-desc {
+            color: rgba(255,255,255,.45);
           }
         ` }} />
 

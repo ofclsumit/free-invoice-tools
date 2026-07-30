@@ -5,7 +5,10 @@ const TEMPLATES = [
   { id: "corporate", name: "Corporate" },
   { id: "minimal", name: "Minimal" },
   { id: "creative", name: "Creative" },
-  { id: "gst-india", name: "GST India" }
+  { id: "gst-india", name: "GST India" },
+  { id: "modern-wave", name: "Modern Wave" },
+  { id: "garage-brand", name: "Garage Brand" },
+  { id: "elite-red", name: "Elite Red" }
 ];
 
 const formValueToId: Record<string, string> = {
@@ -14,6 +17,9 @@ const formValueToId: Record<string, string> = {
   MinimalMonoTemplate: "minimal",
   ClassicBooksTemplate: "creative",
   VyaparDesiTemplate: "gst-india",
+  ModernWaveTemplate: "modern-wave",
+  GarageBrandTemplate: "garage-brand",
+  EliteRedTemplate: "elite-red",
 };
 
 const idToFormValue: Record<string, string> = {
@@ -22,6 +28,9 @@ const idToFormValue: Record<string, string> = {
   minimal: "MinimalMonoTemplate",
   creative: "ClassicBooksTemplate",
   "gst-india": "VyaparDesiTemplate",
+  "modern-wave": "ModernWaveTemplate",
+  "garage-brand": "GarageBrandTemplate",
+  "elite-red": "EliteRedTemplate",
 };
 
 interface TemplateSelectorInlineProps {

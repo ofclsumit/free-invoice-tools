@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { CountryCodeSelect } from "@/components/shared/country-code-select"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
@@ -277,16 +278,7 @@ export function PaymentReceiptClient() {
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Phone (Optional)</Label>
               <div className="flex gap-2">
-                <Select value={businessPhoneCode} onValueChange={setBusinessPhoneCode}>
-                  <SelectTrigger className="h-9 w-20 text-xs text-foreground bg-background">
-                    <SelectValue placeholder="+91" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PHONE_CODES.map(code => (
-                      <SelectItem key={code} value={code}>{code}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <CountryCodeSelect value={businessPhoneCode} onChange={setBusinessPhoneCode} />
                 <Input
                   type="tel"
                   placeholder="9999999999"
@@ -331,16 +323,7 @@ export function PaymentReceiptClient() {
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Phone (Optional)</Label>
               <div className="flex gap-2">
-                <Select value={payerPhoneCode} onValueChange={setPayerPhoneCode}>
-                  <SelectTrigger className="h-9 w-20 text-xs text-foreground bg-background">
-                    <SelectValue placeholder="+91" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PHONE_CODES.map(code => (
-                      <SelectItem key={code} value={code}>{code}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <CountryCodeSelect value={payerPhoneCode} onChange={setPayerPhoneCode} />
                 <Input
                   type="tel"
                   placeholder="9999988888"

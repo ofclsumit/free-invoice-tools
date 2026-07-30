@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { CountryCodeSelect } from "../shared/country-code-select"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
@@ -48,11 +49,13 @@ const quotationSchema = z.object({
   businessPan: z.string().optional(),
   businessAddress: z.string().optional(),
   businessPincode: z.string().optional(),
+  businessPhoneCode: z.string().optional().default("+91"),
   businessPhone: z.string().optional(),
   businessEmail: z.string().email().optional().or(z.literal("")),
   clientName: z.string().min(1, "Client name required"),
   clientGstin: z.string().optional(),
   clientEmail: z.string().email().optional().or(z.literal("")),
+  clientPhoneCode: z.string().optional().default("+91"),
   clientPhone: z.string().optional(),
   clientAddress: z.string().optional(),
   clientPincode: z.string().optional(),
@@ -74,7 +77,7 @@ const quotationSchema = z.object({
   bankBranch: z.string().optional(),
   globalDiscountPercent: z.coerce.number().min(0).max(100).optional().default(0),
   shippingCharge: z.coerce.number().min(0).optional().default(0),
-  template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "ClassicBooksTemplate"]).default("StudioTemplate"),
+  template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "ClassicBooksTemplate", "ModernWaveTemplate", "GarageBrandTemplate", "EliteRedTemplate"]).default("StudioTemplate"),
   status: z.enum(["Draft", "Sent", "Accepted", "Rejected", "Expired"]).default("Draft"),
 })
 
@@ -99,6 +102,9 @@ const TEMPLATES = [
   { id: "MinimalMonoTemplate", name: "Minimalist" },
   { id: "VyaparDesiTemplate", name: "GST India" },
   { id: "ClassicBooksTemplate", name: "Freelancer Classic" },
+  { id: "ModernWaveTemplate", name: "Modern Wave" },
+  { id: "GarageBrandTemplate", name: "Garage Brand" },
+  { id: "EliteRedTemplate", name: "Elite Red" },
 ]
 
 const CURRENCIES = [
@@ -138,6 +144,9 @@ export function QuotationGenerator() {
       minimal: "MinimalMonoTemplate",
       creative: "ClassicBooksTemplate",
       "gst-india": "VyaparDesiTemplate",
+      "modern-wave": "ModernWaveTemplate",
+      "garage-brand": "GarageBrandTemplate",
+      "elite-red": "EliteRedTemplate",
     }
     const formValue = mapping[templateId] || "StudioTemplate"
     form.setValue("template", formValue as any)
@@ -157,6 +166,8 @@ export function QuotationGenerator() {
       businessLogo: "",
       businessSignature: "",
       businessName: "",
+      businessPhoneCode: "+91",
+      clientPhoneCode: "+91",
       quoteNumber: `QUO-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`,
       quoteDate: today,
       validUntil,
@@ -201,14 +212,14 @@ export function QuotationGenerator() {
         addressLines: watchedValues.businessAddress ? watchedValues.businessAddress.split('\n') : [],
         gstin: watchedValues.businessGstin,
         pan: watchedValues.businessPan,
-        phone: watchedValues.businessPhone,
+        phone: watchedValues.businessPhone ? `${watchedValues.businessPhoneCode || "+91"} ${watchedValues.businessPhone}` : undefined,
         email: watchedValues.businessEmail,
       },
       billTo: {
         name: watchedValues.clientName,
         addressLines: watchedValues.clientAddress ? watchedValues.clientAddress.split('\n') : [],
         gstin: watchedValues.clientGstin,
-        phone: watchedValues.clientPhone,
+        phone: watchedValues.clientPhone ? `${watchedValues.clientPhoneCode || "+91"} ${watchedValues.clientPhone}` : undefined,
         email: watchedValues.clientEmail,
       },
       items: (watchedValues.items || []).map((item, i) => {
@@ -299,15 +310,17 @@ export function QuotationGenerator() {
 
   const handleShowPreview = useCallback(() => {
     if (!validateEssentialFields()) return
+    const currentTemplate = form.getValues("template")
+    const currentQuoteNumber = form.getValues("quoteNumber")
     const id = savePreviewData({
       docType: "template",
-      templateName: watchedValues.template,
+      templateName: currentTemplate,
       invoiceData,
       title: "Quotation Preview",
-      fileName: `quotation-${watchedValues.quoteNumber || "draft"}.pdf`,
+      fileName: `quotation-${currentQuoteNumber || "draft"}.pdf`,
     })
     router.push(`/preview/${id}`)
-  }, [validateEssentialFields, watchedValues.template, invoiceData, watchedValues.quoteNumber, router])
+  }, [validateEssentialFields, form, invoiceData, router])
 
   const handleUseCurrency = (code: string) => {
     const currency = CURRENCIES.find(c => c.code === code)
@@ -350,7 +363,7 @@ export function QuotationGenerator() {
                     <div>
                       <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template</Label>
                       <p className="text-sm text-muted-foreground mt-0.5">
-                        Current: <span className="font-semibold text-foreground">{watchedValues.template === "StudioTemplate" ? "Modern" : watchedValues.template === "LedgerTemplate" ? "Corporate" : watchedValues.template === "MinimalMonoTemplate" ? "Minimal" : watchedValues.template === "ClassicBooksTemplate" ? "Creative" : watchedValues.template === "VyaparDesiTemplate" ? "GST India" : "Modern"}</span>
+                        Current: <span className="font-semibold text-foreground">{watchedValues.template === "StudioTemplate" ? "Modern" : watchedValues.template === "LedgerTemplate" ? "Corporate" : watchedValues.template === "MinimalMonoTemplate" ? "Minimal" : watchedValues.template === "ClassicBooksTemplate" ? "Creative" : watchedValues.template === "VyaparDesiTemplate" ? "GST India" : watchedValues.template === "ModernWaveTemplate" ? "Modern Wave" : watchedValues.template === "GarageBrandTemplate" ? "Garage Brand" : watchedValues.template === "EliteRedTemplate" ? "Elite Red" : "Modern"}</span>
                       </p>
                     </div>
                     <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsTemplateDialogOpen(true)}>
@@ -469,7 +482,23 @@ export function QuotationGenerator() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Phone</Label>
-                  <Input {...form.register("businessPhone")} type="tel" inputMode="numeric" placeholder="e.g. 9876543210" className="h-9 text-sm" />
+                  <div className="flex gap-2">
+                    <CountryCodeSelect
+                      value={watchedValues.businessPhoneCode || "+91"}
+                      onChange={(v) => form.setValue("businessPhoneCode", v)}
+                    />
+                    <Input
+                      type="tel"
+                      inputMode="numeric"
+                      placeholder="e.g. 9876543210"
+                      className="h-9 text-sm flex-1"
+                      value={watchedValues.businessPhone || ""}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, "");
+                        form.setValue("businessPhone", val);
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label className="text-xs font-medium">Address</Label>
@@ -507,7 +536,23 @@ export function QuotationGenerator() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Phone</Label>
-                  <Input {...form.register("clientPhone")} type="tel" inputMode="numeric" placeholder="e.g. 9876543210" className="h-9 text-sm" />
+                  <div className="flex gap-2">
+                    <CountryCodeSelect
+                      value={watchedValues.clientPhoneCode || "+91"}
+                      onChange={(v) => form.setValue("clientPhoneCode", v)}
+                    />
+                    <Input
+                      type="tel"
+                      inputMode="numeric"
+                      placeholder="e.g. 9876543210"
+                      className="h-9 text-sm flex-1"
+                      value={watchedValues.clientPhone || ""}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, "");
+                        form.setValue("clientPhone", val);
+                      }}
+                    />
+                  </div>
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label className="text-xs font-medium">Address</Label>
@@ -889,6 +934,7 @@ export function QuotationGenerator() {
           onClose={() => setIsTemplateDialogOpen(false)}
           onSelect={handleTemplateSelect}
           documentType="quotation"
+          currentValue={watchedValues.template}
         />
       </div>
   )

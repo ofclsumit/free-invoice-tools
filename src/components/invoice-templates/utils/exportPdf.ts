@@ -102,9 +102,23 @@ export async function exportNodeToPdf(
 
     const imgWidth = usableWidth
     const imgHeight = (canvas.height * imgWidth) / canvas.width
+    const isCalculator = fileName.includes("report") || fileName.includes("analysis") || fileName.includes("profit-margin") || fileName.includes("calc");
 
     // Render image frames onto the PDF pages
-    if (imgHeight <= usableHeight * 1.10) {
+    if (isCalculator) {
+      let finalW = imgWidth
+      let finalH = imgHeight
+      let x = margin
+
+      if (imgHeight > usableHeight) {
+        const s = usableHeight / imgHeight
+        finalW = imgWidth * s
+        finalH = imgHeight * s
+        x = margin + (usableWidth - finalW) / 2
+      }
+
+      pdf.addImage(imgData, "JPEG", x, margin, finalW, finalH)
+    } else if (imgHeight <= usableHeight * 1.10) {
       let finalW = imgWidth
       let finalH = imgHeight
       let x = margin
@@ -134,8 +148,24 @@ export async function exportNodeToPdf(
 
     // Overlay invisible text nodes on top of the images for selection/copy capabilities
     textNodes.forEach(({ text, x, y, fontSize }) => {
-      const pageIndex = Math.floor((y - margin) / usableHeight)
-      const yOnPage = ((y - margin) % usableHeight) + margin + (fontSize * 0.28) // Adjust baseline
+      let finalX = x
+      let finalY = y
+      let finalFontSize = fontSize
+      let pageIndex = 0
+
+      if (isCalculator && imgHeight > usableHeight) {
+        const s = usableHeight / imgHeight
+        const finalW = imgWidth * s
+        const xOffset = margin + (usableWidth - finalW) / 2
+        finalX = (x - margin) * s + xOffset
+        finalY = (y - margin) * s + margin
+        finalFontSize = fontSize * s
+      } else {
+        pageIndex = Math.floor((y - margin) / usableHeight)
+        finalY = ((y - margin) % usableHeight) + margin
+      }
+
+      const yOnPage = finalY + (finalFontSize * 0.28) // Adjust baseline
 
       if (pageIndex >= 0) {
         // Direct focus to corresponding page (1-based index)
@@ -143,8 +173,8 @@ export async function exportNodeToPdf(
           pdf.addPage()
         }
         pdf.setPage(pageIndex + 1)
-        pdf.setFontSize(fontSize)
-        pdf.text(text, x, yOnPage, { renderingMode: "invisible" })
+        pdf.setFontSize(finalFontSize)
+        pdf.text(text, finalX, yOnPage, { renderingMode: "invisible" })
       }
     })
 

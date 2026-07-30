@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { CountryCodeSelect } from "@/components/shared/country-code-select"
 
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -87,7 +88,7 @@ const deliveryChallanSchema = z.object({
   terms: z.string().optional(),
   globalDiscountPercent: z.coerce.number().min(0).max(100).optional().default(0),
   shippingCharge: z.coerce.number().min(0).optional().default(0),
-  template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "ClassicBooksTemplate"]).default("StudioTemplate"),
+  template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "ClassicBooksTemplate", "ModernWaveTemplate", "GarageBrandTemplate", "EliteRedTemplate"]).default("StudioTemplate"),
 })
 
 export type DeliveryChallanFormData = z.infer<typeof deliveryChallanSchema>
@@ -109,6 +110,9 @@ const TEMPLATES = [
   { id: "MinimalMonoTemplate", name: "Minimalist" },
   { id: "VyaparDesiTemplate", name: "GST India" },
   { id: "ClassicBooksTemplate", name: "Freelancer Classic" },
+  { id: "ModernWaveTemplate", name: "Modern Wave" },
+  { id: "GarageBrandTemplate", name: "Garage Brand" },
+  { id: "EliteRedTemplate", name: "Elite Red" },
 ]
 
 const CURRENCIES = [
@@ -162,6 +166,9 @@ export function DeliveryChallanGenerator() {
       minimal: "MinimalMonoTemplate",
       creative: "ClassicBooksTemplate",
       "gst-india": "VyaparDesiTemplate",
+      "modern-wave": "ModernWaveTemplate",
+      "garage-brand": "GarageBrandTemplate",
+      "elite-red": "EliteRedTemplate",
     }
     const formValue = mapping[templateId] || "StudioTemplate"
     form.setValue("template", formValue as any)
@@ -357,15 +364,17 @@ export function DeliveryChallanGenerator() {
 
   const handleShowPreview = useCallback(() => {
     if (!validateEssentialFields()) return
+    const currentTemplate = form.getValues("template")
+    const currentChallanNumber = form.getValues("challanNumber")
     const id = savePreviewData({
       docType: "template",
-      templateName: watchedValues.template,
+      templateName: currentTemplate,
       invoiceData,
       title: "Delivery Challan Preview",
-      fileName: `delivery-challan-${watchedValues.challanNumber || "draft"}.pdf`,
+      fileName: `delivery-challan-${currentChallanNumber || "draft"}.pdf`,
     })
     router.push(`/preview/${id}`)
-  }, [validateEssentialFields, watchedValues, invoiceData, router])
+  }, [validateEssentialFields, form, invoiceData, router])
 
   const handleUseCurrency = (code: string) => {
     const currency = CURRENCIES.find(c => c.code === code)
@@ -430,7 +439,7 @@ export function DeliveryChallanGenerator() {
                     <div>
                       <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template</Label>
                       <p className="text-sm text-muted-foreground mt-0.5">
-                        Current: <span className="font-semibold text-foreground">{(() => { const t = form.watch("template"); return t === "StudioTemplate" ? "Modern" : t === "LedgerTemplate" ? "Corporate" : t === "MinimalMonoTemplate" ? "Minimal" : t === "ClassicBooksTemplate" ? "Creative" : t === "VyaparDesiTemplate" ? "GST India" : "Modern"; })()}</span>
+                        Current: <span className="font-semibold text-foreground">{(() => { const t = form.watch("template"); return t === "StudioTemplate" ? "Modern" : t === "LedgerTemplate" ? "Corporate" : t === "MinimalMonoTemplate" ? "Minimal" : t === "ClassicBooksTemplate" ? "Creative" : t === "VyaparDesiTemplate" ? "GST India" : t === "ModernWaveTemplate" ? "Modern Wave" : t === "GarageBrandTemplate" ? "Garage Brand" : t === "EliteRedTemplate" ? "Elite Red" : "Modern"; })()}</span>
                       </p>
                     </div>
                     <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsTemplateDialogOpen(true)}>
@@ -496,21 +505,10 @@ export function DeliveryChallanGenerator() {
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Phone (Optional)</Label>
                   <div className="flex gap-2">
-                    <Select
+                    <CountryCodeSelect
                       value={watchedValues.businessPhoneCode || "+91"}
-                      onValueChange={(v) => form.setValue("businessPhoneCode", v)}
-                    >
-                      <SelectTrigger className="h-9 w-20 text-xs text-foreground bg-background">
-                        <SelectValue placeholder="+91" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="+91">+91</SelectItem>
-                        <SelectItem value="+1">+1</SelectItem>
-                        <SelectItem value="+44">+44</SelectItem>
-                        <SelectItem value="+971">+971</SelectItem>
-                        <SelectItem value="+61">+61</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      onChange={(v) => form.setValue("businessPhoneCode", v)}
+                    />
                     <Input
                       type="tel"
                       placeholder="9999999999"
@@ -619,21 +617,10 @@ export function DeliveryChallanGenerator() {
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Phone (Optional)</Label>
                   <div className="flex gap-2">
-                    <Select
+                    <CountryCodeSelect
                       value={watchedValues.clientPhoneCode || "+91"}
-                      onValueChange={(v) => form.setValue("clientPhoneCode", v)}
-                    >
-                      <SelectTrigger className="h-9 w-20 text-xs text-foreground bg-background">
-                        <SelectValue placeholder="+91" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="+91">+91</SelectItem>
-                        <SelectItem value="+1">+1</SelectItem>
-                        <SelectItem value="+44">+44</SelectItem>
-                        <SelectItem value="+971">+971</SelectItem>
-                        <SelectItem value="+61">+61</SelectItem>
-                      </SelectContent>
-                    </Select>
+                      onChange={(v) => form.setValue("clientPhoneCode", v)}
+                    />
                     <Input
                       type="tel"
                       placeholder="9999988888"
@@ -941,6 +928,7 @@ export function DeliveryChallanGenerator() {
         onClose={() => setIsTemplateDialogOpen(false)}
         onSelect={handleTemplateSelect}
         documentType="delivery challan"
+        currentValue={form.watch("template")}
       />
     </div>
   )

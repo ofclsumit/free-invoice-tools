@@ -18,4 +18,5 @@ export interface TemplateDialogProps {
   onClose: () => void;
   onSelect: (templateId: string) => void;
   documentType?: string; // Accept string, but filter based on supported document types
+  currentValue?: string; // Highlight currently active template
 }
