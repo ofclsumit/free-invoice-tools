@@ -214,5 +214,125 @@ export const PREVIEW_SVGS: Record<string, string> = {
     <rect x="163" y="214" width="120" height="14" rx="2" fill="#B45309"/>
     <text x="168" y="224" font-family="sans-serif" font-size="4" font-weight="800" fill="#FFFFFF">TOTAL</text>
     <text x="255" y="224" font-family="sans-serif" font-size="4" font-weight="800" fill="#FFFFFF">1,11,156</text>
+  </svg>`,
+
+  "minimal-freelancer": `<svg viewBox="0 0 300 424" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="300" height="424" rx="8" fill="#FFFFFF"/>
+    <rect x="15" y="15" width="270" height="30" rx="4" fill="#F9FAFB"/>
+    <rect x="22" y="20" width="14" height="14" rx="2" fill="#1F2937"/>
+    <text x="42" y="30" font-family="Poppins,sans-serif" font-size="7" font-weight="700" fill="#1F2937">Northwind</text>
+    <text x="210" y="24" font-family="Poppins,sans-serif" font-size="8" font-weight="800" fill="#1F2937">INVOICE</text>
+    <text x="210" y="36" font-family="sans-serif" font-size="3.5" fill="#9CA3AF">#INV-2026-0143</text>
+    <text x="15" y="60" font-family="sans-serif" font-size="3.5" fill="#9CA3AF">Date: 31 July, 2026</text>
+    <text x="15" y="80" font-family="sans-serif" font-size="3.5" font-weight="600" fill="#9CA3AF">BILLED TO:</text>
+    <text x="15" y="90" font-family="sans-serif" font-size="4" font-weight="600" fill="#1F2937">Studio Nine Design</text>
+    <text x="160" y="80" font-family="sans-serif" font-size="3.5" font-weight="600" fill="#9CA3AF">FROM:</text>
+    <text x="160" y="90" font-family="sans-serif" font-size="4" font-weight="600" fill="#1F2937">Aarav Mehta</text>
+    <rect x="15" y="105" width="270" height="120" rx="4" fill="#F9FAFB"/>
+    <text x="22" y="118" font-family="sans-serif" font-size="3.5" font-weight="700" fill="#9CA3AF">ITEM</text>
+    <text x="160" y="118" font-family="sans-serif" font-size="3.5" font-weight="700" fill="#9CA3AF">QTY</text>
+    <text x="195" y="118" font-family="sans-serif" font-size="3.5" font-weight="700" fill="#9CA3AF">PRICE</text>
+    <text x="240" y="118" font-family="sans-serif" font-size="3.5" font-weight="700" fill="#9CA3AF">AMOUNT</text>
+    <line x1="22" y1="125" x2="280" y2="125" stroke="#E5E7EB" stroke-width="0.5"/>
+    <text x="22" y="138" font-family="sans-serif" font-size="3.5" fill="#374151">Logo Design</text>
+    <text x="160" y="138" font-family="sans-serif" font-size="3.5" fill="#374151">1</text>
+    <text x="195" y="138" font-family="sans-serif" font-size="3.5" fill="#374151">18,000</text>
+    <text x="240" y="138" font-family="sans-serif" font-size="3.5" fill="#374151">18,000</text>
+    <line x1="22" y1="145" x2="280" y2="145" stroke="#E5E7EB" stroke-width="0.5"/>
+    <text x="22" y="158" font-family="sans-serif" font-size="3.5" fill="#374151">Banner (2x6m)</text>
+    <text x="160" y="158" font-family="sans-serif" font-size="3.5" fill="#374151">2</text>
+    <text x="195" y="158" font-family="sans-serif" font-size="3.5" fill="#374151">3,200</text>
+    <text x="240" y="158" font-family="sans-serif" font-size="3.5" fill="#374151">6,400</text>
+    <line x1="22" y1="165" x2="280" y2="165" stroke="#E5E7EB" stroke-width="0.5"/>
+    <text x="22" y="178" font-family="sans-serif" font-size="3.5" fill="#374151">Poster (1x2m)</text>
+    <text x="160" y="178" font-family="sans-serif" font-size="3.5" fill="#374151">3</text>
+    <text x="195" y="178" font-family="sans-serif" font-size="3.5" fill="#374151">6,033</text>
+    <text x="240" y="178" font-family="sans-serif" font-size="3.5" fill="#374151">18,100</text>
+    <line x1="200" y1="195" x2="280" y2="195" stroke="#D1D5DB" stroke-width="1"/>
+    <text x="210" y="208" font-family="sans-serif" font-size="4" font-weight="700" fill="#1F2937">Total:</text>
+    <text x="240" y="208" font-family="sans-serif" font-size="4" font-weight="700" fill="#1F2937">₹42,500</text>
+    <path d="M0,390 C50,370 100,400 150,385 C200,370 250,395 300,380 L300,424 L0,424 Z" fill="#D1D5DB" opacity="0.3"/>
+    <path d="M0,400 C60,385 120,410 180,395 C240,380 270,405 300,395 L300,424 L0,424 Z" fill="#9CA3AF" opacity="0.08"/>
+  </svg>`,
+
+  "red-modern": `<svg viewBox="0 0 300 424" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="300" height="424" rx="8" fill="#E9E7E4"/>
+    <rect x="15" y="15" width="24" height="24" rx="2" fill="#12121B"/>
+    <text x="21" y="29" font-family="Montserrat,sans-serif" font-size="5" font-weight="900" fill="#FFFFFF">T</text>
+    <text x="45" y="24" font-family="Montserrat,sans-serif" font-size="7" font-weight="900" fill="#0D1330">TURNIVO</text>
+    <text x="45" y="33" font-family="Montserrat,sans-serif" font-size="3" font-weight="600" fill="#6B6B70">GST INVOICING SUITE</text>
+    <text x="210" y="28" font-family="Montserrat,sans-serif" font-size="10" font-weight="900" fill="#EE1C3E">invoice</text>
+    <text x="210" y="40" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="500" fill="#6B6B70">QF-01234</text>
+    <line x1="15" y1="55" x2="285" y2="55" stroke="#0D1330" stroke-width="0.5" opacity="0.15"/>
+    <text x="15" y="75" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="700" fill="#0D1330">BILLED TO:</text>
+    <text x="15" y="85" font-family="Montserrat,sans-serif" font-size="4" font-weight="600" fill="#0D1330">Studio Nine Design</text>
+    <text x="15" y="93" font-family="Montserrat,sans-serif" font-size="3.5" fill="#6B6B70">+91-98765-43210</text>
+    <line x1="15" y1="110" x2="285" y2="110" stroke="#0D1330" stroke-width="0.5" opacity="0.15"/>
+    <text x="15" y="122" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="700" fill="#0D1330">ITEM DESCRIPTION</text>
+    <text x="185" y="122" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="700" fill="#0D1330">QTY</text>
+    <text x="215" y="122" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="700" fill="#0D1330">PRICE</text>
+    <text x="245" y="122" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="700" fill="#0D1330">TOTAL</text>
+    <text x="15" y="140" font-family="Montserrat,sans-serif" font-size="3.5" fill="#0D1330">Website Development</text>
+    <text x="190" y="140" font-family="Montserrat,sans-serif" font-size="3.5" fill="#0D1330">1</text>
+    <text x="215" y="140" font-family="Montserrat,sans-serif" font-size="3.5" fill="#0D1330">25,000</text>
+    <text x="245" y="140" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="600" fill="#0D1330">25,000</text>
+    <text x="15" y="155" font-family="Montserrat,sans-serif" font-size="3.5" fill="#0D1330">GST Invoice Module Setup</text>
+    <text x="190" y="155" font-family="Montserrat,sans-serif" font-size="3.5" fill="#0D1330">1</text>
+    <text x="215" y="155" font-family="Montserrat,sans-serif" font-size="3.5" fill="#0D1330">12,000</text>
+    <text x="245" y="155" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="600" fill="#0D1330">12,000</text>
+    <text x="15" y="170" font-family="Montserrat,sans-serif" font-size="3.5" fill="#0D1330">Monthly Support (3 months)</text>
+    <text x="190" y="170" font-family="Montserrat,sans-serif" font-size="3.5" fill="#0D1330">3</text>
+    <text x="215" y="170" font-family="Montserrat,sans-serif" font-size="3.5" fill="#0D1330">3,400</text>
+    <text x="245" y="170" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="600" fill="#0D1330">10,200</text>
+    <line x1="15" y1="185" x2="285" y2="185" stroke="#0D1330" stroke-width="0.5" opacity="0.15"/>
+    <text x="185" y="200" font-family="Montserrat,sans-serif" font-size="3.5" fill="#6B6B70">Subtotal</text>
+    <text x="248" y="200" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="600" fill="#0D1330">47,200</text>
+    <text x="185" y="214" font-family="Montserrat,sans-serif" font-size="3.5" fill="#6B6B70">GST</text>
+    <text x="248" y="214" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="600" fill="#0D1330">8,496</text>
+    <line x1="185" y1="225" x2="285" y2="225" stroke="#0D1330" stroke-width="0.5"/>
+    <text x="185" y="238" font-family="Montserrat,sans-serif" font-size="5" font-weight="900" fill="#EE1C3E">TOTAL</text>
+    <text x="238" y="238" font-family="Montserrat,sans-serif" font-size="5" font-weight="900" fill="#EE1C3E">55,696</text>
+    <path d="M0,330 L200,330 Q280,330 280,380 L280,424 L0,424 Z" fill="#EE1C3E" opacity="0.85"/>
+    <text x="10" y="400" font-family="Montserrat,sans-serif" font-size="100" font-weight="900" fill="#E9E7E4" opacity="0.3">T</text>
+  </svg>`,
+
+  "maroon-geometric": `<svg viewBox="0 0 300 424" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="300" height="424" rx="8" fill="#F7F6F5"/>
+    <polygon points="300,0 120,0 220,100" fill="#A41149"/>
+    <polygon points="300,0 300,160 160,0" fill="#1C1C1C"/>
+    <text x="15" y="25" font-family="Montserrat,sans-serif" font-size="4" font-weight="700" fill="#A41149" letter-spacing="2">QUOTEFLOW SOLUTIONS</text>
+    <text x="15" y="55" font-family="'Playfair Display',serif" font-size="14" font-weight="800" fill="#1C1C1C">INVOICE</text>
+    <text x="15" y="68" font-family="sans-serif" font-size="3.5" fill="#59595C">NO: INV-20458-1</text>
+    <text x="15" y="85" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="700" fill="#A41149">BILL TO:</text>
+    <text x="15" y="95" font-family="sans-serif" font-size="4" font-weight="600" fill="#1C1C1C">Rosa Textiles Pvt. Ltd.</text>
+    <text x="15" y="103" font-family="sans-serif" font-size="3" fill="#59595C">+91-98765-43210</text>
+    <text x="160" y="85" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="700" fill="#A41149">FROM:</text>
+    <text x="160" y="95" font-family="sans-serif" font-size="4" font-weight="600" fill="#1C1C1C">Aarav Mehta</text>
+    <text x="160" y="103" font-family="sans-serif" font-size="3" fill="#59595C">+91-98765-11223</text>
+    <text x="15" y="115" font-family="sans-serif" font-size="3" fill="#59595C">Date: 31 July 2026</text>
+    <rect x="15" y="125" width="270" height="14" rx="2" fill="#A41149"/>
+    <text x="20" y="135" font-family="sans-serif" font-size="3.5" font-weight="700" fill="#FFFFFF">DESCRIPTION</text>
+    <text x="175" y="135" font-family="sans-serif" font-size="3.5" font-weight="700" fill="#FFFFFF">QTY</text>
+    <text x="210" y="135" font-family="sans-serif" font-size="3.5" font-weight="700" fill="#FFFFFF">PRICE</text>
+    <text x="250" y="135" font-family="sans-serif" font-size="3.5" font-weight="700" fill="#FFFFFF">TOTAL</text>
+    <line x1="15" y1="145" x2="285" y2="145" stroke="#C8395C" stroke-width="0.5" stroke-dasharray="2 2"/>
+    <text x="20" y="158" font-family="sans-serif" font-size="3.5" fill="#1C1C1C">UI/UX Design</text>
+    <text x="180" y="158" font-family="sans-serif" font-size="3.5" fill="#1C1C1C">1</text>
+    <text x="210" y="158" font-family="sans-serif" font-size="3.5" fill="#1C1C1C">12,000</text>
+    <text x="248" y="158" font-family="sans-serif" font-size="3.5" font-weight="600" fill="#1C1C1C">12,000</text>
+    <line x1="15" y1="165" x2="285" y2="165" stroke="#C8395C" stroke-width="0.5" stroke-dasharray="2 2"/>
+    <text x="20" y="178" font-family="sans-serif" font-size="3.5" fill="#1C1C1C">Frontend Development</text>
+    <text x="180" y="178" font-family="sans-serif" font-size="3.5" fill="#1C1C1C">1</text>
+    <text x="210" y="178" font-family="sans-serif" font-size="3.5" fill="#1C1C1C">15,500</text>
+    <text x="248" y="178" font-family="sans-serif" font-size="3.5" font-weight="600" fill="#1C1C1C">15,500</text>
+    <line x1="15" y1="185" x2="285" y2="185" stroke="#C8395C" stroke-width="0.5" stroke-dasharray="2 2"/>
+    <rect x="175" y="195" width="110" height="18" rx="2" fill="#1C1C1C"/>
+    <text x="182" y="208" font-family="sans-serif" font-size="4" font-weight="700" fill="#FFFFFF">SUB TOTAL</text>
+    <text x="248" y="208" font-family="sans-serif" font-size="4" font-weight="700" fill="#FFFFFF">36,750</text>
+    <text x="15" y="240" font-family="Montserrat,sans-serif" font-size="3.5" font-weight="700" fill="#A41149">Payment Information:</text>
+    <text x="15" y="250" font-family="sans-serif" font-size="3" fill="#59595C">Bank: ICICI Bank</text>
+    <text x="15" y="258" font-family="sans-serif" font-size="3" fill="#59595C">Email: billing@quoteflow.in</text>
+    <text x="260" y="250" font-family="'Dancing Script',cursive" font-size="8" font-weight="700" fill="#A41149" font-style="italic">Thank You!</text>
+    <rect x="0" y="410" width="300" height="14" fill="#1C1C1C"/>
   </svg>`
 };

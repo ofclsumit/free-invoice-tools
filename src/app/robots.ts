@@ -5,8 +5,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/"],
+      disallow: [
+        "/login",
+        "/dashboard",
+        "/account",
+        "/settings",
+        "/admin",
+        "/preview/",
+        "/share/",
+        "/api/",
+      ],
     },
-    sitemap: "https://Turnivo.com/sitemap.xml",
+    sitemap: "https://turnivo.in/sitemap.xml",
   }
 }

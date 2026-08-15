@@ -2,7 +2,7 @@ export interface Template {
   id: string;
   name: string;
   description: string;
-  // A component or function rendering a mini visual preview using Tailwind
+  category: string;
   previewContent: React.ReactNode;
 }
 

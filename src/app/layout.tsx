@@ -27,7 +27,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://Turnivo.com"),
+  metadataBase: new URL("https://turnivo.in"),
   title: {
     default: "Turnivo — Free Professional Invoice & Quotation Generator",
     template: "%s | Turnivo",
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   creator: "Turnivo",
   publisher: "Turnivo",
   alternates: {
-    canonical: "https://Turnivo.com",
+    canonical: "https://turnivo.in",
   },
   openGraph: {
     type: "website",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     title: "Turnivo — Create Professional Invoices & Quotations in Seconds",
     description:
       "Create professional GST invoices and quotations in seconds. Free forever. Instant PDF download. No signup needed.",
-    url: "https://Turnivo.com",
+    url: "https://turnivo.in",
   },
   twitter: {
     card: "summary_large_image",
@@ -99,6 +99,23 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Google tag (gtag.js) */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-21CX92SPJN"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-21CX92SPJN');
+            `,
+          }}
+        />
         <Script
           id="global-schema"
           type="application/ld+json"
@@ -108,7 +125,7 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "Organization",
                 name: "Turnivo",
-                url: "https://Turnivo.com",
+                url: "https://turnivo.in",
                 description:
                   "Create professional GST invoices and quotations in seconds. The best free online platform for generating business documents in India.",
                 foundingDate: "2024",
@@ -117,12 +134,12 @@ export default function RootLayout({
                 "@context": "https://schema.org",
                 "@type": "WebSite",
                 name: "Turnivo",
-                url: "https://Turnivo.com",
+                url: "https://turnivo.in",
                 description:
                   "Free GST invoice generator for Indian businesses. Create invoices, quotations, receipts, and more.",
                 potentialAction: {
                   "@type": "SearchAction",
-                  target: "https://Turnivo.com/search?q={search_term_string}",
+                  target: "https://turnivo.in/search?q={search_term_string}",
                   "query-input": "required name=search_term_string",
                 },
               },

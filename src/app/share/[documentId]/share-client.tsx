@@ -6,7 +6,7 @@ import { BusinessLetterView } from "@/components/preview/business-letter-view"
 import { RentReceiptView } from "@/components/preview/rent-receipt-view"
 import { SalarySlipView } from "@/components/preview/salary-slip-view"
 import { InvoicePreview } from "@/components/invoice-templates/components"
-import { StudioTemplate, LedgerTemplate, MinimalMonoTemplate, VyaparDesiTemplate, ClassicBooksTemplate, ModernWaveTemplate, GarageBrandTemplate, EliteRedTemplate } from "@/components/invoice-templates/components"
+import { StudioTemplate, LedgerTemplate, MinimalMonoTemplate, VyaparDesiTemplate, MinimalFreelancerTemplate, RedModernTemplate, MaroonGeometricTemplate } from "@/components/invoice-templates/components"
 import { VelvetReceipt, SageReceipt, CarbonReceipt, SaffronReceipt } from "@/components/cash-receipt-templates"
 import type { InvoiceData as TemplateInvoiceData } from "@/components/invoice-templates/data/invoiceTypes"
 
@@ -15,10 +15,9 @@ const TEMPLATE_MAP: Record<string, React.FC<{ invoice: TemplateInvoiceData }>> =
   LedgerTemplate,
   MinimalMonoTemplate,
   VyaparDesiTemplate,
-  ClassicBooksTemplate,
-  ModernWaveTemplate,
-  GarageBrandTemplate,
-  EliteRedTemplate,
+  MinimalFreelancerTemplate,
+  RedModernTemplate,
+  MaroonGeometricTemplate,
 }
 
 const RECEIPT_MAP: Record<string, React.FC<{ invoice: TemplateInvoiceData }>> = {

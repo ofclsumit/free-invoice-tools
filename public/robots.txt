@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://Turnivo.in/sitemap.xml
+Disallow: /login
+Disallow: /dashboard
+Disallow: /account
+Disallow: /settings
+Disallow: /admin
+Disallow: /preview/
+Disallow: /share/
+Disallow: /api/
+
+Sitemap: https://turnivo.in/sitemap.xml

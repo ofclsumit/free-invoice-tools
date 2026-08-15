@@ -4,33 +4,30 @@ const TEMPLATES = [
   { id: "modern", name: "Modern" },
   { id: "corporate", name: "Corporate" },
   { id: "minimal", name: "Minimal" },
-  { id: "creative", name: "Creative" },
   { id: "gst-india", name: "GST India" },
-  { id: "modern-wave", name: "Modern Wave" },
-  { id: "garage-brand", name: "Garage Brand" },
-  { id: "elite-red", name: "Elite Red" }
+  { id: "minimal-freelancer", name: "Minimal Freelancer" },
+  { id: "red-modern", name: "Red Modern" },
+  { id: "maroon-geometric", name: "Maroon Geometric" }
 ];
 
 const formValueToId: Record<string, string> = {
   StudioTemplate: "modern",
   LedgerTemplate: "corporate",
   MinimalMonoTemplate: "minimal",
-  ClassicBooksTemplate: "creative",
   VyaparDesiTemplate: "gst-india",
-  ModernWaveTemplate: "modern-wave",
-  GarageBrandTemplate: "garage-brand",
-  EliteRedTemplate: "elite-red",
+  MinimalFreelancerTemplate: "minimal-freelancer",
+  RedModernTemplate: "red-modern",
+  MaroonGeometricTemplate: "maroon-geometric",
 };
 
 const idToFormValue: Record<string, string> = {
   modern: "StudioTemplate",
   corporate: "LedgerTemplate",
   minimal: "MinimalMonoTemplate",
-  creative: "ClassicBooksTemplate",
   "gst-india": "VyaparDesiTemplate",
-  "modern-wave": "ModernWaveTemplate",
-  "garage-brand": "GarageBrandTemplate",
-  "elite-red": "EliteRedTemplate",
+  "minimal-freelancer": "MinimalFreelancerTemplate",
+  "red-modern": "RedModernTemplate",
+  "maroon-geometric": "MaroonGeometricTemplate",
 };
 
 interface TemplateSelectorInlineProps {

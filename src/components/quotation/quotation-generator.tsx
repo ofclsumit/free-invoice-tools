@@ -77,7 +77,7 @@ const quotationSchema = z.object({
   bankBranch: z.string().optional(),
   globalDiscountPercent: z.coerce.number().min(0).max(100).optional().default(0),
   shippingCharge: z.coerce.number().min(0).optional().default(0),
-  template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "ClassicBooksTemplate", "ModernWaveTemplate", "GarageBrandTemplate", "EliteRedTemplate"]).default("StudioTemplate"),
+  template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "MinimalFreelancerTemplate", "RedModernTemplate", "MaroonGeometricTemplate"]).default("StudioTemplate"),
   status: z.enum(["Draft", "Sent", "Accepted", "Rejected", "Expired"]).default("Draft"),
 })
 
@@ -101,10 +101,9 @@ const TEMPLATES = [
   { id: "LedgerTemplate", name: "Corporate Ledger" },
   { id: "MinimalMonoTemplate", name: "Minimalist" },
   { id: "VyaparDesiTemplate", name: "GST India" },
-  { id: "ClassicBooksTemplate", name: "Freelancer Classic" },
-  { id: "ModernWaveTemplate", name: "Modern Wave" },
-  { id: "GarageBrandTemplate", name: "Garage Brand" },
-  { id: "EliteRedTemplate", name: "Elite Red" },
+  { id: "MinimalFreelancerTemplate", name: "Minimal Freelancer" },
+  { id: "RedModernTemplate", name: "Red Modern" },
+  { id: "MaroonGeometricTemplate", name: "Maroon Geometric" },
 ]
 
 const CURRENCIES = [
@@ -142,11 +141,10 @@ export function QuotationGenerator() {
       modern: "StudioTemplate",
       corporate: "LedgerTemplate",
       minimal: "MinimalMonoTemplate",
-      creative: "ClassicBooksTemplate",
       "gst-india": "VyaparDesiTemplate",
-      "modern-wave": "ModernWaveTemplate",
-      "garage-brand": "GarageBrandTemplate",
-      "elite-red": "EliteRedTemplate",
+      "minimal-freelancer": "MinimalFreelancerTemplate",
+      "red-modern": "RedModernTemplate",
+      "maroon-geometric": "MaroonGeometricTemplate",
     }
     const formValue = mapping[templateId] || "StudioTemplate"
     form.setValue("template", formValue as any)
@@ -363,7 +361,7 @@ export function QuotationGenerator() {
                     <div>
                       <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template</Label>
                       <p className="text-sm text-muted-foreground mt-0.5">
-                        Current: <span className="font-semibold text-foreground">{watchedValues.template === "StudioTemplate" ? "Modern" : watchedValues.template === "LedgerTemplate" ? "Corporate" : watchedValues.template === "MinimalMonoTemplate" ? "Minimal" : watchedValues.template === "ClassicBooksTemplate" ? "Creative" : watchedValues.template === "VyaparDesiTemplate" ? "GST India" : watchedValues.template === "ModernWaveTemplate" ? "Modern Wave" : watchedValues.template === "GarageBrandTemplate" ? "Garage Brand" : watchedValues.template === "EliteRedTemplate" ? "Elite Red" : "Modern"}</span>
+                        Current: <span className="font-semibold text-foreground">{watchedValues.template === "StudioTemplate" ? "Modern" : watchedValues.template === "LedgerTemplate" ? "Corporate" : watchedValues.template === "MinimalMonoTemplate" ? "Minimal" : watchedValues.template === "VyaparDesiTemplate" ? "GST India" : watchedValues.template === "MinimalFreelancerTemplate" ? "Minimal Freelancer" : watchedValues.template === "RedModernTemplate" ? "Red Modern" : watchedValues.template === "MaroonGeometricTemplate" ? "Maroon Geometric" : "Modern"}</span>
                       </p>
                     </div>
                     <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsTemplateDialogOpen(true)}>
