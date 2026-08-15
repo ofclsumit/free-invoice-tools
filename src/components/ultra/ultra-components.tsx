@@ -6,7 +6,7 @@ import type { ReactNode, InputHTMLAttributes } from "react"
 export function UltraNav() {
   return (
     <nav className="flex items-center justify-between max-w-[920px] mx-auto w-full px-5 pt-10 pb-0">
-      <a href="https://Turnivo.vercel.app/" className="inline-flex items-center gap-[.45rem] text-white/65 no-underline text-[.85rem] font-semibold transition-colors hover:text-white">
+      <a href="/" className="inline-flex items-center gap-[.45rem] text-white/65 no-underline text-[.85rem] font-semibold transition-colors hover:text-white">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 shrink-0"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
         Back to Home
       </a>
