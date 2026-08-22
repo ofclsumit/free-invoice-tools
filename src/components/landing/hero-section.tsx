@@ -102,13 +102,20 @@ export function HeroSection() {
         }
 
         .hero-gradient-text {
-          background: linear-gradient(90deg,#C4B5FD 0%,#A78BFA 25%,#8B5CF6 50%,#C084FC 75%,#C4B5FD 100%);
+          background: linear-gradient(90deg, #6D28D9 0%, #7C3AED 35%, #6366F1 70%, #4F46E5 100%);
           background-size: 220% 100%;
           -webkit-background-clip: text;
           background-clip: text;
           -webkit-text-fill-color: transparent;
           color: transparent;
           animation: heroTextShift 6s linear infinite;
+        }
+        .dark .hero-gradient-text {
+          background: linear-gradient(90deg,#C4B5FD 0%,#A78BFA 25%,#8B5CF6 50%,#C084FC 75%,#C4B5FD 100%);
+          background-size: 220% 100%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
           filter: drop-shadow(0 2px 18px rgba(139,92,246,0.35));
         }
         @keyframes heroTextShift {

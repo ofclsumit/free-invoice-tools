@@ -64,7 +64,7 @@ Here is how you generate a professional invoice using Turnivo:
 1. **Open the Generator**: No login required, just open the web app.
 2. **Input Data**: Fill in the intuitive form fields for your business, the client, and the items.
 3. **Auto-Calculate**: The software instantly calculates all taxes, discounts, and totals without any spreadsheet formulas.
-4. **Choose a Template**: Select from various professionally designed templates (Modern, Classic, Ledger) that fit your brand.
+4. **Preview & Verify**: Inspect your clean, professional document layout with live calculations.
 5. **Download PDF**: Instantly export a flawless, print-ready PDF.
 
 ## Tips for Getting Paid Faster

@@ -194,7 +194,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
         "Download your compliant Tax Invoice as PDF."
       ],
     },
-    features: ["Tax calculation", "Professional templates", "PDF export"],
+    features: ["Tax calculation", "Standard document layout", "PDF export"],
     benefits: ["Legal compliance", "Fast billing", "Zero cost"],
     faqs: [
       { question: "What is a Tax Invoice?", answer: "A commercial document issued by a registered dealer to a purchaser showing the amount of tax payable." }
@@ -651,7 +651,7 @@ export const toolContentDictionary: Record<string, SeoContent> = {
       "Custom company logo and name",
       "Automatic PO number generation",
       "Unlimited line items with GST calculation",
-      "Multi-template support with live preview",
+      "Standard document layout with live preview",
       "Authorized signature section",
       "Bank details and watermark support",
       "Intra-state / Inter-state GST toggle",

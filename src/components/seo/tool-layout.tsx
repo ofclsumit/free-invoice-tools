@@ -11,6 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { StarsBackground } from "../shared/stars-background"
+import { SiteLogo } from "@/components/shared/site-logo"
 
 export interface ToolLayoutProps {
   title: string
@@ -272,14 +273,7 @@ export function ToolLayout({
         {/* Header & Navigation */}
         <div className="max-w-4xl mx-auto mb-10 px-1">
           <div className="flex items-center justify-between">
-            <Link href="/" className="inline-flex items-center gap-2.5 font-display font-bold text-xl hover:opacity-90 transition-opacity">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden shrink-0">
-                <img src="/logo.png" alt="Turnivo Logo" title="𝘛𝘜𝘙𝘕𝘐𘘝𝘖 Logo" width="32" height="32" className="w-8 h-8 object-cover animate-fade-in" />
-              </div>
-              <span className="text-[#c084fc]">
-                {"\uD835\uDE1B\uD835\uDE1C\uD835\uDE19\uD835\uDE15\uD835\uDE10\uD835\uDE1D\uD835\uDE16"}
-              </span>
-            </Link>
+            <SiteLogo />
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">

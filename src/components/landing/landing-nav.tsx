@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/shared/theme-toggle"
+import { SiteLogo } from "@/components/shared/site-logo"
 import { cn } from "@/lib/utils"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 
@@ -121,17 +122,7 @@ export function LandingNav() {
           <div className="flex h-16 items-center justify-between">
             
             {/* Logo with hover scaling and aura glow */}
-            <Link 
-              href="/" 
-              className="flex items-center gap-2.5 font-display font-bold text-xl transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] hover:scale-[1.03] group"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden shrink-0 transition-shadow duration-300 group-hover:shadow-[0_0_15px_rgba(192,132,252,0.45)]">
-                <img src="/logo.png" alt="Turnivo Logo" className="w-8 h-8 object-cover" />
-              </div>
-              <span className="text-[#c084fc] transition-colors duration-300 group-hover:text-purple-300">
-                {"\uD835\uDE1B\uD835\uDE1C\uD835\uDE19\uD835\uDE15\uD835\uDE10\uD835\uDE1D\uD835\uDE16"}
-              </span>
-            </Link>
+            <SiteLogo />
 
             {/* Desktop Nav - Crystal glass link tiles with animated glowing underline */}
             <nav className="hidden md:flex items-center gap-1">

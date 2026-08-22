@@ -13,24 +13,24 @@ body {
 
 @layer base {
   :root {
-    --background: 260 20% 99%; /* #fbfaff - Soft Light Purple/White */
-    --foreground: 222 47% 11%; /* #0F172A */
-    --card: 0 0% 100%; /* #FFFFFF */
+    --background: 210 40% 98%; /* #F8FAFC - Clean SaaS Neutral Slate Background */
+    --foreground: 222 47% 11%; /* #0F172A - Deep Slate Primary Text */
+    --card: 0 0% 100%; /* #FFFFFF - Pure White Surface */
     --card-foreground: 222 47% 11%; /* #0F172A */
     --popover: 0 0% 100%; /* #FFFFFF */
     --popover-foreground: 222 47% 11%; /* #0F172A */
-    --primary: 262.1 83.3% 57.8%; /* #8B5CF6 - Purple */
+    --primary: 262.1 83.3% 57.8%; /* #8B5CF6 - Vibrant Purple */
     --primary-foreground: 210 40% 98%;
-    --secondary: 260 20% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 260 20% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --secondary: 210 40% 96.1%; /* #F1F5F9 - Sub-surface */
+    --secondary-foreground: 222.2 47.4% 11.2%; /* #0F172A */
+    --muted: 210 40% 96.1%; /* #F1F5F9 */
+    --muted-foreground: 215.4 16.3% 38%; /* #4B5563 - Strong High-Contrast Secondary Text */
     --accent: 262.1 83.3% 57.8%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 260 20% 91.4%;
-    --input: 260 20% 91.4%;
+    --border: 214.3 31.8% 89%; /* #E2E8F0 - Crisp Boundary Border */
+    --input: 214.3 31.8% 82%; /* #CBD5E1 - Interactive Visible Input Border */
     --ring: 262.1 83.3% 57.8%;
     --radius: 0.75rem;
 
@@ -248,19 +248,19 @@ body {
     background: linear-gradient(135deg, rgba(139,92,246,0.14) 0%, rgba(99,102,241,0.1) 100%);
   }
 
-  /* Universal Responsive Liquid Glass Cards */
+  /* Universal Responsive Cards */
   .tool-card, .related-card {
     position: relative;
     display: flex;
     flex-direction: column;
     text-decoration: none;
-    background: rgba(255, 255, 255, 0.12);
+    background: #FFFFFF;
     border-radius: 1.1rem;
     overflow: hidden;
     box-shadow: 
-      0 8px 32px 0 rgba(31, 38, 135, 0.04), 
-      0 0 0 1px rgba(255, 255, 255, 0.25);
-    transition: transform .3s cubic-bezier(.175,.885,.32,2.2), box-shadow .25s ease;
+      0 1px 3px 0 rgba(0, 0, 0, 0.04), 
+      0 0 0 1px #E2E8F0;
+    transition: transform .25s cubic-bezier(.175,.885,.32,2.2), box-shadow .2s ease;
   }
 
   .tool-card {
@@ -268,17 +268,16 @@ body {
   }
 
   .tool-card:hover, .related-card:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 0 0 1px rgba(139, 92, 246,.3), 0 8px 24px rgba(0,0,0,.08);
+    transform: translateY(-3px) scale(1.015);
+    box-shadow: 0 0 0 1px rgba(139, 92, 246, .4), 0 8px 24px rgba(0, 0, 0, 0.06);
   }
 
   .tool-card .glass-filter, .related-card .glass-filter {
     position: absolute;
     inset: 0;
     z-index: 0;
-    backdrop-filter: blur(30px) saturate(1.6);
-    -webkit-backdrop-filter: blur(30px) saturate(1.6);
-    filter: url(#lg-dist);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
     isolation: isolate;
   }
 
@@ -286,7 +285,7 @@ body {
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: rgba(255, 255, 255, 0.08);
+    background: transparent;
   }
 
   .tool-card .glass-specular, .related-card .glass-specular {
@@ -295,10 +294,7 @@ body {
     z-index: 2;
     border-radius: inherit;
     overflow: hidden;
-    box-shadow:
-      inset 1.5px 1.5px 0 rgba(255,255,255,0.45),
-      inset -1px -1px 0 rgba(0,0,0,.02),
-      inset 0 0 10px rgba(255,255,255,0.25);
+    box-shadow: none;
   }
 
   .tool-card .glass-content, .related-card .glass-content {
@@ -310,7 +306,7 @@ body {
   }
 
   .tool-card .glass-content {
-    padding: .9rem 1rem .8rem;
+    padding: .95rem 1rem .85rem;
     flex: 1;
   }
 
@@ -319,28 +315,28 @@ body {
   }
 
   .tc-name {
-    font-size: .82rem;
+    font-size: .84rem;
     font-weight: 700;
     line-height: 1.3;
     display: flex;
     align-items: center;
     gap: .45rem;
-    color: #1e1b4b;
+    color: #0F172A;
   }
 
   .tc-name svg {
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
     flex-shrink: 0;
-    opacity: .7;
+    opacity: .9;
   }
 
   .tc-desc {
-    font-size: .7rem;
-    font-weight: 400;
-    color: rgba(30,27,75,.6);
-    margin-top: .2rem;
-    line-height: 1.35;
+    font-size: .72rem;
+    font-weight: 500;
+    color: #475569;
+    margin-top: .25rem;
+    line-height: 1.4;
   }
 
   .tc-badge {
@@ -348,26 +344,26 @@ body {
     align-items: center;
     margin-top: auto;
     padding-top: .5rem;
-    font-size: .62rem;
+    font-size: .63rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .08em;
-    color: #4f46e5;
+    color: #6D28D9;
   }
 
   .rc-name {
-    font-size: .82rem;
+    font-size: .84rem;
     font-weight: 700;
     line-height: 1.3;
-    color: #1e1b4b;
+    color: #0F172A;
   }
 
   .rc-desc {
-    font-size: .71rem;
-    font-weight: 400;
-    color: rgba(30,27,75,.6);
-    margin-top: .15rem;
-    line-height: 1.3;
+    font-size: .72rem;
+    font-weight: 500;
+    color: #475569;
+    margin-top: .2rem;
+    line-height: 1.35;
   }
 
   /* Dark mode overrides for cards */
@@ -396,11 +392,11 @@ body {
   }
 
   .dark .tc-desc, .dark .rc-desc {
-    color: rgba(255,255,255,.45);
+    color: rgba(255,255,255,.6);
   }
 
   .dark .tc-badge {
-    color: rgba(167,139,250,.65);
+    color: rgba(167,139,250,.9);
   }
 
   /* Invoice preview styles */
@@ -442,16 +438,49 @@ body {
     @apply space-y-4 p-6 rounded-xl border bg-card;
   }
 
-  /* Shimmer loading */
+  /* Centralized Shimmer & Loading Styles */
   .shimmer {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, #f0f0f0 25%, #e2e8f0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
-    @apply animate-shimmer;
+    animation: shimmer 1.6s ease-in-out infinite;
   }
 
   .dark .shimmer {
-    background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+    background: linear-gradient(90deg, #141926 25%, #222938 50%, #141926 75%);
     background-size: 200% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+
+  @keyframes indeterminate-bar {
+    0% {
+      transform: translateX(-100%);
+    }
+    50% {
+      transform: translateX(30%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-indeterminate {
+    animation: indeterminate-bar 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer {
+      animation: none !important;
+      background: #f0f0f0 !important;
+    }
+    .dark .shimmer {
+      animation: none !important;
+      background: #1e2433 !important;
+    }
+    .animate-indeterminate {
+      animation: none !important;
+      transform: none !important;
+      width: 100% !important;
+    }
   }
 
   /* Glass system from reference */
@@ -643,4 +672,42 @@ body {
   .animate-orbit-cw-slow {
     animation: spin-cw 35s linear infinite;
   }
+
+  /* TURNIVO Futuristic Oblique Brand Wordmark */
+  .brand-wordmark {
+    font-family: var(--font-oxanium), var(--font-orbitron), var(--font-plus-jakarta), sans-serif;
+    font-style: italic;
+    font-weight: 800;
+    letter-spacing: 0.085em;
+    text-transform: uppercase;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Light Mode: Obsidian charcoal / near-black with subtle indigo-slate depth */
+  .brand-wordmark-theme {
+    color: #0b0f19;
+    background: linear-gradient(135deg, #090d16 0%, #111827 70%, #312e81 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Dark Mode: Crisp bright white with subtle lavender/violet highlight & soft ambient tech glow */
+  .dark .brand-wordmark-theme {
+    color: #ffffff;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 60%, #eee9ff 85%, #d8b4fe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.16));
+  }
+
+  .dark .group:hover .brand-wordmark-theme,
+  .dark a:hover .brand-wordmark-theme {
+    filter: drop-shadow(0 0 16px rgba(192, 132, 252, 0.32));
+  }
 }
+

@@ -6,26 +6,10 @@ import { BusinessLetterView } from "@/components/preview/business-letter-view"
 import { RentReceiptView } from "@/components/preview/rent-receipt-view"
 import { SalarySlipView } from "@/components/preview/salary-slip-view"
 import { InvoicePreview } from "@/components/invoice-templates/components"
-import { StudioTemplate, LedgerTemplate, MinimalMonoTemplate, VyaparDesiTemplate, MinimalFreelancerTemplate, RedModernTemplate, MaroonGeometricTemplate } from "@/components/invoice-templates/components"
-import { VelvetReceipt, SageReceipt, CarbonReceipt, SaffronReceipt } from "@/components/cash-receipt-templates"
+import { StandardDocumentView, StandardPaymentReceiptView } from "@/components/documents"
 import type { InvoiceData as TemplateInvoiceData } from "@/components/invoice-templates/data/invoiceTypes"
 
-const TEMPLATE_MAP: Record<string, React.FC<{ invoice: TemplateInvoiceData }>> = {
-  StudioTemplate,
-  LedgerTemplate,
-  MinimalMonoTemplate,
-  VyaparDesiTemplate,
-  MinimalFreelancerTemplate,
-  RedModernTemplate,
-  MaroonGeometricTemplate,
-}
-
-const RECEIPT_MAP: Record<string, React.FC<{ invoice: TemplateInvoiceData }>> = {
-  VelvetReceipt,
-  SageReceipt,
-  CarbonReceipt,
-  SaffronReceipt,
-}
+import { FullScreenLoader } from "@/components/shared/loading"
 
 interface ShareClientProps {
   documentData: any
@@ -33,19 +17,18 @@ interface ShareClientProps {
   template?: string
 }
 
-export function ShareClient({ documentData, documentType, template }: ShareClientProps) {
+export function ShareClient({ documentData, documentType }: ShareClientProps) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  if (!mounted) return null
+  if (!mounted) return <FullScreenLoader delayMs={150} message="Loading shared document..." />
 
   // Support both wrapped PreviewStoreItem and raw data structures
   const isWrapped = documentData && typeof documentData === "object" && "docType" in documentData
   const actualDocType = isWrapped ? documentData.docType : documentType
-  const actualTemplate = isWrapped ? documentData.templateName : template
   const actualTitle = isWrapped ? documentData.title : "Document Preview"
   const actualFileName = isWrapped ? documentData.fileName : "document.pdf"
   const actualInvoiceData = isWrapped ? documentData.invoiceData : documentData
@@ -53,19 +36,25 @@ export function ShareClient({ documentData, documentType, template }: ShareClien
 
   const renderContent = () => {
     switch (actualDocType) {
-      case "template": {
-        const Tpl = TEMPLATE_MAP[actualTemplate as string] || MinimalMonoTemplate
+      case "template":
+      case "invoice":
+      case "quotation":
+      case "delivery-challan":
+      case "purchase-order":
+      case "proforma-invoice":
+      case "estimate":
+      case "credit-note":
+      case "debit-note": {
         return (
           <InvoicePreview hideToolbar={true}>
-            <Tpl invoice={actualInvoiceData as TemplateInvoiceData} />
+            <StandardDocumentView invoice={actualInvoiceData as TemplateInvoiceData} />
           </InvoicePreview>
         )
       }
       case "payment-receipt": {
-        const Tpl = RECEIPT_MAP[actualTemplate as string] || VelvetReceipt
         return (
           <InvoicePreview hideToolbar={true}>
-            <Tpl invoice={actualInvoiceData as TemplateInvoiceData} />
+            <StandardPaymentReceiptView invoice={actualInvoiceData as TemplateInvoiceData} />
           </InvoicePreview>
         )
       }
@@ -135,7 +124,11 @@ export function ShareClient({ documentData, documentType, template }: ShareClien
         )
       }
       default:
-        return <p className="text-center text-muted-foreground py-12">Unknown document type</p>
+        return (
+          <InvoicePreview hideToolbar={true}>
+            <StandardDocumentView invoice={actualInvoiceData as TemplateInvoiceData} />
+          </InvoicePreview>
+        )
     }
   }
 
@@ -143,10 +136,12 @@ export function ShareClient({ documentData, documentType, template }: ShareClien
     <PreviewShell
       title={actualTitle}
       fileName={actualFileName}
-      hideBack={true}
-      hideShare={true}
+      documentType={actualDocType}
+      documentData={documentData}
     >
       {renderContent()}
     </PreviewShell>
   )
 }
+
+export default ShareClient

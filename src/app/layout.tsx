@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google"
+import { Inter, Plus_Jakarta_Sans, JetBrains_Mono, Oxanium, Orbitron } from "next/font/google"
 import Script from "next/script"
 import "./globals.css"
 import "@/components/invoice-templates/styles/print.css"
@@ -24,6 +24,20 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
   display: "swap",
+})
+
+const oxanium = Oxanium({
+  subsets: ["latin"],
+  variable: "--font-oxanium",
+  display: "swap",
+  weight: ["600", "700", "800"],
+})
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+  display: "swap",
+  weight: ["600", "700", "800", "900"],
 })
 
 export const metadata: Metadata = {
@@ -148,7 +162,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} font-sans antialiased`}
+        className={`${inter.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} ${oxanium.variable} ${orbitron.variable} font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"

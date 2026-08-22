@@ -170,9 +170,9 @@ export function PreviewShell({
   return (
     <>
       {isGenerating && <LoadingScreen message="Generating PDF..." />}
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
-        {/* Glassmorphic Sticky Header */}
-        <div className="no-print sticky top-0 z-30 bg-white/70 dark:bg-black/60 backdrop-blur-md border-b border-black/5 dark:border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.03)]">
+      <div className="min-h-screen bg-[#F8FAFC] dark:bg-gray-950 flex flex-col">
+        {/* Sticky Action Header */}
+        <div className="no-print sticky top-0 z-30 bg-white/80 dark:bg-black/60 backdrop-blur-md border-b border-slate-200 dark:border-white/10 shadow-xs">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-2">
             <div className="flex items-center gap-3 min-w-0">
               {!hideBack && onBack && (
@@ -180,35 +180,35 @@ export function PreviewShell({
                   variant="ghost" 
                   size="icon" 
                   onClick={onBack} 
-                  className="h-8 w-8 rounded-full shrink-0 bg-white/40 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition-all duration-200 shadow-sm"
+                  className="h-8 w-8 rounded-full shrink-0 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition-all duration-200 shadow-xs"
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
               )}
-              <h1 className="text-sm font-semibold truncate text-slate-800 dark:text-slate-200">{title}</h1>
+              <h1 className="text-sm font-bold truncate text-slate-900 dark:text-slate-100">{title}</h1>
             </div>
             
             <div className="flex items-center gap-1.5 shrink-0">
-              {/* Glassmorphic Zoom Controls */}
-              <div className="hidden sm:flex items-center gap-1 bg-white/30 dark:bg-white/5 backdrop-blur-md rounded-lg p-0.5 mr-2 border border-black/10 dark:border-white/10 shadow-sm">
-                <button className="h-7 w-7 flex items-center justify-center rounded-md hover:bg-white/60 dark:hover:bg-white/10 transition-colors text-slate-800 dark:text-slate-200" onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>
+              {/* Zoom Controls */}
+              <div className="hidden sm:flex items-center gap-1 bg-white dark:bg-white/5 backdrop-blur-md rounded-lg p-0.5 mr-2 border border-slate-200 dark:border-white/10 shadow-xs">
+                <button className="h-7 w-7 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-700 dark:text-slate-200 font-medium" onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}>
                   <ZoomOut className="h-3.5 w-3.5" />
                 </button>
-                <span className="text-xs font-semibold w-10 text-center select-none text-slate-800 dark:text-slate-200">{Math.round(zoom * 100)}%</span>
-                <button className="h-7 w-7 flex items-center justify-center rounded-md hover:bg-white/60 dark:hover:bg-white/10 transition-colors text-slate-800 dark:text-slate-200" onClick={() => setZoom(z => Math.min(3, z + 0.1))}>
+                <span className="text-xs font-bold w-10 text-center select-none text-slate-900 dark:text-slate-200">{Math.round(zoom * 100)}%</span>
+                <button className="h-7 w-7 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-700 dark:text-slate-200 font-medium" onClick={() => setZoom(z => Math.min(3, z + 0.1))}>
                   <ZoomIn className="h-3.5 w-3.5" />
                 </button>
               </div>
 
-              {/* Glassmorphic Action Buttons */}
-              <div className="flex items-center gap-1">
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1.5">
                 {!hideShare && (
                   <>
                     {/* Copy URL Button */}
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="h-8 gap-1.5 text-xs font-semibold bg-white/40 dark:bg-white/5 border border-black/10 dark:border-white/10 backdrop-blur-md hover:bg-white/60 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-sm transition-all hover:scale-102 active:scale-98" 
+                      className="h-8 gap-1.5 text-xs font-semibold bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-xs transition-all" 
                       onClick={handleShare} 
                       disabled={isCopying || isSharing}
                     >
@@ -220,7 +220,7 @@ export function PreviewShell({
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="h-8 gap-1.5 text-xs font-semibold bg-white/40 dark:bg-white/5 border border-black/10 dark:border-white/10 backdrop-blur-md hover:bg-white/60 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-sm transition-all hover:scale-102 active:scale-98" 
+                      className="h-8 gap-1.5 text-xs font-semibold bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-xs transition-all" 
                       onClick={handleNativeShare} 
                       disabled={isCopying || isSharing}
                     >
@@ -233,21 +233,22 @@ export function PreviewShell({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="h-8 gap-1.5 text-xs font-semibold bg-white/40 dark:bg-white/5 border border-black/10 dark:border-white/10 backdrop-blur-md hover:bg-white/60 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-sm transition-all hover:scale-102 active:scale-98" 
+                  className="h-8 gap-1.5 text-xs font-semibold bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-xs transition-all" 
                   onClick={handlePrint}
                 >
                   <Printer className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Print</span>
                 </Button>
 
-                {/* Brand Colored Primary Glassmorphic Button */}
+                {/* Primary Download PDF Button */}
                 <Button 
                   size="sm" 
-                  className="h-8 gap-1.5 text-xs font-bold bg-[#c084fc]/90 hover:bg-[#c084fc] dark:bg-[#c084fc]/80 dark:hover:bg-[#c084fc] text-white dark:text-black border-0 shadow-md shadow-purple-500/10 transition-all hover:scale-102 active:scale-98" 
+                  className="h-8 gap-1.5 text-xs font-bold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white border-0 shadow-md shadow-violet-500/20 transition-all hover:scale-102 active:scale-98 disabled:opacity-60" 
                   onClick={handleDownloadPDF}
+                  disabled={isGenerating}
                 >
-                  <Download className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">PDF</span>
+                  {isGenerating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                  <span className="hidden sm:inline">{isGenerating ? "Preparing..." : "Download PDF"}</span>
                 </Button>
               </div>
             </div>
@@ -262,7 +263,7 @@ export function PreviewShell({
           </div>
           <footer className="w-full max-w-[210mm] mt-8 pb-4 text-center text-xs text-gray-400 border-t border-gray-200 pt-4">
             <p className="mb-1">Made with <HeartBeat /> in India</p>
-            <p>&copy; {new Date().getFullYear()} {"\uD835\uDE1B\uD835\uDE1C\uD835\uDE19\uD835\uDE15\uD835\uDE10\uD835\uDE1D\uD835\uDE16"}. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} TURNIVO. All rights reserved.</p>
           </footer>
         </div>
       </div>

@@ -17,16 +17,17 @@ import { Badge } from "@/components/ui/badge"
 import {
   Plus, Trash2, Eye, Save, FileText,
   ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
-  RotateCcw, Share2, LayoutTemplate
+  RotateCcw, Share2, Loader2
 } from "lucide-react"
 import {
   computeInvoiceTotals,
   type InvoiceData as TemplateInvoiceData
 } from "@/components/invoice-templates/components"
+import { SkeletonDocumentForm } from "@/components/shared/loading"
 import { useToast } from "@/hooks/use-toast"
-import { TemplateDialog } from "@/components/template-selection"
 import { useRouter } from "next/navigation"
 import { savePreviewData } from "@/lib/preview-store"
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-store"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -76,7 +77,6 @@ const invoiceSchema = z.object({
   bankBranch: z.string().optional(),
   globalDiscountPercent: z.coerce.number().min(0).max(100).optional().default(0),
   shippingCharge: z.coerce.number().min(0).optional().default(0),
-  template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "MinimalFreelancerTemplate", "RedModernTemplate", "MaroonGeometricTemplate"]).default("StudioTemplate"),
 })
 
 export type InvoiceFormData = z.infer<typeof invoiceSchema>
@@ -93,16 +93,6 @@ const defaultItem = {
 }
 
 const GST_RATES = [0, 5, 12, 18, 28]
-
-const TEMPLATES = [
-  { id: "StudioTemplate", name: "Modern Studio" },
-  { id: "LedgerTemplate", name: "Corporate Ledger" },
-  { id: "MinimalMonoTemplate", name: "Minimalist" },
-  { id: "VyaparDesiTemplate", name: "GST India" },
-  { id: "MinimalFreelancerTemplate", name: "Minimal Freelancer" },
-  { id: "RedModernTemplate", name: "Red Modern" },
-  { id: "MaroonGeometricTemplate", name: "Maroon Geometric" },
-]
 
 const CURRENCIES = [
   { code: "INR", symbol: "₹", name: "Indian Rupee", country: "India" },
@@ -153,24 +143,10 @@ export function InvoiceGenerator() {
   const { toast } = useToast()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
-  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
+  const [isPreviewing, setIsPreviewing] = useState(false)
   const [showExtras, setShowExtras] = useState(false)
   const [savedOnce, setSavedOnce] = useState(false)
   const [invoices, setInvoices] = useState<SavedInvoice[]>([])
-
-  const handleTemplateSelect = (templateId: string) => {
-    const mapping: Record<string, string> = {
-      modern: "StudioTemplate",
-      corporate: "LedgerTemplate",
-      minimal: "MinimalMonoTemplate",
-      "gst-india": "VyaparDesiTemplate",
-      "minimal-freelancer": "MinimalFreelancerTemplate",
-      "red-modern": "RedModernTemplate",
-      "maroon-geometric": "MaroonGeometricTemplate",
-    }
-    const formValue = mapping[templateId] || "StudioTemplate"
-    form.setValue("template", formValue as any)
-  }
 
   useEffect(() => setMounted(true), [])
 
@@ -197,10 +173,6 @@ export function InvoiceGenerator() {
       form.setValue("clientPhone", params.get("clientPhone") || "")
       form.setValue("clientEmail", params.get("clientEmail") || "")
       form.setValue("currencySymbol", params.get("currencySymbol") || "₹")
-      const tmpl = params.get("template") as any
-      if (tmpl && TEMPLATES.find(t => t.id === tmpl)) {
-        form.setValue("template", tmpl)
-      }
     }
   }, [])
 
@@ -224,12 +196,28 @@ export function InvoiceGenerator() {
       terms: "Payment is due within 30 days of invoice date.",
       globalDiscountPercent: undefined,
       shippingCharge: undefined,
-      template: "StudioTemplate",
     },
   })
 
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "items" })
   const watchedValues = form.watch()
+
+  // Auto-restore draft from session storage on mount
+  useEffect(() => {
+    const draft = loadDraft<InvoiceFormData>("invoice")
+    if (draft) {
+      form.reset(draft)
+    }
+  }, [form])
+
+  // Auto-save draft to session storage on form change
+  useEffect(() => {
+    if (!mounted) return
+    const timer = setTimeout(() => {
+      saveDraft("invoice", form.getValues())
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [watchedValues, mounted, form])
 
   const validateEssentialFields = useCallback(() => {
     const values = form.getValues()
@@ -359,11 +347,12 @@ export function InvoiceGenerator() {
 
   const handleShowPreview = useCallback(() => {
     if (!validateEssentialFields()) return
-    const currentTemplate = form.getValues("template")
-    const currentInvoiceNumber = form.getValues("invoiceNumber")
+    setIsPreviewing(true)
+    const currentValues = form.getValues()
+    saveDraft("invoice", currentValues)
+    const currentInvoiceNumber = currentValues.invoiceNumber
     const id = savePreviewData({
-      docType: "template",
-      templateName: currentTemplate,
+      docType: "invoice",
       invoiceData,
       title: "Invoice Preview",
       fileName: `invoice-${currentInvoiceNumber || "draft"}.pdf`,
@@ -381,7 +370,7 @@ export function InvoiceGenerator() {
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-  if (!mounted) return null;
+  if (!mounted) return <SkeletonDocumentForm />;
 
   return (
     <div>
@@ -408,19 +397,6 @@ export function InvoiceGenerator() {
             {/* Settings Section */}
             <section className="form-section">
               <div className="grid sm:grid-cols-3 gap-4">
-                <div className="sm:col-span-3 border-b border-stone-100 dark:border-stone-850 pb-4 mb-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template</Label>
-                      <p className="text-sm text-muted-foreground mt-0.5">
-                        Current: <span className="font-semibold text-foreground">{watchedValues.template === "StudioTemplate" ? "Modern" : watchedValues.template === "LedgerTemplate" ? "Corporate" : watchedValues.template === "MinimalMonoTemplate" ? "Minimal" : watchedValues.template === "VyaparDesiTemplate" ? "GST India" : watchedValues.template === "MinimalFreelancerTemplate" ? "Minimal Freelancer" : watchedValues.template === "RedModernTemplate" ? "Red Modern" : watchedValues.template === "MaroonGeometricTemplate" ? "Maroon Geometric" : "Modern"}</span>
-                      </p>
-                    </div>
-                    <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsTemplateDialogOpen(true)}>
-                      <LayoutTemplate className="h-4 w-4" /> Change Template
-                    </Button>
-                  </div>
-                </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Currency</Label>
                   <Select
@@ -911,8 +887,20 @@ export function InvoiceGenerator() {
 
             {/* Actions */}
             <div className="flex flex-wrap gap-3 pb-4">
-              <Button className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold" onClick={handleShowPreview}>
-                <Eye className="h-4 w-4" /> SHOW PREVIEW
+              <Button
+                className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold disabled:opacity-60"
+                onClick={handleShowPreview}
+                disabled={isPreviewing}
+              >
+                {isPreviewing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> GENERATING PREVIEW...
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4" /> SHOW PREVIEW
+                  </>
+                )}
               </Button>
             </div>
 
@@ -953,13 +941,6 @@ export function InvoiceGenerator() {
           </div>
         </div>
       </div>
-      <TemplateDialog
-        isOpen={isTemplateDialogOpen}
-        onClose={() => setIsTemplateDialogOpen(false)}
-        onSelect={handleTemplateSelect}
-        documentType="invoice"
-        currentValue={watchedValues.template}
-      />
     </div>
   );
 }

@@ -1,3 +1,5 @@
+.invoice-sheet,
+.receipt-sheet,
 .invoice-page {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
@@ -22,7 +24,9 @@
   }
 
   #invoice-print-root,
-  #invoice-print-root * {
+  #invoice-print-root *,
+  #preview-print-root,
+  #preview-print-root * {
     visibility: visible;
   }
 
@@ -32,7 +36,8 @@
     top: auto !important;
   }
 
-  #invoice-print-root {
+  #invoice-print-root,
+  #preview-print-root {
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
@@ -41,6 +46,8 @@
     transform: none !important;
   }
 
+  .invoice-sheet,
+  .receipt-sheet,
   .invoice-page {
     box-shadow: none !important;
     width: 210mm !important;
@@ -52,20 +59,33 @@
     print-color-adjust: exact;
   }
 
+  .invoice-sheet table,
+  .receipt-sheet table,
   .invoice-page table {
     page-break-inside: auto;
   }
 
+  .invoice-sheet tr,
+  .invoice-sheet th,
+  .invoice-sheet td,
+  .receipt-sheet tr,
+  .receipt-sheet th,
+  .receipt-sheet td,
   .invoice-page tr,
   .invoice-page th,
   .invoice-page td {
     page-break-inside: avoid;
+    break-inside: avoid;
   }
 
+  .invoice-sheet thead,
+  .receipt-sheet thead,
   .invoice-page thead {
     display: table-header-group;
   }
 
+  .invoice-sheet tfoot,
+  .receipt-sheet tfoot,
   .invoice-page tfoot {
     display: table-footer-group;
   }

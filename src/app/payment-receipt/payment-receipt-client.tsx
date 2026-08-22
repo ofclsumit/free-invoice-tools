@@ -11,19 +11,15 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import {
-  Eye, RotateCcw, LayoutTemplate, Plus, Trash2, Save
+  Eye, RotateCcw, Plus, Trash2, Save
 } from "lucide-react"
 import {
   computeInvoiceTotals,
   type InvoiceData as TemplateInvoiceData
 } from "@/components/invoice-templates/components"
 import { useToast } from "@/hooks/use-toast"
-import {
-  TEMPLATES,
-  TemplateSelectorDialog,
-} from "@/components/cash-receipt-templates"
-import type { CashReceiptTemplateId } from "@/components/cash-receipt-templates"
 import { savePreviewData } from "@/lib/preview-store"
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-store"
 
 const PHONE_CODES = ["+91", "+1", "+44", "+61", "+971", "+65", "+60", "+94", "+977", "+880"]
 const PAYMENT_MODES = ["Cash", "Cheque", "UPI", "Bank Transfer"]
@@ -31,7 +27,6 @@ const PAYMENT_MODES = ["Cash", "Cheque", "UPI", "Bank Transfer"]
 export function PaymentReceiptClient() {
   const { toast } = useToast()
   const router = useRouter()
-  const [showTemplateDialog, setShowTemplateDialog] = useState(false)
 
   const [companyName, setCompanyName] = useState("")
   const [companyLogo, setCompanyLogo] = useState("")
@@ -54,21 +49,20 @@ export function PaymentReceiptClient() {
   const [invoiceReference, setInvoiceReference] = useState("")
   const [receiptNo, setReceiptNo] = useState(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`)
   const [receiptDate, setReceiptDate] = useState(new Date().toISOString().split("T")[0])
-  const [template, setTemplate] = useState<CashReceiptTemplateId>("VelvetReceipt")
   const [notes, setNotes] = useState("")
 
   const getState = useCallback(() => ({
     companyName, companyLogo, businessSignature, businessEmail, businessPhoneCode, businessPhone, businessAddress, businessGstin, businessPan,
     receivedFrom, payerEmail, payerPhoneCode, payerPhone, payerAddress,
     amount, purpose, paymentMode, transactionId, invoiceReference,
-    receiptNo, receiptDate, template, notes,
-  }), [companyName, companyLogo, businessSignature, businessEmail, businessPhoneCode, businessPhone, businessAddress, businessGstin, businessPan, receivedFrom, payerEmail, payerPhoneCode, payerPhone, payerAddress, amount, purpose, paymentMode, transactionId, invoiceReference, receiptNo, receiptDate, template, notes])
+    receiptNo, receiptDate, notes,
+  }), [companyName, companyLogo, businessSignature, businessEmail, businessPhoneCode, businessPhone, businessAddress, businessGstin, businessPan, receivedFrom, payerEmail, payerPhoneCode, payerPhone, payerAddress, amount, purpose, paymentMode, transactionId, invoiceReference, receiptNo, receiptDate, notes])
 
   const setState = useCallback((d: any) => {
     setCompanyName(d.companyName || ""); setCompanyLogo(d.companyLogo || ""); setBusinessSignature(d.businessSignature || ""); setBusinessEmail(d.businessEmail || ""); setBusinessPhoneCode(d.businessPhoneCode || "+91"); setBusinessPhone(d.businessPhone || ""); setBusinessAddress(d.businessAddress || ""); setBusinessGstin(d.businessGstin || ""); setBusinessPan(d.businessPan || "")
     setReceivedFrom(d.receivedFrom || ""); setPayerEmail(d.payerEmail || ""); setPayerPhoneCode(d.payerPhoneCode || "+91"); setPayerPhone(d.payerPhone || ""); setPayerAddress(d.payerAddress || "")
     setAmount(d.amount || ""); setPurpose(d.purpose || ""); setPaymentMode(d.paymentMode || "Cash"); setTransactionId(d.transactionId || ""); setInvoiceReference(d.invoiceReference || "")
-    setReceiptNo(d.receiptNo || `CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(d.receiptDate || new Date().toISOString().split("T")[0]); setTemplate(d.template || "VelvetReceipt"); setNotes(d.notes || "")
+    setReceiptNo(d.receiptNo || `CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(d.receiptDate || new Date().toISOString().split("T")[0]); setNotes(d.notes || "")
   }, [])
 
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2 })
@@ -166,37 +160,44 @@ export function PaymentReceiptClient() {
   }
 
   const resetForm = () => {
-    setCompanyName(""); setCompanyLogo(""); setBusinessSignature(""); setBusinessEmail(""); setBusinessPhoneCode("+91"); setBusinessPhone(""); setBusinessAddress(""); setBusinessGstin(""); setBusinessPan(""); setReceivedFrom(""); setPayerEmail(""); setPayerPhoneCode("+91"); setPayerPhone(""); setPayerAddress(""); setAmount(""); setPurpose(""); setPaymentMode("Cash"); setTransactionId(""); setInvoiceReference(""); setReceiptNo(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(new Date().toISOString().split("T")[0]); setTemplate("VelvetReceipt"); setNotes("")
+    clearDraft("payment-receipt")
+    setCompanyName(""); setCompanyLogo(""); setBusinessSignature(""); setBusinessEmail(""); setBusinessPhoneCode("+91"); setBusinessPhone(""); setBusinessAddress(""); setBusinessGstin(""); setBusinessPan(""); setReceivedFrom(""); setPayerEmail(""); setPayerPhoneCode("+91"); setPayerPhone(""); setPayerAddress(""); setAmount(""); setPurpose(""); setPaymentMode("Cash"); setTransactionId(""); setInvoiceReference(""); setReceiptNo(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(new Date().toISOString().split("T")[0]); setNotes("")
   }
 
   const handleShowPreview = useCallback(() => {
     if (!validateEssentialFields()) return
+    saveDraft("payment-receipt", getState())
     const id = savePreviewData({
       docType: "payment-receipt",
-      templateName: template,
       invoiceData,
       title: "Payment Receipt Preview",
       fileName: `receipt-${receiptNo || "draft"}.pdf`,
     })
     router.push(`/preview/${id}`)
-  }, [validateEssentialFields, template, invoiceData, receiptNo, router])
+  }, [validateEssentialFields, invoiceData, receiptNo, getState, router])
 
   const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    setMounted(true)
+    const draft = loadDraft<any>("payment-receipt")
+    if (draft) {
+      setState(draft)
+    }
+  }, [setState])
+
+  // Auto-save draft on state change
+  useEffect(() => {
+    if (!mounted) return
+    const timer = setTimeout(() => {
+      saveDraft("payment-receipt", getState())
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [getState, mounted])
 
   if (!mounted) return null
 
   return (
     <div>
-      {/* Template Selector Dialog */}
-      {showTemplateDialog && (
-        <TemplateSelectorDialog
-          selected={template}
-          onSelect={(id) => setTemplate(id)}
-          onClose={() => setShowTemplateDialog(false)}
-        />
-      )}
-
       <div className="flex flex-col min-h-[calc(100vh-8rem)]">
         {/* Header Ribbon */}
         <div className="flex items-center justify-between mb-6 sticky top-0 z-20 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-sm -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-4 border-b border-border">
@@ -219,22 +220,6 @@ export function PaymentReceiptClient() {
 
         <div className="max-w-4xl mx-auto w-full">
           <div className="space-y-6">
-
-        {/* Template Selector */}
-        <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
-          <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-            <div className="h-5 w-1 rounded-full bg-amber-500" />
-            Template
-          </h3>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">
-              Current: <span className="font-semibold text-foreground">{TEMPLATES.find(t => t.id === template)?.name}</span>
-            </span>
-            <Button variant="outline" size="sm" className="gap-2" onClick={() => setShowTemplateDialog(true)}>
-              <LayoutTemplate className="h-4 w-4" /> Change Template
-            </Button>
-          </div>
-        </section>
 
         {/* From (Your Business) */}
         <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">

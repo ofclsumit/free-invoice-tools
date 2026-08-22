@@ -10,6 +10,7 @@ import { Eye, RotateCcw, Plus, Trash2, Save } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { computeInvoiceTotals, type InvoiceData as TemplateInvoiceData } from "@/components/invoice-templates/components"
 import { savePreviewData } from "@/lib/preview-store"
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-store"
 
 interface LineItem {
   id: string; description: string; quantity: number; rate: number
@@ -46,7 +47,6 @@ export function EstimateGeneratorClient() {
   const [companyLogo, setCompanyLogo] = useState("")
 
   const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
 
   const addItem = () => setItems([...items, { id: String(Date.now()), description: "", quantity: 1, rate: 0 }])
   const updateItem = (id: string, field: keyof LineItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i))
@@ -81,6 +81,22 @@ export function EstimateGeneratorClient() {
     setItems(d.items?.length ? d.items : [{ id: "1", description: "", quantity: 1, rate: 0 }])
   }, [])
 
+  useEffect(() => {
+    setMounted(true)
+    const draft = loadDraft<EstimateData>("estimate")
+    if (draft) {
+      setState(draft)
+    }
+  }, [setState])
+
+  useEffect(() => {
+    if (!mounted) return
+    const timer = setTimeout(() => {
+      saveDraft("estimate", getState())
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [getState, mounted])
+
   const validate = useCallback(() => {
     if (!clientName) { toast({ title: "Client name is required", variant: "destructive" }); return false }
     return true
@@ -90,20 +106,21 @@ export function EstimateGeneratorClient() {
   const handleRevert = () => { const s = loadSaved(); if (!s) { toast({ title: "No saved estimate found", variant: "destructive" }); return }; setState(s); toast({ title: "Reverted to saved draft" }) }
 
   const resetForm = useCallback(() => {
+    clearDraft("estimate")
     setCompanyName(""); setCompanyLogo(""); setClientName(""); setEstimateNo(""); setEstimateDate(new Date().toISOString().split("T")[0]); setValidUntil(""); setTaxRate(18); setNotes(""); setItems([{ id: "1", description: "", quantity: 1, rate: 0 }])
   }, [])
 
   const handleShowPreview = useCallback(() => {
     if (!validate()) return
+    saveDraft("estimate", getState())
     const id = savePreviewData({
-      docType: "template",
-      templateName: "MinimalMonoTemplate",
+      docType: "estimate",
       invoiceData,
       title: "Estimate Preview",
       fileName: `estimate-${estimateNo || "draft"}.pdf`,
     })
     router.push(`/preview/${id}`)
-  }, [validate, invoiceData, estimateNo, router])
+  }, [validate, invoiceData, estimateNo, getState, router])
 
   if (!mounted) return null
 

@@ -15,6 +15,7 @@ import {
   type InvoiceData as TemplateInvoiceData
 } from "@/components/invoice-templates/components"
 import { savePreviewData } from "@/lib/preview-store"
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-store"
 
 interface LineItem {
   id: string; description: string; quantity: number; rate: number
@@ -50,7 +51,6 @@ export function DebitNoteClient() {
   const [companyLogo, setCompanyLogo] = useState("")
 
   const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
 
   const addItem = () => setItems([...items, { id: String(Date.now()), description: "", quantity: 1, rate: 0 }])
   const updateItem = (id: string, field: keyof LineItem, value: string | number) => setItems(items.map(i => i.id === id ? { ...i, [field]: value } : i))
@@ -82,6 +82,22 @@ export function DebitNoteClient() {
     setReason(d.reason || ""); setItems(d.items?.length ? d.items : [{ id: "1", description: "", quantity: 1, rate: 0 }])
   }, [])
 
+  useEffect(() => {
+    setMounted(true)
+    const draft = loadDraft<DebitNoteData>("debit-note")
+    if (draft) {
+      setState(draft)
+    }
+  }, [setState])
+
+  useEffect(() => {
+    if (!mounted) return
+    const timer = setTimeout(() => {
+      saveDraft("debit-note", getState())
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [getState, mounted])
+
   const validate = useCallback(() => {
     if (!supplierName) { toast({ title: "Supplier name is required", variant: "destructive" }); return false }
     return true
@@ -91,20 +107,21 @@ export function DebitNoteClient() {
   const handleRevert = () => { const s = loadSaved(); if (!s) { toast({ title: "No saved debit note found", variant: "destructive" }); return }; setState(s); toast({ title: "Reverted to saved draft" }) }
 
   const resetForm = useCallback(() => {
+    clearDraft("debit-note")
     setCompanyName(""); setCompanyLogo(""); setDebitNoteNo(""); setDebitDate(new Date().toISOString().split("T")[0]); setReferenceInvoice(""); setSupplierName(""); setReason(""); setItems([{ id: "1", description: "", quantity: 1, rate: 0 }])
   }, [])
 
   const handleShowPreview = useCallback(() => {
     if (!validate()) return
+    saveDraft("debit-note", getState())
     const id = savePreviewData({
-      docType: "template",
-      templateName: "MinimalMonoTemplate",
+      docType: "debit-note",
       invoiceData,
       title: "Debit Note Preview",
       fileName: `debit-note-${debitNoteNo || "draft"}.pdf`,
     })
     router.push(`/preview/${id}`)
-  }, [validate, invoiceData, debitNoteNo, router])
+  }, [validate, invoiceData, debitNoteNo, getState, router])
 
   if (!mounted) return null
 

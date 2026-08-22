@@ -112,7 +112,7 @@ export function StarsBackground({
     <div
       data-slot="stars-background"
       className={cn(
-        'relative w-full min-h-screen overflow-hidden bg-white dark:bg-[radial-gradient(ellipse_at_bottom,_#0d0a1b_0%,_#030014_100%)] transition-colors duration-500',
+        'relative w-full min-h-screen overflow-hidden bg-[#F8FAFC] dark:bg-[radial-gradient(ellipse_at_bottom,_#0d0a1b_0%,_#030014_100%)] transition-colors duration-300',
         className,
       )}
       {...props}

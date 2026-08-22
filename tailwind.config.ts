@@ -75,6 +75,7 @@ const config = {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         display: ["var(--font-plus-jakarta)", "var(--font-inter)", "sans-serif"],
         mono: ["var(--font-jetbrains-mono)", "monospace"],
+        brand: ["var(--font-oxanium)", "var(--font-orbitron)", "var(--font-plus-jakarta)", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

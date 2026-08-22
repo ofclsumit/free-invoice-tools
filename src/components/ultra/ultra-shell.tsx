@@ -14,7 +14,7 @@ export function UltraShell({ children }: { children: ReactNode }) {
           </filter>
         </defs>
       </svg>
-      <div className="font-['Inter'] w-full text-white">
+      <div className="font-sans w-full text-foreground">
         {children}
       </div>
     </>

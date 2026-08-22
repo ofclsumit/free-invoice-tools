@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Zap } from "lucide-react"
+import { SiteLogo } from "@/components/shared/site-logo"
 
 const footerLinks = {
   "Document Generators": [
@@ -52,14 +53,7 @@ export function LandingFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2 md:col-span-1 space-y-4">
-            <Link href="/" className="flex items-center gap-2 font-display font-bold text-lg">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg overflow-hidden shrink-0">
-                <img src="/logo.png" alt="Turnivo Logo" className="w-7 h-7 object-cover" />
-              </div>
-              <span className="text-[#c084fc]">
-                {"\uD835\uDE1B\uD835\uDE1C\uD835\uDE19\uD835\uDE15\uD835\uDE10\uD835\uDE1D\uD835\uDE16"}
-              </span>
-            </Link>
+            <SiteLogo size="sm" />
             <p className="text-xs text-muted-foreground leading-relaxed">
               India&apos;s most comprehensive free business document platform. Create invoices, quotations, receipts and more.
             </p>

@@ -7,28 +7,12 @@ import { BusinessLetterView } from "@/components/preview/business-letter-view"
 import { RentReceiptView } from "@/components/preview/rent-receipt-view"
 import { SalarySlipView } from "@/components/preview/salary-slip-view"
 import { InvoicePreview } from "@/components/invoice-templates/components"
-import { StudioTemplate, LedgerTemplate, MinimalMonoTemplate, VyaparDesiTemplate, MinimalFreelancerTemplate, RedModernTemplate, MaroonGeometricTemplate } from "@/components/invoice-templates/components"
-import { VelvetReceipt, SageReceipt, CarbonReceipt, SaffronReceipt } from "@/components/cash-receipt-templates"
+import { StandardDocumentView, StandardPaymentReceiptView } from "@/components/documents"
 import { fetchPreviewData } from "@/lib/preview-store"
 import type { PreviewStoreItem } from "@/lib/preview-store"
 import type { InvoiceData as TemplateInvoiceData } from "@/components/invoice-templates/data/invoiceTypes"
 
-const TEMPLATE_MAP: Record<string, React.FC<{ invoice: TemplateInvoiceData }>> = {
-  StudioTemplate,
-  LedgerTemplate,
-  MinimalMonoTemplate,
-  VyaparDesiTemplate,
-  MinimalFreelancerTemplate,
-  RedModernTemplate,
-  MaroonGeometricTemplate,
-}
-
-const RECEIPT_MAP: Record<string, React.FC<{ invoice: TemplateInvoiceData }>> = {
-  VelvetReceipt,
-  SageReceipt,
-  CarbonReceipt,
-  SaffronReceipt,
-}
+import { FullScreenLoader } from "@/components/shared/loading"
 
 export default function PreviewPage() {
   const router = useRouter()
@@ -55,7 +39,9 @@ export default function PreviewPage() {
     router.back()
   }, [router])
 
-  if (!mounted) return null
+  if (!mounted || (!data && !error)) {
+    return <FullScreenLoader delayMs={150} message="Preparing preview..." />
+  }
 
   if (error || !data) {
     return (
@@ -74,23 +60,29 @@ export default function PreviewPage() {
     )
   }
 
-  const { docType, title, fileName, invoiceData, templateName, data: customData } = data
+  const { docType, title, fileName, invoiceData, data: customData } = data
 
   const renderContent = () => {
     switch (docType) {
-      case "template": {
-        const Tpl = TEMPLATE_MAP[templateName as string] || MinimalMonoTemplate
+      case "template":
+      case "invoice":
+      case "quotation":
+      case "delivery-challan":
+      case "purchase-order":
+      case "proforma-invoice":
+      case "estimate":
+      case "credit-note":
+      case "debit-note": {
         return (
           <InvoicePreview hideToolbar={true}>
-            <Tpl invoice={invoiceData as TemplateInvoiceData} />
+            <StandardDocumentView invoice={invoiceData as TemplateInvoiceData} />
           </InvoicePreview>
         )
       }
       case "payment-receipt": {
-        const Tpl = RECEIPT_MAP[templateName as string] || VelvetReceipt
         return (
           <InvoicePreview hideToolbar={true}>
-            <Tpl invoice={invoiceData as TemplateInvoiceData} />
+            <StandardPaymentReceiptView invoice={invoiceData as TemplateInvoiceData} />
           </InvoicePreview>
         )
       }
@@ -107,7 +99,11 @@ export default function PreviewPage() {
         return <SalarySlipView companyName={d.companyName || ""} companyLogo={d.companyLogo || ""} companyAddress={d.companyAddress || ""} employeeName={d.employeeName || ""} employeeId={d.employeeId || ""} designation={d.designation || ""} department={d.department || ""} pan={d.pan || ""} uan={d.uan || ""} bankName={d.bankName || ""} bankAccount={d.bankAccount || ""} payPeriod={d.payPeriod || ""} paidDays={d.paidDays || ""} lopDays={d.lopDays || ""} payDate={d.payDate || ""} basic={d.basic || ""} hra={d.hra || ""} da={d.da || ""} conveyance={d.conveyance || ""} medical={d.medical || ""} special={d.special || ""} pf={d.pf || ""} esi={d.esi || ""} profTax={d.profTax || ""} tds={d.tds || ""} />
       }
       default:
-        return <p className="text-center text-muted-foreground py-12">Unknown document type</p>
+        return (
+          <InvoicePreview hideToolbar={true}>
+            <StandardDocumentView invoice={invoiceData as TemplateInvoiceData} />
+          </InvoicePreview>
+        )
     }
   }
 
@@ -117,7 +113,6 @@ export default function PreviewPage() {
       fileName={fileName}
       onBack={handleBack}
       documentType={docType}
-      template={templateName || ""}
       documentData={data}
     >
       {renderContent()}

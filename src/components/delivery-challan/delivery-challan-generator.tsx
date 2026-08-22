@@ -18,17 +18,18 @@ import { Badge } from "@/components/ui/badge"
 import {
   Plus, Trash2, Eye, Save,
   ChevronDown, ChevronUp, Info, Paperclip, FileUp, CheckCircle2,
-  RotateCcw, Truck, LayoutTemplate
+  RotateCcw, Truck, Loader2
 } from "lucide-react"
 import {
   computeInvoiceTotals,
   type InvoiceData as TemplateInvoiceData
 } from "@/components/invoice-templates/components"
+import { SkeletonDocumentForm } from "@/components/shared/loading"
 
 import { useToast } from "@/hooks/use-toast"
-import { TemplateDialog } from "@/components/template-selection"
 import { useRouter } from "next/navigation"
 import { savePreviewData } from "@/lib/preview-store"
+import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-store"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -88,7 +89,6 @@ const deliveryChallanSchema = z.object({
   terms: z.string().optional(),
   globalDiscountPercent: z.coerce.number().min(0).max(100).optional().default(0),
   shippingCharge: z.coerce.number().min(0).optional().default(0),
-  template: z.enum(["StudioTemplate", "LedgerTemplate", "MinimalMonoTemplate", "VyaparDesiTemplate", "MinimalFreelancerTemplate", "RedModernTemplate", "MaroonGeometricTemplate"]).default("StudioTemplate"),
 })
 
 export type DeliveryChallanFormData = z.infer<typeof deliveryChallanSchema>
@@ -103,16 +103,6 @@ const defaultItem = {
   taxRate: 0,
   gstType: "CGST_SGST" as const,
 }
-
-const TEMPLATES = [
-  { id: "StudioTemplate", name: "Modern Studio" },
-  { id: "LedgerTemplate", name: "Corporate Ledger" },
-  { id: "MinimalMonoTemplate", name: "Minimalist" },
-  { id: "VyaparDesiTemplate", name: "GST India" },
-  { id: "MinimalFreelancerTemplate", name: "Minimal Freelancer" },
-  { id: "RedModernTemplate", name: "Red Modern" },
-  { id: "MaroonGeometricTemplate", name: "Maroon Geometric" },
-]
 
 const CURRENCIES = [
   { code: "INR", symbol: "₹", name: "Indian Rupee", country: "India" },
@@ -153,24 +143,10 @@ function saveChallans(challans: SavedChallan[]) {
 export function DeliveryChallanGenerator() {
   const { toast } = useToast()
   const [mounted, setMounted] = useState(false)
-  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false)
+  const [isPreviewing, setIsPreviewing] = useState(false)
   const [savedOnce, setSavedOnce] = useState(false)
   const [challans, setChallans] = useState<SavedChallan[]>([])
   const router = useRouter()
-
-  const handleTemplateSelect = (templateId: string) => {
-    const mapping: Record<string, string> = {
-      modern: "StudioTemplate",
-      corporate: "LedgerTemplate",
-      minimal: "MinimalMonoTemplate",
-      "gst-india": "VyaparDesiTemplate",
-      "minimal-freelancer": "MinimalFreelancerTemplate",
-      "red-modern": "RedModernTemplate",
-      "maroon-geometric": "MaroonGeometricTemplate",
-    }
-    const formValue = mapping[templateId] || "StudioTemplate"
-    form.setValue("template", formValue as any)
-  }
 
   useEffect(() => setMounted(true), [])
 
@@ -206,12 +182,28 @@ export function DeliveryChallanGenerator() {
       terms: "1. Goods received in good condition.\n2. This challan is only for transport of goods, not for sale.",
       globalDiscountPercent: 0,
       shippingCharge: 0,
-      template: "StudioTemplate",
     },
   })
 
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "items" })
   const watchedValues = form.watch()
+
+  // Auto-restore draft from session storage on mount
+  useEffect(() => {
+    const draft = loadDraft<DeliveryChallanFormData>("delivery-challan")
+    if (draft) {
+      form.reset(draft)
+    }
+  }, [form])
+
+  // Auto-save draft to session storage on form change
+  useEffect(() => {
+    if (!mounted) return
+    const timer = setTimeout(() => {
+      saveDraft("delivery-challan", form.getValues())
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [watchedValues, mounted, form])
 
   const validateEssentialFields = useCallback(() => {
     const values = form.getValues()
@@ -362,11 +354,12 @@ export function DeliveryChallanGenerator() {
 
   const handleShowPreview = useCallback(() => {
     if (!validateEssentialFields()) return
-    const currentTemplate = form.getValues("template")
-    const currentChallanNumber = form.getValues("challanNumber")
+    setIsPreviewing(true)
+    const currentValues = form.getValues()
+    saveDraft("delivery-challan", currentValues)
+    const currentChallanNumber = currentValues.challanNumber
     const id = savePreviewData({
-      docType: "template",
-      templateName: currentTemplate,
+      docType: "delivery-challan",
       invoiceData,
       title: "Delivery Challan Preview",
       fileName: `delivery-challan-${currentChallanNumber || "draft"}.pdf`,
@@ -404,7 +397,7 @@ export function DeliveryChallanGenerator() {
     }
   }
 
-  if (!mounted) return null;
+  if (!mounted) return <SkeletonDocumentForm />;
 
   return (
     <div>
@@ -430,21 +423,8 @@ export function DeliveryChallanGenerator() {
 
             {/* Settings Section */}
             <section className="bg-white dark:bg-gray-900 border border-border p-5 rounded-2xl shadow-sm space-y-4">
-              <h3 className="text-sm font-semibold flex items-center gap-2 text-blue-600"><Truck className="h-4 w-4" /> Challan Design & Preferences</h3>
+              <h3 className="text-sm font-semibold flex items-center gap-2 text-blue-600"><Truck className="h-4 w-4" /> Challan Preferences</h3>
               <div className="grid sm:grid-cols-3 gap-4">
-                <div className="sm:col-span-3 border-b border-stone-100 dark:border-stone-850 pb-4 mb-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Template</Label>
-                      <p className="text-sm text-muted-foreground mt-0.5">
-                        Current: <span className="font-semibold text-foreground">{(() => { const t = form.watch("template"); return t === "StudioTemplate" ? "Modern" : t === "LedgerTemplate" ? "Corporate" : t === "MinimalMonoTemplate" ? "Minimal" : t === "VyaparDesiTemplate" ? "GST India" : t === "MinimalFreelancerTemplate" ? "Minimal Freelancer" : t === "RedModernTemplate" ? "Red Modern" : t === "MaroonGeometricTemplate" ? "Maroon Geometric" : "Modern"; })()}</span>
-                      </p>
-                    </div>
-                    <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsTemplateDialogOpen(true)}>
-                      <LayoutTemplate className="h-4 w-4" /> Change Template
-                    </Button>
-                  </div>
-                </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium">Currency</Label>
                   <Select
@@ -913,21 +893,26 @@ export function DeliveryChallanGenerator() {
 
             {/* Action Bar */}
             <div className="flex flex-wrap gap-3 pb-6 mt-6">
-              <Button className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold flex-1" onClick={handleShowPreview}>
-                <Eye className="h-4 w-4" /> SHOW PREVIEW
+              <Button
+                className="gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white border-0 font-semibold flex-1 disabled:opacity-60"
+                onClick={handleShowPreview}
+                disabled={isPreviewing}
+              >
+                {isPreviewing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> GENERATING PREVIEW...
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4" /> SHOW PREVIEW
+                  </>
+                )}
               </Button>
             </div>
 
           </div>
         </div>
       </div>
-      <TemplateDialog
-        isOpen={isTemplateDialogOpen}
-        onClose={() => setIsTemplateDialogOpen(false)}
-        onSelect={handleTemplateSelect}
-        documentType="delivery challan"
-        currentValue={form.watch("template")}
-      />
     </div>
   )
 }
