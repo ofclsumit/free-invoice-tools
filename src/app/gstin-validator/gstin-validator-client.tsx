@@ -1,11 +1,11 @@
 "use client"
 import { useState } from "react"
 import { Search, Download } from "lucide-react"
+import { LoadingScreen } from "@/components/shared/loading-screen"
 import { generateGSTINValidationPDF } from "@/lib/pdf/generate-gstin-validation"
-import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
-  UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraCardHeader, UltraEmptyState, UltraTextInput, UltraDivider, UltraResultCard, UltraPrimaryButton
+  UltraGrid,
+  UltraCard, UltraCardHeader, UltraEmptyState, UltraTextInput, UltraDivider, UltraResultCard, UltraPrimaryButton
 } from "@/components/ultra/ultra-components"
 
 const STATE_CODES: Record<string, string> = {
@@ -63,84 +63,76 @@ export function GstinValidatorClient() {
   }
 
   return (
-    <UltraShell>
-      <UltraNav />
-      <UltraPage>
-        <UltraHeader
-          badge="Validator"
-          title="GSTIN Validator"
-          subtitle="Validate GST Identification Numbers and identify the registered state"
-        />
+    <>
+      {isDownloading && <LoadingScreen message="Generating GSTIN Report PDF..." />}
+      <UltraGrid>
+        <UltraCard>
+          <UltraCardHeader title="Validate" />
 
-        <UltraGrid>
-          <UltraCard>
-            <UltraCardHeader title="Validate" />
+          <UltraTextInput
+            placeholder="Enter GSTIN"
+            value={gstin}
+            onChange={e => { setGstin(e.target.value); setResult(null) }}
+            maxLength={15}
+            className="uppercase tracking-wider font-mono"
+          />
+          <p className="text-[11.5px] text-slate-500 dark:text-white/60 -mt-3 mb-5 font-medium">15-character GST Identification Number</p>
 
-            <UltraTextInput
-              placeholder="Enter GSTIN"
-              value={gstin}
-              onChange={e => { setGstin(e.target.value); setResult(null) }}
-              maxLength={15}
-              className="uppercase tracking-wider font-mono"
-            />
-            <p className="text-[11.5px] text-slate-500 dark:text-white/60 -mt-3 mb-5 font-medium">15-character GST Identification Number</p>
+          <UltraPrimaryButton onClick={validate} className="w-full">
+            <Search className="h-4 w-4" />
+            Validate GSTIN
+          </UltraPrimaryButton>
+        </UltraCard>
 
-            <UltraPrimaryButton onClick={validate} className="w-full">
-              <Search className="h-4 w-4" />
-              Validate GSTIN
-            </UltraPrimaryButton>
-          </UltraCard>
+        <UltraCard>
+          <UltraCardHeader title="Result" />
 
-          <UltraCard>
-            <UltraCardHeader title="Result" />
+          {result ? (
+            <>
+              {result.valid ? (
+                <UltraResultCard
+                  color="green"
+                  label="Valid GSTIN"
+                  value={result.state || ""}
+                  sub={result.msg}
+                />
+              ) : (
+                <div className="p-4 rounded-xl border border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/10 mb-4">
+                  <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-rose-700 dark:text-rose-400 mb-1">Invalid GSTIN</div>
+                  <div className="text-rose-900 dark:text-rose-300 text-sm font-medium">{result.msg}</div>
+                </div>
+              )}
 
-            {result ? (
-              <>
-                {result.valid ? (
-                  <UltraResultCard
-                    color="green"
-                    label="Valid GSTIN"
-                    value={result.state || ""}
-                    sub={result.msg}
-                  />
-                ) : (
-                  <div className="p-4 rounded-xl border border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/10 mb-4">
-                    <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-rose-700 dark:text-rose-400 mb-1">Invalid GSTIN</div>
-                    <div className="text-rose-900 dark:text-rose-300 text-sm font-medium">{result.msg}</div>
-                  </div>
-                )}
+              <UltraDivider />
 
-                <UltraDivider />
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isDownloading} className="w-full">
+                <Download className="h-4 w-4" />
+                {isDownloading ? "Generating PDF..." : "Download Verification PDF"}
+              </UltraPrimaryButton>
+            </>
+          ) : (
+            <UltraEmptyState message="Enter a GSTIN and tap" actionText="Validate GSTIN" />
+          )}
 
-                <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isDownloading} className="w-full">
-                  <Download className="h-4 w-4" />
-                  {isDownloading ? "Generating PDF..." : "Download Verification PDF"}
-                </UltraPrimaryButton>
-              </>
-            ) : (
-              <UltraEmptyState message="Enter a GSTIN and tap" actionText="Validate GSTIN" />
-            )}
+          <UltraDivider />
 
-            <UltraDivider />
-
-            <div className="bg-slate-50 dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/[0.06] overflow-hidden">
-              <div className="px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] bg-slate-100/70 dark:bg-black/20">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-white">GSTIN Structure Reference</h3>
-              </div>
-              <div className="px-4 py-3 text-sm text-slate-700 dark:text-white/70 space-y-2">
-                <p><strong className="text-slate-900 dark:text-white">Example:</strong> <code className="font-mono text-xs bg-slate-200 dark:bg-white/[0.06] px-1.5 py-0.5 rounded text-violet-800 dark:text-indigo-300 font-bold">27ABCDE1234F1Z5</code></p>
-                <ul className="space-y-1 text-xs list-disc pl-4 text-slate-600 dark:text-white/60">
-                  <li><strong>First 2 digits:</strong> State Code (e.g., 27 for Maharashtra)</li>
-                  <li><strong>Next 10 characters:</strong> PAN of business entity</li>
-                  <li><strong>13th character:</strong> Entity number (1-9 or A-Z)</li>
-                  <li><strong>14th character:</strong> Default character &apos;Z&apos;</li>
-                  <li><strong>15th character:</strong> Checksum validation code</li>
-                </ul>
-              </div>
+          <div className="bg-slate-50 dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/[0.06] overflow-hidden">
+            <div className="px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] bg-slate-100/70 dark:bg-black/20">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-white">GSTIN Structure Reference</h3>
             </div>
-          </UltraCard>
-        </UltraGrid>
-      </UltraPage>
-    </UltraShell>
+            <div className="px-4 py-3 text-sm text-slate-700 dark:text-white/70 space-y-2">
+              <p><strong className="text-slate-900 dark:text-white">Example:</strong> <code className="font-mono text-xs bg-slate-200 dark:bg-white/[0.06] px-1.5 py-0.5 rounded text-violet-800 dark:text-indigo-300 font-bold">27ABCDE1234F1Z5</code></p>
+              <ul className="space-y-1 text-xs list-disc pl-4 text-slate-600 dark:text-white/60">
+                <li><strong>First 2 digits:</strong> State Code (e.g., 27 for Maharashtra)</li>
+                <li><strong>Next 10 characters:</strong> PAN of business entity</li>
+                <li><strong>13th character:</strong> Entity number (1-9 or A-Z)</li>
+                <li><strong>14th character:</strong> Default character &apos;Z&apos;</li>
+                <li><strong>15th character:</strong> Checksum validation code</li>
+              </ul>
+            </div>
+          </div>
+        </UltraCard>
+      </UltraGrid>
+    </>
   )
 }

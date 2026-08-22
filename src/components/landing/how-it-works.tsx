@@ -20,8 +20,8 @@ const steps = [
   },
   {
     number: "04",
-    title: "Share & get paid",
-    description: "Generate secure cloud-backed database sharing links with Copy URL, or launch native device file-share sheets in one click.",
+    title: "Send & get paid",
+    description: "Download crystal-clear vector PDFs, print directly, or launch native device file-share sheets in one click.",
   },
 ]
 

@@ -128,7 +128,9 @@ export function UltraTextInput(props: InputHTMLAttributes<HTMLInputElement>) {
 }
 
 /* ─── RATE SELECTOR ─── */
-export function UltraRateSelector({ rates, value, onChange, labels }: { rates: number[]; value: number; onChange: (v: number) => void; labels?: Record<number, string> }) {
+export function UltraRateSelector({ rates, value, selectedRate, onChange, onSelect, labels }: { rates: number[]; value?: number; selectedRate?: number; onChange?: (v: number) => void; onSelect?: (v: number) => void; labels?: Record<number, string> }) {
+  const currentRate = typeof value === "number" ? value : (typeof selectedRate === "number" ? selectedRate : rates[0])
+  const handler = onChange || onSelect || (() => {})
   return (
     <div className="mb-4">
       <label className="block text-[.75rem] font-bold tracking-[.07em] uppercase text-slate-700 dark:text-[#a78bfa]/90 mb-[.4rem]">Rate</label>
@@ -137,15 +139,15 @@ export function UltraRateSelector({ rates, value, onChange, labels }: { rates: n
           <button
             key={rate}
             type="button"
-            onClick={() => onChange(rate)}
+            onClick={() => handler(rate)}
             className={`flex-1 min-w-[60px] py-[.55rem] px-[.6rem] rounded-[.65rem] text-[.82rem] font-semibold cursor-pointer font-sans transition-all duration-200 ${
-              value === rate
+              currentRate === rate
                 ? "bg-violet-600 text-white shadow-sm dark:bg-gradient-to-r dark:from-[#8b5cf6]/60 dark:to-[#3b82f6]/45 dark:shadow-[0_2px_12px_rgba(139,92,246,.35)]"
                 : "bg-slate-50 border border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400 dark:bg-black/30 dark:border-white/[.12] dark:text-white/60 dark:hover:text-white dark:hover:bg-white/[.06]"
             }`}
           >
             {rate}%
-            {labels?.[rate] && <span className={`block text-[10px] font-normal mt-0.5 ${value === rate ? "text-violet-100" : "text-slate-500 dark:text-white/45"}`}>{labels[rate]}</span>}
+            {labels?.[rate] && <span className={`block text-[10px] font-normal mt-0.5 ${currentRate === rate ? "text-violet-100" : "text-slate-500 dark:text-white/45"}`}>{labels[rate]}</span>}
           </button>
         ))}
       </div>
@@ -216,17 +218,18 @@ export function UltraSplitContainer({ children }: { children: ReactNode }) {
 }
 
 /* ─── PROGRESS ─── */
-export function UltraProgressBar({ label, value }: { label: string; value: number; color?: "indigo" | "emerald" }) {
+export function UltraProgressBar({ label, value, percent, color }: { label: string; value?: number; percent?: number; color?: "indigo" | "emerald" }) {
+  const finalVal = typeof value === "number" ? value : (typeof percent === "number" ? percent : 0)
   return (
     <div className="mt-[.2rem] px-4 py-[.85rem] bg-slate-50 dark:bg-black/25 border border-slate-200 dark:border-white/[.07] rounded-[.75rem]">
       <div className="flex justify-between text-[.75rem] font-semibold text-slate-700 dark:text-white/45 mb-2">
         <span>{label}</span>
-        <span className="font-mono text-slate-900 dark:text-white font-bold">{value.toFixed(1)}%</span>
+        <span className="font-mono text-slate-900 dark:text-white font-bold">{finalVal.toFixed(1)}%</span>
       </div>
       <div className="h-[8px] bg-slate-200 dark:bg-white/[.1] rounded-[2rem] overflow-hidden">
         <div
           className="h-full rounded-[2rem] transition-all duration-700 bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-[#a78bfa] dark:to-[#60a5fa]"
-          style={{ width: `${Math.min(value, 100)}%` }}
+          style={{ width: `${Math.min(finalVal, 100)}%` }}
         />
       </div>
     </div>

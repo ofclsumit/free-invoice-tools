@@ -39,7 +39,6 @@ export function PreviewShell({
   const { toast } = useToast()
   const [isGenerating, setIsGenerating] = useState(false)
   const [isSharing, setIsSharing] = useState(false)
-  const [isCopying, setIsCopying] = useState(false)
   const [zoom, setZoom] = useState(1)
   const previewContainerRef = useRef<HTMLDivElement>(null)
 
@@ -60,65 +59,7 @@ export function PreviewShell({
 
   const handlePrint = useCallback(() => window.print(), [])
 
-  // 1. Copy URL Action (Uploads document data to Supabase and copies public share URL)
-  const handleShare = useCallback(async () => {
-    if (!documentType || !documentData) {
-      // Fallback: Copy current page URL to clipboard
-      try {
-        if (navigator.share) {
-          await navigator.share({
-            title: fileName,
-            text: title,
-            url: window.location.href,
-          })
-        } else {
-          await navigator.clipboard.writeText(window.location.href)
-          toast({
-            title: "URL copied successfully.",
-            description: "Anyone with this link can view and download this document.",
-          })
-        }
-      } catch {}
-      return
-    }
-
-    setIsCopying(true)
-    try {
-      const res = await fetch("/api/share", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          document_type: documentType,
-          template: template || "",
-          document_data: documentData,
-        }),
-      })
-
-      if (!res.ok) {
-        throw new Error("Failed to create public share link")
-      }
-
-      const { id } = await res.json()
-      const shareUrl = `${window.location.origin}/share/${id}`
-
-      await navigator.clipboard.writeText(shareUrl)
-      toast({
-        title: "URL copied successfully.",
-        description: "Anyone with this link can view and download this document.",
-      })
-    } catch (err: any) {
-      console.error(err)
-      toast({
-        title: "Failed to create public share link",
-        description: err.message || "An error occurred",
-        variant: "destructive",
-      })
-    } finally {
-      setIsCopying(false)
-    }
-  }, [documentType, template, documentData, fileName, title, toast])
-
-  // 2. Native File Sharing (Attached PDF + Template message)
+  // Native File Sharing (Attached PDF + Template message)
   const handleNativeShare = useCallback(async () => {
     setIsSharing(true)
     try {
@@ -203,31 +144,16 @@ export function PreviewShell({
               {/* Action Buttons */}
               <div className="flex items-center gap-1.5">
                 {!hideShare && (
-                  <>
-                    {/* Copy URL Button */}
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="h-8 gap-1.5 text-xs font-semibold bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-xs transition-all" 
-                      onClick={handleShare} 
-                      disabled={isCopying || isSharing}
-                    >
-                      {isCopying ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Copy className="h-3.5 w-3.5" />}
-                      <span className="hidden sm:inline">Copy URL</span>
-                    </Button>
-
-                    {/* Native Share Button */}
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="h-8 gap-1.5 text-xs font-semibold bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-xs transition-all" 
-                      onClick={handleNativeShare} 
-                      disabled={isCopying || isSharing}
-                    >
-                      {isSharing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" />}
-                      <span className="hidden sm:inline">Share</span>
-                    </Button>
-                  </>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 gap-1.5 text-xs font-semibold bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-xs transition-all" 
+                    onClick={handleNativeShare} 
+                    disabled={isSharing}
+                  >
+                    {isSharing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" />}
+                    <span className="hidden sm:inline">Share</span>
+                  </Button>
                 )}
                 
                 <Button 

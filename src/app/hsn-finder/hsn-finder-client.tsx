@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { Search, Download } from "lucide-react"
+import { LoadingScreen } from "@/components/shared/loading-screen"
 import { generateHsnListPDF } from "@/lib/pdf/generate-hsn-list"
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
@@ -86,61 +87,53 @@ export function HsnFinderClient() {
   }
 
   return (
-    <UltraShell>
-      <UltraNav />
-      <UltraPage>
-        <UltraHeader
-          badge="Reference"
-          title="HSN Code Finder"
-          subtitle="Search for Harmonized System of Nomenclature codes and GST rates"
-        />
+    <>
+      {isDownloading && <LoadingScreen message="Generating HSN Directory PDF..." />}
+      <UltraGrid>
+        <UltraCard>
+          <UltraCardHeader title="Search HSN Codes" />
 
-        <UltraGrid>
-          <UltraCard>
-            <UltraCardHeader title="Search HSN Codes" />
+          <div className="relative mb-5">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-white/40" />
+            <input
+              placeholder="Search by code or description..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-900 dark:text-white text-sm outline-none transition-all duration-200 focus:border-violet-600 focus:ring-2 focus:ring-violet-500/20 pl-10 pr-4 py-2.5 placeholder:text-slate-400 dark:placeholder-white/30 shadow-xs"
+            />
+          </div>
 
-            <div className="relative mb-5">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-white/40" />
-              <input
-                placeholder="Search by code or description..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-900 dark:text-white text-sm outline-none transition-all duration-200 focus:border-violet-600 focus:ring-2 focus:ring-violet-500/20 pl-10 pr-4 py-2.5 placeholder:text-slate-400 dark:placeholder-white/30 shadow-xs"
-              />
-            </div>
+          <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isDownloading} className="w-full">
+            <Download className="h-4 w-4" />
+            {isDownloading ? "Exporting..." : "Export HSN Directory PDF"}
+          </UltraPrimaryButton>
+        </UltraCard>
 
-            <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isDownloading} className="w-full">
-              <Download className="h-4 w-4" />
-              {isDownloading ? "Exporting..." : "Export HSN Directory PDF"}
-            </UltraPrimaryButton>
-          </UltraCard>
+        <UltraCard>
+          <UltraCardHeader title="Results" />
 
-          <UltraCard>
-            <UltraCardHeader title="Results" />
-
-            {filtered.length > 0 ? (
-              <div className="bg-white dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/[0.06] overflow-hidden shadow-xs">
-                <div className="grid grid-cols-[90px_1fr_75px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-4 py-2.5 text-xs font-bold tracking-[0.06em] uppercase text-slate-700 dark:text-white/70 border-b border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.03]">
-                  <span>HSN Code</span><span>Description</span><span>GST Rate</span>
-                </div>
-                <div className="divide-y divide-slate-100 dark:divide-white/[0.04] max-h-[500px] overflow-y-auto">
-                  {filtered.map(h => (
-                    <div key={h.code} className="grid grid-cols-[90px_1fr_75px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-4 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors items-center">
-                      <span className="font-mono font-bold text-violet-700 dark:text-indigo-400 truncate text-xs">{h.code}</span>
-                      <span className="text-slate-800 dark:text-white/80 truncate text-xs sm:text-sm font-medium" title={h.description}>{h.description}</span>
-                      <span className="font-bold font-mono text-slate-900 dark:text-white text-xs">{h.rate}</span>
-                    </div>
-                  ))}
-                </div>
+          {filtered.length > 0 ? (
+            <div className="bg-white dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/[0.06] overflow-hidden shadow-xs">
+              <div className="grid grid-cols-[90px_1fr_75px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-4 py-2.5 text-xs font-bold tracking-[0.06em] uppercase text-slate-700 dark:text-white/70 border-b border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.03]">
+                <span>HSN Code</span><span>Description</span><span>GST Rate</span>
               </div>
-            ) : (
-              <UltraEmptyState message={`No HSN codes found for "${search}"`} actionText="Clear search to view all" />
-            )}
+              <div className="divide-y divide-slate-100 dark:divide-white/[0.04] max-h-[500px] overflow-y-auto">
+                {filtered.map(h => (
+                  <div key={h.code} className="grid grid-cols-[90px_1fr_75px] sm:grid-cols-[100px_1fr_80px] gap-2 sm:gap-4 px-3 sm:px-4 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors items-center">
+                    <span className="font-mono font-bold text-violet-700 dark:text-indigo-400 truncate text-xs">{h.code}</span>
+                    <span className="text-slate-800 dark:text-white/80 truncate text-xs sm:text-sm font-medium" title={h.description}>{h.description}</span>
+                    <span className="font-bold font-mono text-slate-900 dark:text-white text-xs">{h.rate}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <UltraEmptyState message={`No HSN codes found for "${search}"`} actionText="Clear search to view all" />
+          )}
 
-            <p className="text-[11.5px] text-slate-500 dark:text-white/50 text-center mt-4">This is a quick lookup database. Please consult official GST portal for full statutory schedules.</p>
-          </UltraCard>
-        </UltraGrid>
-      </UltraPage>
-    </UltraShell>
+          <p className="text-[11.5px] text-slate-500 dark:text-white/50 text-center mt-4">This is a quick lookup database. Please consult official GST portal for full statutory schedules.</p>
+        </UltraCard>
+      </UltraGrid>
+    </>
   )
 }

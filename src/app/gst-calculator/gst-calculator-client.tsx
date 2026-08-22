@@ -175,106 +175,95 @@ export function GstCalculatorClient() {
         </div>
       </div>
 
-      <UltraShell>
-        <UltraNav />
-        <UltraPage>
-          <UltraHeader
-            badge="GST Calculator India"
-            title={"Instant GST\nCalculator"}
-            subtitle="Real-time GST calculation with automatic CGST & SGST split."
+      <UltraGrid>
+        <UltraCard>
+          <UltraCardHeader title="Calculate" />
+
+          <div className="space-y-3 mb-4">
+            <UltraTextInput placeholder="Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)} />
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="w-full bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-800 dark:text-white text-xs outline-none px-3 py-2 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-violet-100 dark:file:bg-violet-500/20 file:text-violet-700 dark:file:text-violet-300 file:cursor-pointer cursor-pointer"
+                />
+              </div>
+              {companyLogo && (
+                <div className="h-9 w-9 rounded-lg border border-slate-200 dark:border-white/[0.12] overflow-hidden flex-shrink-0 bg-white p-0.5">
+                  <img src={companyLogo} alt="Logo" className="h-full w-full object-contain" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <UltraToggle
+            options={[{value:"exclusive",label:"Exclusive (Add GST)"},{value:"inclusive",label:"Inclusive (Remove GST)"}]}
+            value={mode}
+            onChange={(v) => setMode(v as "exclusive" | "inclusive")}
           />
 
-          <UltraGrid>
-            <UltraCard>
-              <UltraCardHeader title="Calculate" />
+          <UltraInput
+            type="number"
+            placeholder={mode === "exclusive" ? "Base Amount" : "Total Amount (with GST)"}
+            currencySymbol="₹"
+            value={amount}
+            onChange={e => setAmount(e.target.value)}
+          />
 
-              <div className="space-y-3 mb-4">
-                <UltraTextInput placeholder="Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)} />
-                <div className="flex items-center gap-2">
-                  <div className="flex-1">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="w-full bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-800 dark:text-white text-sm outline-none px-4 py-2.5 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:bg-violet-100 dark:file:bg-indigo-500/20 file:text-violet-700 dark:file:text-indigo-300 file:border-0 file:text-xs file:font-semibold"
-                    />
-                  </div>
-                  {companyLogo && (
-                    <div className="h-11 w-11 rounded-xl border border-slate-200 dark:border-white/[0.12] overflow-hidden flex-shrink-0 bg-white p-1">
-                      <img src={companyLogo} alt="Logo" className="h-full w-full object-contain" />
-                    </div>
-                  )}
-                </div>
+          <UltraRateSelector
+            rates={GST_RATES}
+            value={gstRate}
+            onChange={setGstRate}
+            labels={{ 0: "Exempt", 5: "Basic", 12: "Mid", 18: "Standard", 28: "Luxury" }}
+          />
+
+          <div className="flex gap-3 mt-6">
+            <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
+              Calculate GST
+            </UltraPrimaryButton>
+            <UltraResetButton onClick={handleReset} />
+          </div>
+        </UltraCard>
+
+        <UltraCard>
+          <UltraCardHeader title="Results" />
+
+          {!calculated || !(numAmount > 0) ? (
+            <UltraEmptyState actionText="Calculate GST" />
+          ) : (
+            <>
+              <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
+                <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
+                {mode === "exclusive" ? "GST Exclusive" : "GST Inclusive"}
               </div>
 
-              <UltraToggle
-                options={[{ value: "exclusive", label: "+ GST Exclusive" }, { value: "inclusive", label: "Incl. GST" }]}
-                value={mode}
-                onChange={(v) => setMode(v as "exclusive" | "inclusive")}
-              />
+              <UltraResultsGrid>
+                <UltraResultCard label="Base Amount" value={`₹${fmt(baseAmount)}`} color="blue" />
+                <UltraResultCard label="GST Rate" value={`${gstRate}%`} color="blue" />
+                <UltraResultCard label="GST Amount" value={`₹${fmt(gstAmount)}`} color="green" />
+                <UltraResultCard label="Total Amount" value={`₹${fmt(totalAmount)}`} color="main" />
+              </UltraResultsGrid>
 
-              <UltraInput
-                type="number"
-                placeholder="Enter amount"
-                currencySymbol="₹"
-                value={amount}
-                onChange={e => { setAmount(e.target.value); setCalculated(false) }}
-              />
-
-              <UltraRateSelector
-                rates={GST_RATES}
-                value={gstRate}
-                onChange={setGstRate}
-                labels={{ 0: "Exempt", 5: "Basic", 12: "Mid", 18: "Standard", 28: "Luxury" }}
-              />
-
-              <div className="flex gap-3 mt-6">
-                <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
-                  Calculate GST
-                </UltraPrimaryButton>
-                <UltraResetButton onClick={handleReset} />
+              <div className="flex justify-between items-center text-[.82rem] text-slate-600 dark:text-white/60 mt-4 pb-2 border-b border-slate-200 dark:border-white/[.06]">
+                <span>CGST ({gstRate / 2}%)</span>
+                <span className="text-slate-900 dark:text-white font-mono font-bold">₹{fmt(cgst)}</span>
               </div>
-            </UltraCard>
+              <div className="flex justify-between items-center text-[.82rem] text-slate-600 dark:text-white/60 pb-3">
+                <span>SGST ({gstRate / 2}%)</span>
+                <span className="text-slate-900 dark:text-white font-mono font-bold">₹{fmt(sgst)}</span>
+              </div>
 
-            <UltraCard>
-              <UltraCardHeader title="Results" />
+              <UltraProgressBar label="Base vs GST" percent={totalAmount > 0 ? (baseAmount / totalAmount) * 100 : 0} />
 
-              {!calculated || !(numAmount > 0) ? (
-                <UltraEmptyState actionText="Calculate GST" />
-              ) : (
-                <>
-                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
-                    <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
-                    {mode === "exclusive" ? "GST Exclusive" : "GST Inclusive"}
-                  </div>
-
-                  <UltraResultsGrid>
-                    <UltraResultCard label="Base Amount" value={`₹${fmt(baseAmount)}`} color="blue" />
-                    <UltraResultCard label="GST Rate" value={`${gstRate}%`} color="blue" />
-                    <UltraResultCard label="GST Amount" value={`₹${fmt(gstAmount)}`} color="green" />
-                    <UltraResultCard label="Total Amount" value={`₹${fmt(totalAmount)}`} color="main" />
-                  </UltraResultsGrid>
-
-                  <div className="flex justify-between items-center text-[.82rem] text-slate-600 dark:text-white/60 mt-4 pb-2 border-b border-slate-200 dark:border-white/[.06]">
-                    <span>CGST ({gstRate / 2}%)</span>
-                    <span className="text-slate-900 dark:text-white font-mono font-bold">₹{fmt(cgst)}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-[.82rem] text-slate-600 dark:text-white/60 pb-3">
-                    <span>SGST ({gstRate / 2}%)</span>
-                    <span className="text-slate-900 dark:text-white font-mono font-bold">₹{fmt(sgst)}</span>
-                  </div>
-
-                  <UltraProgressBar label="Base vs GST" value={basePct} />
-
-                  <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
-                    <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                  </UltraPrimaryButton>
-                </>
-              )}
-            </UltraCard>
-          </UltraGrid>
-        </UltraPage>
-      </UltraShell>
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
+                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+            </>
+          )}
+        </UltraCard>
+      </UltraGrid>
     </>
   )
 }

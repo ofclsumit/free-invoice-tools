@@ -99,78 +99,67 @@ export function LoanCalculatorClient() {
         </div>
       </div>
 
-      <UltraShell>
-        <UltraNav />
-        <UltraPage>
-          <UltraHeader
-            badge="Loan Calculator"
-            title={"Loan\nCalculator"}
-            subtitle="Calculate your monthly payments and total loan costs instantly."
+      <UltraGrid>
+        {/* ─── CALCULATE CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Calculate Loan EMI" />
+
+          <UltraInput
+            type="number"
+            placeholder="Loan Amount"
+            currencySymbol="₹"
+            value={amount}
+            onChange={e => { setAmount(e.target.value); setCalculated(false) }}
           />
 
-          <UltraGrid>
-            {/* ─── CALCULATE CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Calculate Loan EMI" />
+          <UltraInput
+            type="number"
+            step="0.1"
+            placeholder="Annual Interest Rate"
+            suffix="% p.a."
+            value={rate}
+            onChange={e => { setRate(e.target.value); setCalculated(false) }}
+          />
 
-              <UltraInput
-                type="number"
-                placeholder="Loan Amount"
-                currencySymbol="₹"
-                value={amount}
-                onChange={e => { setAmount(e.target.value); setCalculated(false) }}
-              />
+          <UltraInput
+            type="number"
+            placeholder="Loan Tenure"
+            suffix="Months"
+            value={tenure}
+            onChange={e => { setTenure(e.target.value); setCalculated(false) }}
+          />
 
-              <UltraInput
-                type="number"
-                step="0.1"
-                placeholder="Annual Interest Rate"
-                suffix="% p.a."
-                value={rate}
-                onChange={e => { setRate(e.target.value); setCalculated(false) }}
-              />
+          <div className="flex gap-3 mt-6">
+            <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
+              Calculate EMI
+            </UltraPrimaryButton>
+            <UltraResetButton onClick={handleReset} />
+          </div>
+        </UltraCard>
 
-              <UltraInput
-                type="number"
-                placeholder="Loan Tenure"
-                suffix="Months"
-                value={tenure}
-                onChange={e => { setTenure(e.target.value); setCalculated(false) }}
-              />
+        {/* ─── RESULTS CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Results" />
 
-              <div className="flex gap-3 mt-6">
-                <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
-                  Calculate EMI
-                </UltraPrimaryButton>
-                <UltraResetButton onClick={handleReset} />
-              </div>
-            </UltraCard>
+          {!calculated || !(P > 0 && annualRate > 0 && months > 0) ? (
+            <UltraEmptyState actionText="Calculate EMI" />
+          ) : (
+            <>
+              <UltraResultsGrid>
+                <UltraResultCard label="Monthly EMI" value={`₹${fmt(emi)}`} color="main" />
+                <UltraResultCard label="Total Interest" value={`₹${fmt(totalInterest)}`} color="amber" />
+                <UltraResultCard label="Total Cost" value={`₹${fmt(totalCost)}`} color="purple" />
+                <UltraResultCard label="Principal" value={`₹${fmt(P)}`} color="blue" />
+                <UltraResultCard label="Interest % of Total" value={`${(totalInterest / totalCost * 100).toFixed(1)}%`} color="amber" />
+              </UltraResultsGrid>
 
-            {/* ─── RESULTS CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Results" />
-
-              {!calculated || !(P > 0 && annualRate > 0 && months > 0) ? (
-                <UltraEmptyState actionText="Calculate EMI" />
-              ) : (
-                <>
-                  <UltraResultsGrid>
-                    <UltraResultCard label="Monthly EMI" value={`₹${fmt(emi)}`} color="main" />
-                    <UltraResultCard label="Total Interest" value={`₹${fmt(totalInterest)}`} color="amber" />
-                    <UltraResultCard label="Total Cost" value={`₹${fmt(totalCost)}`} color="purple" />
-                    <UltraResultCard label="Principal" value={`₹${fmt(P)}`} color="blue" />
-                    <UltraResultCard label="Interest % of Total" value={`${(totalInterest / totalCost * 100).toFixed(1)}%`} color="amber" />
-                  </UltraResultsGrid>
-
-                  <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
-                    <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                  </UltraPrimaryButton>
-                </>
-              )}
-            </UltraCard>
-          </UltraGrid>
-        </UltraPage>
-      </UltraShell>
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
+                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+            </>
+          )}
+        </UltraCard>
+      </UltraGrid>
     </>
   )
 }

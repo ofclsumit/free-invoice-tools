@@ -110,102 +110,89 @@ export function InterestCalculatorClient() {
         </div>
       </div>
 
-      <UltraShell>
-        <UltraNav />
-        <UltraPage>
-          <UltraHeader
-            badge="Financial Tools"
-            title={"Interest\nCalculator"}
-            subtitle="Simple &amp; compound interest — instant results for any amount"
+      <UltraGrid>
+        {/* ─── CALCULATE CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Calculate Interest" />
+
+          <UltraToggle
+            options={[{value:"simple",label:"Simple Interest"},{value:"compound",label:"Compound Interest"}]}
+            value={mode}
+            onChange={(v) => setMode(v as "simple" | "compound")}
           />
 
-          <UltraGrid>
-            {/* ─── CALCULATE CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Calculate Interest" />
+          <UltraInput
+            type="number"
+            placeholder="Principal Amount"
+            currencySymbol="₹"
+            value={principal}
+            onChange={e => { setPrincipal(e.target.value); setCalculated(false) }}
+          />
 
+          <UltraInput
+            type="number"
+            step="0.1"
+            placeholder="Annual Interest Rate"
+            suffix="%"
+            value={rate}
+            onChange={e => { setRate(e.target.value); setCalculated(false) }}
+          />
+
+          <UltraInput
+            type="number"
+            placeholder="Time Period (Years)"
+            value={time}
+            onChange={e => { setTime(e.target.value); setCalculated(false) }}
+          />
+
+          {mode === "compound" && (
+            <div>
+              <UltraSectionLabel>Compounding Frequency</UltraSectionLabel>
               <UltraToggle
-                options={[{value:"simple",label:"Simple Interest"},{value:"compound",label:"Compound Interest"}]}
-                value={mode}
-                onChange={(v) => setMode(v as "simple" | "compound")}
+                options={COMPOUND_FREQUENCIES}
+                value={frequency}
+                onChange={setFrequency}
               />
+            </div>
+          )}
 
-              <UltraInput
-                type="number"
-                placeholder="Principal Amount"
-                currencySymbol="₹"
-                value={principal}
-                onChange={e => { setPrincipal(e.target.value); setCalculated(false) }}
-              />
+          <div className="flex gap-3 mt-6">
+            <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
+              Calculate Interest
+            </UltraPrimaryButton>
+            <UltraResetButton onClick={handleReset} />
+          </div>
+        </UltraCard>
 
-              <UltraInput
-                type="number"
-                step="0.1"
-                placeholder="Annual Interest Rate"
-                suffix="% p.a."
-                value={rate}
-                onChange={e => { setRate(e.target.value); setCalculated(false) }}
-              />
+        {/* ─── RESULTS CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Results" />
 
-              <UltraInput
-                type="number"
-                step="0.5"
-                placeholder="Time Period"
-                suffix="Years"
-                value={time}
-                onChange={e => { setTime(e.target.value); setCalculated(false) }}
-              />
-
-              {mode === "compound" && (
-                <div className="mb-4">
-                  <UltraSectionLabel>Compounding Frequency</UltraSectionLabel>
-                  <UltraToggle
-                    options={COMPOUND_FREQUENCIES}
-                    value={frequency}
-                    onChange={setFrequency}
-                  />
-                </div>
-              )}
-
-              <div className="flex gap-3 mt-6">
-                <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
-                  Calculate Interest
-                </UltraPrimaryButton>
-                <UltraResetButton onClick={handleReset} />
+          {!calculated || !(P > 0 && r > 0 && t > 0) ? (
+            <UltraEmptyState actionText="Calculate Interest" />
+          ) : (
+            <>
+              <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
+                <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
+                {mode === "simple" ? "Simple Interest" : "Compound Interest"}
               </div>
-            </UltraCard>
 
-            {/* ─── RESULTS CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Results" />
+              <UltraResultsGrid>
+                <UltraResultCard label="Principal Amount" value={`₹${fmt(P)}`} color="blue" />
+                <UltraResultCard label="Rate & Duration" value={`${rate}% × ${t} ${t === 1 ? "Year" : "Years"}`} color="blue" />
+                <UltraResultCard label="Interest Earned" value={`₹${fmt(interest)}`} color="green" />
+                <UltraResultCard label="Maturity Amount" value={`₹${fmt(maturity)}`} color="main" />
+              </UltraResultsGrid>
 
-              {!calculated || !(P > 0 && r > 0 && t > 0) ? (
-                <UltraEmptyState actionText="Calculate Interest" />
-              ) : (
-                <>
-                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
-                    <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
-                    {mode === "simple" ? "Simple Interest" : "Compound Interest"}
-                  </div>
+              <UltraProgressBar label="Interest vs Principal" percent={iPct} />
 
-                  <UltraResultsGrid>
-                    <UltraResultCard label="Principal Amount" value={`₹${fmt(P)}`} color="blue" />
-                    <UltraResultCard label="Rate & Duration" value={`${rate}% × ${t} ${t === 1 ? "Year" : "Years"}`} color="blue" />
-                    <UltraResultCard label="Interest Earned" value={`₹${fmt(interest)}`} color="green" />
-                    <UltraResultCard label="Maturity Amount" value={`₹${fmt(maturity)}`} color="main" />
-                  </UltraResultsGrid>
-
-                  <UltraProgressBar label="Interest vs Principal" value={iPct} />
-
-                  <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
-                    <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                  </UltraPrimaryButton>
-                </>
-              )}
-            </UltraCard>
-          </UltraGrid>
-        </UltraPage>
-      </UltraShell>
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
+                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+            </>
+          )}
+        </UltraCard>
+      </UltraGrid>
     </>
   )
 }

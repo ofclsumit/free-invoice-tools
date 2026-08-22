@@ -114,73 +114,62 @@ export function DiscountCalculatorClient() {
         </div>
       </div>
 
-      <UltraShell>
-        <UltraNav />
-        <UltraPage>
-          <UltraHeader
-            badge="Calculator"
-            title="Discount\nCalculator"
-            subtitle="Calculate savings and final price after discount"
+      <UltraGrid>
+        {/* ─── CALCULATE CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Calculate Discount" />
+
+          <UltraInput
+            type="number"
+            placeholder="Original Price"
+            currencySymbol="₹"
+            value={originalPrice}
+            onChange={e => { setOriginalPrice(e.target.value); setCalculated(false) }}
+          />
+          <UltraInput
+            type="number"
+            step="0.1"
+            placeholder="Discount Rate"
+            suffix="%"
+            value={discountRate}
+            onChange={e => { setDiscountRate(e.target.value); setCalculated(false) }}
           />
 
-          <UltraGrid>
-            {/* ─── CALCULATE CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Calculate Discount" />
+          <div className="flex gap-3 mt-6">
+            <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
+              Calculate Discount
+            </UltraPrimaryButton>
+            <UltraResetButton onClick={handleReset} />
+          </div>
+        </UltraCard>
 
-              <UltraInput
-                type="number"
-                placeholder="Original Price"
-                currencySymbol="₹"
-                value={originalPrice}
-                onChange={e => { setOriginalPrice(e.target.value); setCalculated(false) }}
-              />
-              <UltraInput
-                type="number"
-                step="0.1"
-                placeholder="Discount Rate"
-                suffix="%"
-                value={discountRate}
-                onChange={e => { setDiscountRate(e.target.value); setCalculated(false) }}
-              />
+        {/* ─── RESULTS CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Results" />
 
-              <div className="flex gap-3 mt-6">
-                <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
-                  Calculate Discount
-                </UltraPrimaryButton>
-                <UltraResetButton onClick={handleReset} />
+          {!calculated || !(price > 0 && rate > 0) ? (
+            <UltraEmptyState actionText="Calculate Discount" />
+          ) : (
+            <>
+              <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
+                <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
+                Discount Details
               </div>
-            </UltraCard>
 
-            {/* ─── RESULTS CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Results" />
+              <UltraResultsGrid>
+                <UltraResultCard label="Original Price" value={`₹${fmt(price)}`} color="blue" />
+                <UltraResultCard label={`Discount (${rate}%)`} value={`-₹${fmt(discountAmount)}`} color="amber" />
+                <UltraResultCard label="Final Price" value={`₹${fmt(finalPrice)}`} color="main" />
+                <UltraResultCard label="You Save" value={`₹${fmt(discountAmount)} (${rate}%)`} color="green" />
+              </UltraResultsGrid>
 
-              {!calculated || !(price > 0 && rate > 0) ? (
-                <UltraEmptyState actionText="Calculate Discount" />
-              ) : (
-                <>
-                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
-                    <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
-                    Discount Details
-                  </div>
-
-                  <UltraResultsGrid>
-                    <UltraResultCard label="Original Price" value={`₹${fmt(price)}`} color="blue" />
-                    <UltraResultCard label={`Discount (${rate}%)`} value={`-₹${fmt(discountAmount)}`} color="amber" />
-                    <UltraResultCard label="Final Price" value={`₹${fmt(finalPrice)}`} color="main" />
-                    <UltraResultCard label="You Save" value={`₹${fmt(discountAmount)} (${rate}%)`} color="green" />
-                  </UltraResultsGrid>
-
-                  <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
-                    <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                  </UltraPrimaryButton>
-                </>
-              )}
-            </UltraCard>
-          </UltraGrid>
-        </UltraPage>
-      </UltraShell>
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
+                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+            </>
+          )}
+        </UltraCard>
+      </UltraGrid>
     </>
   )
 }

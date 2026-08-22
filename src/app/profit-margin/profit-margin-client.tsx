@@ -135,105 +135,94 @@ export function ProfitMarginClient() {
         </div>
       </div>
 
-      <UltraShell>
-        <UltraNav />
-        <UltraPage>
-          <UltraHeader
-            badge="Profit Margin"
-            title={"Profit\nMargin"}
-            subtitle="Calculate your profit margin, markup, and see how your business is performing."
+      <UltraGrid>
+        {/* ─── CALCULATE CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Calculate Margin & Markup" />
+
+          <div className="space-y-3 mb-4">
+            <UltraTextInput
+              placeholder="Company Name"
+              value={companyName}
+              onChange={e => setCompanyName(e.target.value)}
+            />
+
+            <div>
+              <UltraSectionLabel>Company Logo</UltraSectionLabel>
+              <div className="flex items-center gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="flex-1 bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-800 dark:text-white text-sm outline-none px-4 py-2.5 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-violet-100 dark:file:bg-indigo-500/20 file:text-violet-700 dark:file:text-indigo-300 file:cursor-pointer cursor-pointer"
+                />
+                {companyLogo && (
+                  <div className="h-11 w-11 rounded-xl border border-slate-200 dark:border-white/[0.12] overflow-hidden flex-shrink-0 bg-white p-1">
+                    <img src={companyLogo} alt="Logo" className="h-full w-full object-contain" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <UltraInput
+            type="number"
+            placeholder="Cost Price"
+            currencySymbol="₹"
+            value={cost}
+            onChange={e => { setCost(e.target.value); setCalculated(false) }}
           />
 
-          <UltraGrid>
-            {/* ─── CALCULATE CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Calculate Margin & Markup" />
+          <UltraInput
+            type="number"
+            placeholder="Selling Price"
+            currencySymbol="₹"
+            value={selling}
+            onChange={e => { setSelling(e.target.value); setCalculated(false) }}
+          />
 
-              <div className="space-y-3 mb-4">
-                <UltraTextInput
-                  placeholder="Company Name"
-                  value={companyName}
-                  onChange={e => setCompanyName(e.target.value)}
+          <div className="mt-4 bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-xl p-4">
+            <p className="text-xs text-slate-700 dark:text-white/70 leading-relaxed font-medium">
+              <strong className="text-slate-900 dark:text-white">Profit Margin</strong> = (Selling Price - Cost) &divide; Selling Price &times; 100
+            </p>
+            <p className="text-xs text-slate-700 dark:text-white/70 leading-relaxed mt-1 font-medium">
+              <strong className="text-slate-900 dark:text-white">Markup</strong> = (Selling Price - Cost) &divide; Cost &times; 100
+            </p>
+          </div>
+
+          <div className="flex gap-3 mt-6">
+            <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
+              Calculate Margin
+            </UltraPrimaryButton>
+            <UltraResetButton onClick={handleReset} />
+          </div>
+        </UltraCard>
+
+        {/* ─── RESULTS CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Results" />
+
+          {!calculated || !(c > 0 && s > 0) ? (
+            <UltraEmptyState message="Enter cost & selling price and tap" actionText="Calculate Margin" />
+          ) : (
+            <>
+              <UltraResultsGrid>
+                <UltraResultCard
+                  label="Net Profit / Loss"
+                  value={<span className={profit >= 0 ? "text-emerald-700 dark:text-emerald-400 font-bold" : "text-rose-700 dark:text-rose-400 font-bold"}>{profit >= 0 ? "+" : ""}₹{fmt(profit)}</span>}
+                  color="main"
                 />
+                <UltraResultCard label="Profit Margin" value={`${margin.toFixed(1)}%`} color="green" />
+                <UltraResultCard label="Markup Percentage" value={`${markup.toFixed(1)}%`} color="blue" />
+              </UltraResultsGrid>
 
-                <div>
-                  <UltraSectionLabel>Company Logo</UltraSectionLabel>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="flex-1 bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-800 dark:text-white text-sm outline-none px-4 py-2.5 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-violet-100 dark:file:bg-indigo-500/20 file:text-violet-700 dark:file:text-indigo-300 file:cursor-pointer cursor-pointer"
-                    />
-                    {companyLogo && (
-                      <div className="h-11 w-11 rounded-xl border border-slate-200 dark:border-white/[0.12] overflow-hidden flex-shrink-0 bg-white p-1">
-                        <img src={companyLogo} alt="Logo" className="h-full w-full object-contain" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <UltraInput
-                type="number"
-                placeholder="Cost Price"
-                currencySymbol="₹"
-                value={cost}
-                onChange={e => { setCost(e.target.value); setCalculated(false) }}
-              />
-
-              <UltraInput
-                type="number"
-                placeholder="Selling Price"
-                currencySymbol="₹"
-                value={selling}
-                onChange={e => { setSelling(e.target.value); setCalculated(false) }}
-              />
-
-              <div className="mt-4 bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-xl p-4">
-                <p className="text-xs text-slate-700 dark:text-white/70 leading-relaxed font-medium">
-                  <strong className="text-slate-900 dark:text-white">Profit Margin</strong> = (Selling Price - Cost) &divide; Selling Price &times; 100
-                </p>
-                <p className="text-xs text-slate-700 dark:text-white/70 leading-relaxed mt-1 font-medium">
-                  <strong className="text-slate-900 dark:text-white">Markup</strong> = (Selling Price - Cost) &divide; Cost &times; 100
-                </p>
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
-                  Calculate Margin
-                </UltraPrimaryButton>
-                <UltraResetButton onClick={handleReset} />
-              </div>
-            </UltraCard>
-
-            {/* ─── RESULTS CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Results" />
-
-              {!calculated || !(c > 0 && s > 0) ? (
-                <UltraEmptyState message="Enter cost & selling price and tap" actionText="Calculate Margin" />
-              ) : (
-                <>
-                  <UltraResultsGrid>
-                    <UltraResultCard
-                      label="Net Profit / Loss"
-                      value={<span className={profit >= 0 ? "text-emerald-700 dark:text-emerald-400 font-bold" : "text-rose-700 dark:text-rose-400 font-bold"}>{profit >= 0 ? "+" : ""}₹{fmt(profit)}</span>}
-                      color="main"
-                    />
-                    <UltraResultCard label="Profit Margin" value={`${margin.toFixed(1)}%`} color="green" />
-                    <UltraResultCard label="Markup Percentage" value={`${markup.toFixed(1)}%`} color="blue" />
-                  </UltraResultsGrid>
-
-                  <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
-                    <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                  </UltraPrimaryButton>
-                </>
-              )}
-            </UltraCard>
-          </UltraGrid>
-        </UltraPage>
-      </UltraShell>
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
+                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+            </>
+          )}
+        </UltraCard>
+      </UltraGrid>
     </>
   )
 }

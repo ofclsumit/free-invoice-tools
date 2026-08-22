@@ -125,88 +125,77 @@ export function ReverseGstCalculatorClient() {
         </div>
       </div>
 
-      <UltraShell>
-        <UltraNav />
-        <UltraPage>
-          <UltraHeader
-            badge="Reverse GST"
-            title={"Reverse GST\nCalculator"}
-            subtitle="Calculate the original base amount and GST from a total inclusive price."
+      <UltraGrid>
+        {/* ─── CALCULATE CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Calculate" />
+
+          <UltraInput
+            type="number"
+            placeholder="Total Amount (Inclusive of GST)"
+            currencySymbol="₹"
+            value={totalAmount}
+            onChange={e => { setTotalAmount(e.target.value); setCalculated(false) }}
           />
 
-          <UltraGrid>
-            {/* ─── CALCULATE CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Calculate" />
+          <UltraRateSelector
+            rates={GST_RATES}
+            value={gstRate}
+            onChange={setGstRate}
+            labels={{ 0: "Exempt", 5: "Basic", 12: "Mid", 18: "Standard", 28: "Luxury" }}
+          />
 
-              <UltraInput
-                type="number"
-                placeholder="Total Amount (Inclusive of GST)"
-                currencySymbol="₹"
-                value={totalAmount}
-                onChange={e => { setTotalAmount(e.target.value); setCalculated(false) }}
-              />
+          <div className="flex gap-3 mt-6">
+            <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
+              Calculate
+            </UltraPrimaryButton>
+            <UltraResetButton onClick={handleReset} />
+          </div>
+        </UltraCard>
 
-              <UltraRateSelector
-                rates={GST_RATES}
-                value={gstRate}
-                onChange={setGstRate}
-                labels={{ 0: "Exempt", 5: "Basic", 12: "Mid", 18: "Standard", 28: "Luxury" }}
-              />
+        {/* ─── RESULTS CARD ─── */}
+        <UltraCard>
+          <UltraCardHeader title="Results" />
 
-              <div className="flex gap-3 mt-6">
-                <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
-                  Calculate
-                </UltraPrimaryButton>
-                <UltraResetButton onClick={handleReset} />
+          {!calculated || !(total > 0) ? (
+            <UltraEmptyState actionText="Calculate" />
+          ) : (
+            <>
+              <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
+                <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
+                Reverse GST
               </div>
-            </UltraCard>
 
-            {/* ─── RESULTS CARD ─── */}
-            <UltraCard>
-              <UltraCardHeader title="Results" />
+              <UltraResultsGrid>
+                <UltraResultCard color="main" label="Total (Inclusive)" value={`₹${fmt(total)}`} sub={`Including ${gstRate}% GST`} />
+                <UltraResultCard color="green" label="Base Amount" value={`₹${fmt(baseAmount)}`} sub="Without GST" />
+                <UltraResultCard color="amber" label="GST Amount" value={`₹${fmt(gstAmount)}`} sub={`${gstRate}% GST`} />
+              </UltraResultsGrid>
 
-              {!calculated || !(total > 0) ? (
-                <UltraEmptyState actionText="Calculate" />
-              ) : (
-                <>
-                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
-                    <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
-                    Reverse GST
-                  </div>
+              <div className="mt-4 p-4 sm:p-5 bg-slate-50 dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/[0.06]">
+                <div className="flex justify-between items-center py-2 border-b border-slate-200 dark:border-white/[0.04]">
+                  <span className="flex items-center gap-2 text-xs sm:text-sm text-slate-700 dark:text-white/65">
+                    <span className="w-2 h-2 rounded-full shrink-0 bg-indigo-600" />
+                    CGST ({gstRate / 2}%)
+                  </span>
+                  <span className="font-mono text-sm sm:text-base font-bold text-slate-900 dark:text-indigo-400">₹${fmt(cgst)}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 pt-2.5">
+                  <span className="flex items-center gap-2 text-xs sm:text-sm text-slate-700 dark:text-white/65">
+                    <span className="w-2 h-2 rounded-full shrink-0 bg-purple-600" />
+                    SGST ({gstRate / 2}%)
+                  </span>
+                  <span className="font-mono text-sm sm:text-base font-bold text-slate-900 dark:text-purple-400">₹${fmt(sgst)}</span>
+                </div>
+              </div>
 
-                  <UltraResultsGrid>
-                    <UltraResultCard color="main" label="Total (Inclusive)" value={`₹${fmt(total)}`} sub={`Including ${gstRate}% GST`} />
-                    <UltraResultCard color="green" label="Base Amount" value={`₹${fmt(baseAmount)}`} sub="Without GST" />
-                    <UltraResultCard color="amber" label="GST Amount" value={`₹${fmt(gstAmount)}`} sub={`${gstRate}% GST`} />
-                  </UltraResultsGrid>
-
-                  <div className="mt-4 p-4 sm:p-5 bg-slate-50 dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/[0.06]">
-                    <div className="flex justify-between items-center py-2 border-b border-slate-200 dark:border-white/[0.04]">
-                      <span className="flex items-center gap-2 text-xs sm:text-sm text-slate-700 dark:text-white/65">
-                        <span className="w-2 h-2 rounded-full shrink-0 bg-indigo-600" />
-                        CGST ({gstRate / 2}%)
-                      </span>
-                      <span className="font-mono text-sm sm:text-base font-bold text-slate-900 dark:text-indigo-400">₹{fmt(cgst)}</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 pt-2.5">
-                      <span className="flex items-center gap-2 text-xs sm:text-sm text-slate-700 dark:text-white/65">
-                        <span className="w-2 h-2 rounded-full shrink-0 bg-purple-600" />
-                        SGST ({gstRate / 2}%)
-                      </span>
-                      <span className="font-mono text-sm sm:text-base font-bold text-slate-900 dark:text-purple-400">₹{fmt(sgst)}</span>
-                    </div>
-                  </div>
-
-                  <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-6">
-                    <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                  </UltraPrimaryButton>
-                </>
-              )}
-            </UltraCard>
-          </UltraGrid>
-        </UltraPage>
-      </UltraShell>
+              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-6">
+                <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+              </UltraPrimaryButton>
+            </>
+          )}
+        </UltraCard>
+      </UltraGrid>
     </>
   )
 }

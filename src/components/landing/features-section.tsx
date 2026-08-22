@@ -79,8 +79,8 @@ const features = [
   },
   {
     icon: Globe,
-    title: "Public Shareable Link",
-    description: "Share a beautiful online version of your invoice. Clients can view and download from any device.",
+    title: "Instant PDF & Print",
+    description: "Export high-resolution vector PDFs or print documents instantly with crisp formatting.",
     color: "from-amber-500 to-amber-600",
     bg: "bg-amber-50 dark:bg-amber-950/30",
   },

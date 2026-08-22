@@ -11,7 +11,7 @@ import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
   UltraNav, UltraPage, UltraGrid,
   UltraHeader, UltraCard, UltraCardHeader, UltraSectionLabel, UltraEmptyState, UltraInput,
-  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
+  UltraResultsGrid, UltraResultCard, UltraProgressBar, UltraPrimaryButton, UltraResetButton
 } from "@/components/ultra/ultra-components"
 
 export function BreakEvenCalculatorClient() {
@@ -30,6 +30,7 @@ export function BreakEvenCalculatorClient() {
 
   const breakEvenUnits = contribution > 0 ? FC / contribution : 0
   const breakEvenRevenue = breakEvenUnits * SP
+  const cmRatio = SP > 0 ? contribution / SP : 0
 
   const sampleVolumes = contribution > 0
     ? [Math.round(breakEvenUnits * 0.5), Math.round(breakEvenUnits * 0.75), Math.round(breakEvenUnits * 1), Math.round(breakEvenUnits * 1.25), Math.round(breakEvenUnits * 1.5)]
@@ -179,7 +180,7 @@ export function BreakEvenCalculatorClient() {
       </div>
 
       {showPreview ? (
-        <UltraShell>
+        <div className="w-full">
           <div className="flex items-center justify-between mb-6">
             <button
               onClick={togglePreview}
@@ -195,105 +196,77 @@ export function BreakEvenCalculatorClient() {
           <InvoicePreview hideToolbar={true}>
             {previewContent}
           </InvoicePreview>
-        </UltraShell>
+        </div>
       ) : (
-        <UltraShell>
-          <UltraNav />
-          <UltraPage>
-            <UltraHeader
-              badge="Calculator"
-              title={"Break-Even\nCalculator"}
-              subtitle="Find out how many units you need to sell to cover your fixed and variable costs"
+        <UltraGrid>
+          <UltraCard>
+            <UltraCardHeader title="Calculate Break-Even" />
+
+            <UltraInput
+              type="number"
+              placeholder="Fixed Costs"
+              currencySymbol="₹"
+              value={fixedCost}
+              onChange={e => { setFixedCost(e.target.value); setCalculated(false) }}
+            />
+            <UltraInput
+              type="number"
+              step="0.01"
+              placeholder="Variable Cost Per Unit"
+              currencySymbol="₹"
+              value={variableCost}
+              onChange={e => { setVariableCost(e.target.value); setCalculated(false) }}
+            />
+            <UltraInput
+              type="number"
+              step="0.01"
+              placeholder="Selling Price Per Unit"
+              currencySymbol="₹"
+              value={sellingPrice}
+              onChange={e => { setSellingPrice(e.target.value); setCalculated(false) }}
             />
 
-            <UltraGrid>
-              <UltraCard>
-                <UltraCardHeader title="Calculate Break-Even" />
+            <div className="flex gap-3 mt-6">
+              <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
+                Calculate
+              </UltraPrimaryButton>
+              <UltraResetButton onClick={handleReset} />
+            </div>
+          </UltraCard>
 
-                <UltraInput
-                  type="number"
-                  placeholder="Fixed Costs"
-                  currencySymbol="₹"
-                  value={fixedCost}
-                  onChange={e => { setFixedCost(e.target.value); setCalculated(false) }}
-                />
-                <UltraInput
-                  type="number"
-                  step="0.01"
-                  placeholder="Variable Cost Per Unit"
-                  currencySymbol="₹"
-                  value={variableCost}
-                  onChange={e => { setVariableCost(e.target.value); setCalculated(false) }}
-                />
-                <UltraInput
-                  type="number"
-                  step="0.01"
-                  placeholder="Selling Price Per Unit"
-                  currencySymbol="₹"
-                  value={sellingPrice}
-                  onChange={e => { setSellingPrice(e.target.value); setCalculated(false) }}
-                />
+          <UltraCard>
+            <UltraCardHeader title="Results" />
 
-                <div className="flex gap-3 mt-6">
-                  <UltraPrimaryButton onClick={handleCalculate} className="flex-[2]">
-                    Calculate
-                  </UltraPrimaryButton>
-                  <UltraResetButton onClick={handleReset} />
+            {!calculated || !(FC > 0 && SP > 0 && contribution > 0) ? (
+              <UltraEmptyState actionText="Calculate" />
+            ) : (
+              <>
+                <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
+                  <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
+                  Break-Even Analysis
                 </div>
-              </UltraCard>
 
-              <UltraCard>
-                <UltraCardHeader title="Results" />
+                <UltraResultsGrid>
+                  <UltraResultCard label="Break-Even Units" value={`${fmtUnits(breakEvenUnits)} Units`} color="main" />
+                  <UltraResultCard label="Break-Even Revenue" value={`₹${fmt(breakEvenRevenue)}`} color="green" />
+                  <UltraResultCard label="Unit Margin (CM)" value={`₹${fmt(contribution)}`} color="blue" />
+                  <UltraResultCard label="CM Ratio" value={`${(cmRatio * 100).toFixed(1)}%`} color="amber" />
+                </UltraResultsGrid>
 
-                {!canShowResults ? (
-                  <UltraEmptyState actionText="Calculate" />
-                ) : contribution > 0 ? (
-                  <>
-                    <UltraResultsGrid>
-                      <UltraResultCard label="Break-Even Point" value={`${fmtUnits(breakEvenUnits)} units`} color="main" />
-                      <UltraResultCard label="Break-Even Revenue" value={`₹${fmt(breakEvenRevenue)}`} color="blue" />
-                      <UltraResultCard label="Contribution Per Unit" value={`₹${fmt(contribution)}`} color="green" />
-                    </UltraResultsGrid>
+                <UltraProgressBar label="Contribution Margin vs Price" percent={Math.min(100, Math.max(0, cmRatio * 100))} />
 
-                    {sampleVolumes.length > 0 && (
-                      <div className="mt-5">
-                        <UltraSectionLabel>Profit / Loss at Different Volumes</UltraSectionLabel>
-                        <div className="bg-slate-50 dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/[0.06] p-4">
-                          {sampleVolumes.map(v => (
-                            <div key={v.units} className="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/[0.04] last:border-b-0">
-                              <span className="text-sm font-semibold text-slate-800 dark:text-white/80">{fmtUnits(v.units)} units</span>
-                              <span className={`font-mono text-sm font-bold ${v.profit >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>
-                                {v.profit >= 0 ? "+" : ""}₹{fmt(v.profit)}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-2 gap-3 mt-4">
-                      <button type="button" onClick={togglePreview} className="py-3 px-4 bg-slate-100 hover:bg-slate-200 border border-slate-300 dark:bg-white/[0.06] dark:border-white/[0.12] dark:hover:bg-white/[0.1] rounded-xl text-sm font-semibold text-slate-800 dark:text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs">
-                        <Eye className="h-4 w-4" />
-                        Show Preview
-                      </button>
-
-                      <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating}>
-                        <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                      </UltraPrimaryButton>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-slate-600 dark:text-white/60 text-sm text-center py-8">
-                      Selling price must exceed variable cost to calculate break-even.
-                    </p>
-                    <UltraResetButton onClick={handleReset} />
-                  </>
-                )}
-              </UltraCard>
-            </UltraGrid>
-          </UltraPage>
-        </UltraShell>
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <button type="button" onClick={() => setShowPreview(true)} className="py-3 px-4 bg-slate-100 hover:bg-slate-200 border border-slate-300 dark:bg-white/[0.06] dark:border-white/[0.12] dark:hover:bg-white/[0.1] rounded-xl text-sm font-semibold text-slate-800 dark:text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                    <Eye className="w-4 h-4" /> Show Preview
+                  </button>
+                  <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating}>
+                    <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                  </UltraPrimaryButton>
+                </div>
+              </>
+            )}
+          </UltraCard>
+        </UltraGrid>
       )}
     </>
   )
