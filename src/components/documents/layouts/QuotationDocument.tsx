@@ -5,13 +5,16 @@ import {
   numberToWords,
 } from "@/components/invoice-templates/data/invoiceTypes"
 import { sheetStyle, format, Watermark } from "./shared"
+import { DocumentTypeConfig, getDocumentConfig } from "../documentConfig"
 
 interface DocumentProps {
   invoice: InvoiceData
   className?: string
+  config?: DocumentTypeConfig
 }
 
-export function QuotationDocument({ invoice, className = "" }: DocumentProps) {
+export function QuotationDocument({ invoice, className = "", config }: DocumentProps) {
+  const docConfig = config || getDocumentConfig(invoice.documentType || "quotation")
   const totals = computeInvoiceTotals(invoice)
   const { company, billTo, bankDetails, gstMode } = invoice
   const isGstEnabled = gstMode && gstMode !== "none"
@@ -57,21 +60,23 @@ export function QuotationDocument({ invoice, className = "" }: DocumentProps) {
 
           <div className="text-right shrink-0 min-w-[230px]">
             <div className="inline-block bg-[#181818] text-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest rounded-sm mb-1.5">
-              Commercial Proposal
+              {docConfig.badgeLabel || "Commercial Proposal"}
             </div>
-            <h2 className="text-[24px] font-black uppercase tracking-tight text-[#111111]">QUOTATION</h2>
+            <h2 className="text-[24px] font-black uppercase tracking-tight text-[#111111]">
+              {docConfig.title}
+            </h2>
             <div className="mt-2 text-[14px] space-y-1.5 text-left">
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">Quote Ref:</span>
+                <span className="text-[#555555] font-medium">{docConfig.numberLabel}</span>
                 <span className="font-mono font-bold text-[#111111]">{invoice.invoiceNumber || "—"}</span>
               </div>
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">Quote Date:</span>
+                <span className="text-[#555555] font-medium">{docConfig.dateLabel}</span>
                 <span className="font-medium text-[#111111]">{invoice.invoiceDate || "—"}</span>
               </div>
               {invoice.dueDate && (
                 <div className="flex justify-between gap-4 border-b border-[#181818] bg-[#F4F4F4] px-1.5 py-1 rounded-sm">
-                  <span className="text-[#181818] font-bold text-[12.5px] uppercase">Valid Until:</span>
+                  <span className="text-[#181818] font-bold text-[12.5px] uppercase">{docConfig.dueDateLabel || "Valid Until:"}</span>
                   <span className="font-bold text-[#181818] text-[13px]">{invoice.dueDate}</span>
                 </div>
               )}
@@ -184,7 +189,7 @@ export function QuotationDocument({ invoice, className = "" }: DocumentProps) {
                 )}
                 <tr className="bg-[#181818] text-white">
                   <td className="py-3 px-3 font-bold uppercase tracking-wider text-[13px] border-r border-[#333333]">
-                    Total Quoted Value
+                    {docConfig.totalLabel || "Total Quoted Value"}
                   </td>
                   <td className="py-3 px-3 text-right font-bold text-[17px] font-mono tabular-nums text-white">
                     {format(totals.grandTotal, invoice.currencySymbol)}

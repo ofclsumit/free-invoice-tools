@@ -9,7 +9,7 @@ import {
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
   UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraInput,
+  UltraHeader, UltraCard, UltraCardHeader, UltraSectionLabel, UltraEmptyState, UltraInput, UltraTextInput,
   UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
 } from "@/components/ultra/ultra-components"
 
@@ -147,31 +147,30 @@ export function ProfitMarginClient() {
           <UltraGrid>
             {/* ─── CALCULATE CARD ─── */}
             <UltraCard>
-              <div className="flex items-center gap-2 mb-[1.35rem]">
-                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-                <span className="text-[1rem] font-bold text-white/90">Calculate</span>
-              </div>
+              <UltraCardHeader title="Calculate Margin & Markup" />
 
-              <div className="space-y-2 mb-4">
-                <label className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 block">Company Name</label>
-                <input
-                  type="text"
+              <div className="space-y-3 mb-4">
+                <UltraTextInput
                   placeholder="Company Name"
                   value={companyName}
                   onChange={e => setCompanyName(e.target.value)}
-                  className="w-full bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none transition-all duration-300 focus:border-indigo-500/60 px-4 py-3"
                 />
-              </div>
 
-              <div className="space-y-2 mb-4">
-                <label className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 block">Company Logo</label>
-                <div className="flex items-center gap-2">
-                  <input type="file" accept="image/*" onChange={handleLogoUpload} className="flex-1 bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none transition-all duration-300 focus:border-indigo-500/60 px-4 py-3 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-500/20 file:text-indigo-300 file:cursor-pointer cursor-pointer" />
-                  {companyLogo && (
-                    <div className="h-11 w-11 rounded-xl border border-white/[0.12] overflow-hidden flex-shrink-0 bg-black/40">
-                      <img src={companyLogo} alt="Logo" className="h-full w-full object-cover" />
-                    </div>
-                  )}
+                <div>
+                  <UltraSectionLabel>Company Logo</UltraSectionLabel>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="flex-1 bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-800 dark:text-white text-sm outline-none px-4 py-2.5 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-violet-100 dark:file:bg-indigo-500/20 file:text-violet-700 dark:file:text-indigo-300 file:cursor-pointer cursor-pointer"
+                    />
+                    {companyLogo && (
+                      <div className="h-11 w-11 rounded-xl border border-slate-200 dark:border-white/[0.12] overflow-hidden flex-shrink-0 bg-white p-1">
+                        <img src={companyLogo} alt="Logo" className="h-full w-full object-contain" />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -191,53 +190,36 @@ export function ProfitMarginClient() {
                 onChange={e => { setSelling(e.target.value); setCalculated(false) }}
               />
 
-              <div className="mt-4 bg-white/[0.04] border border-white/[0.08] rounded-xl p-5">
-                <p className="text-xs text-[#f1f5f9]/65 space-y-1.5 leading-relaxed">
-                  <span className="font-semibold text-[#f1f5f9]">Profit Margin</span> = (Selling Price - Cost) &divide; Selling Price &times; 100
+              <div className="mt-4 bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-xl p-4">
+                <p className="text-xs text-slate-700 dark:text-white/70 leading-relaxed font-medium">
+                  <strong className="text-slate-900 dark:text-white">Profit Margin</strong> = (Selling Price - Cost) &divide; Selling Price &times; 100
                 </p>
-                <p className="text-xs text-[#f1f5f9]/65 space-y-1.5 leading-relaxed mt-1">
-                  <span className="font-semibold text-[#f1f5f9]">Markup</span> = (Selling Price - Cost) &divide; Cost &times; 100
+                <p className="text-xs text-slate-700 dark:text-white/70 leading-relaxed mt-1 font-medium">
+                  <strong className="text-slate-900 dark:text-white">Markup</strong> = (Selling Price - Cost) &divide; Cost &times; 100
                 </p>
               </div>
 
               <div className="flex gap-3 mt-6">
-                <button
-                  id="calc-btn"
-                  onClick={handleCalculate}
-                  className="flex-[2] py-[.82rem] px-5 bg-gradient-to-r from-[#8b5cf6]/75 to-[#3b82f6]/60 border border-[#a78bfa]/45 rounded-[.9rem] text-white text-[.93rem] font-bold cursor-pointer font-['Inter'] transition-all duration-300 shadow-[0_4px_20px_rgba(139,92,246,.35)] hover:-translate-y-px hover:shadow-[0_6px_28px_rgba(139,92,246,.55)] hover:from-[#8b5cf6]/90 hover:to-[#3b82f6]/75"
-                >
+                <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
                   Calculate Margin
-                </button>
-                <button
-                  onClick={handleReset}
-                  className="flex-1 py-[.82rem] bg-white/[.08] border border-white/[.15] rounded-[.9rem] text-white/60 text-[.9rem] cursor-pointer font-['Inter'] transition-all duration-300 hover:bg-white/[.14] hover:text-white"
-                >
-                  ↺ Reset
-                </button>
+                </UltraPrimaryButton>
+                <UltraResetButton onClick={handleReset} />
               </div>
             </UltraCard>
 
             {/* ─── RESULTS CARD ─── */}
             <UltraCard>
-              <div className="flex items-center gap-2 mb-[1.35rem]">
-                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-                <span className="text-[1rem] font-bold text-white/90">Results</span>
-              </div>
+              <UltraCardHeader title="Results" />
 
               {!calculated || !(c > 0 && s > 0) ? (
-                <div className="flex flex-col items-center justify-center min-h-[280px] text-white/35 text-center gap-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
-                  <p className="text-[.88rem] leading-relaxed">Enter cost &amp; selling price and tap<br /><strong className="text-[#a78bfa]/70">Calculate Margin</strong></p>
-                </div>
+                <UltraEmptyState message="Enter cost & selling price and tap" actionText="Calculate Margin" />
               ) : (
                 <>
                   <UltraResultsGrid>
                     <UltraResultCard
-                      label="Profit / Loss"
-                      value={<span className={profit >= 0 ? "text-emerald-400" : "text-rose-400"}>{profit >= 0 ? "+" : ""}₹{fmt(profit)}</span>}
-                      color="amber"
+                      label="Net Profit / Loss"
+                      value={<span className={profit >= 0 ? "text-emerald-700 dark:text-emerald-400 font-bold" : "text-rose-700 dark:text-rose-400 font-bold"}>{profit >= 0 ? "+" : ""}₹{fmt(profit)}</span>}
+                      color="main"
                     />
                     <UltraResultCard label="Profit Margin" value={`${margin.toFixed(1)}%`} color="green" />
                     <UltraResultCard label="Markup Percentage" value={`${markup.toFixed(1)}%`} color="blue" />

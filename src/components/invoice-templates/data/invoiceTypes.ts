@@ -66,7 +66,7 @@ export interface InvoiceData {
   invoiceNumber: string;
   invoiceDate: string; // ISO or display string
   dueDate?: string;
-  documentType?: "INVOICE" | "QUOTATION" | "PROFORMA" | "RECEIPT" | "PURCHASE_ORDER" | "DELIVERY CHALLAN";
+  documentType?: string;
   status?: "Paid" | "Unpaid" | "Overdue" | "Draft" | "Partially Paid";
   currencySymbol: string; // "₹", "$", "€"
   gstMode: GstMode;
@@ -83,6 +83,7 @@ export interface InvoiceData {
   shippingCharge?: number;
 
   notes?: string;
+  terms?: string;
   termsAndConditions?: string;
   bankDetails?: BankDetails;
   watermarkUrl?: string;

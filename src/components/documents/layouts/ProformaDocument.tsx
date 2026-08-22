@@ -5,13 +5,16 @@ import {
   numberToWords,
 } from "@/components/invoice-templates/data/invoiceTypes"
 import { sheetStyle, format, Watermark } from "./shared"
+import { DocumentTypeConfig, getDocumentConfig } from "../documentConfig"
 
 interface DocumentProps {
   invoice: InvoiceData
   className?: string
+  config?: DocumentTypeConfig
 }
 
-export function ProformaDocument({ invoice, className = "" }: DocumentProps) {
+export function ProformaDocument({ invoice, className = "", config }: DocumentProps) {
+  const docConfig = config || getDocumentConfig(invoice.documentType || "proforma")
   const totals = computeInvoiceTotals(invoice)
   const { company, billTo, shipTo, bankDetails, gstMode } = invoice
   const isGstEnabled = gstMode && gstMode !== "none"
@@ -26,7 +29,7 @@ export function ProformaDocument({ invoice, className = "" }: DocumentProps) {
         {/* Proforma Identification Notice Banner */}
         <div className="mb-4 py-1.5 px-3 bg-[#F4F4F4] border border-[#D6D6D6] rounded text-center">
           <p className="text-[11px] font-bold uppercase tracking-widest text-[#333333]">
-            Pre-Billing Commercial Document • Advance Payment Against Proforma
+            {docConfig.badgeLabel || "Pre-Billing Commercial Document"} • Advance Payment Against Proforma
           </p>
         </div>
 
@@ -61,20 +64,20 @@ export function ProformaDocument({ invoice, className = "" }: DocumentProps) {
 
           <div className="text-right shrink-0 min-w-[230px]">
             <h2 className="text-[24px] font-black uppercase tracking-tight text-[#111111]">
-              PROFORMA INVOICE
+              {docConfig.title}
             </h2>
             <div className="mt-2 text-[14px] space-y-1.5">
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">Proforma No:</span>
+                <span className="text-[#555555] font-medium">{docConfig.numberLabel}</span>
                 <span className="font-mono font-bold text-[#111111]">{invoice.invoiceNumber || "—"}</span>
               </div>
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">Proforma Date:</span>
+                <span className="text-[#555555] font-medium">{docConfig.dateLabel}</span>
                 <span className="font-medium text-[#111111]">{invoice.invoiceDate || "—"}</span>
               </div>
               {invoice.dueDate && (
                 <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                  <span className="text-[#555555] font-medium">Valid Until:</span>
+                  <span className="text-[#555555] font-medium">{docConfig.dueDateLabel || "Valid Until:"}</span>
                   <span className="font-medium text-[#111111]">{invoice.dueDate}</span>
                 </div>
               )}
@@ -212,7 +215,7 @@ export function ProformaDocument({ invoice, className = "" }: DocumentProps) {
                 )}
                 <tr className="bg-[#181818] text-white">
                   <td className="py-3 px-3 font-bold uppercase tracking-wider text-[13px] border-r border-[#333333]">
-                    Proforma Total ({invoice.currencySymbol || "INR"})
+                    {docConfig.totalLabel || "Proforma Total"} ({invoice.currencySymbol || "INR"})
                   </td>
                   <td className="py-3 px-3 text-right font-bold text-[18px] font-mono tabular-nums text-white">
                     {format(totals.grandTotal, invoice.currencySymbol)}

@@ -11,7 +11,7 @@ import {
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
   UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraToggle, UltraInput, UltraTextInput,
+  UltraHeader, UltraCard, UltraCardHeader, UltraResetButton, UltraEmptyState, UltraToggle, UltraInput, UltraTextInput,
   UltraRateSelector,
   UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraProgressBar
 } from "@/components/ultra/ultra-components"
@@ -186,10 +186,7 @@ export function GstCalculatorClient() {
 
           <UltraGrid>
             <UltraCard>
-              <div className="flex items-center gap-2 mb-[1.35rem]">
-                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-                <span className="text-[1rem] font-bold text-white/90">Calculate</span>
-              </div>
+              <UltraCardHeader title="Calculate" />
 
               <div className="space-y-3 mb-4">
                 <UltraTextInput placeholder="Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)} />
@@ -199,12 +196,12 @@ export function GstCalculatorClient() {
                       type="file"
                       accept="image/*"
                       onChange={handleLogoUpload}
-                      className="w-full bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none px-4 py-3 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:bg-indigo-500/20 file:text-indigo-300 file:border-0 file:text-xs file:font-semibold"
+                      className="w-full bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-800 dark:text-white text-sm outline-none px-4 py-2.5 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:bg-violet-100 dark:file:bg-indigo-500/20 file:text-violet-700 dark:file:text-indigo-300 file:border-0 file:text-xs file:font-semibold"
                     />
                   </div>
                   {companyLogo && (
-                    <div className="h-12 w-12 rounded-xl border border-white/[0.12] overflow-hidden flex-shrink-0">
-                      <img src={companyLogo} alt="Logo" className="h-full w-full object-cover" />
+                    <div className="h-11 w-11 rounded-xl border border-slate-200 dark:border-white/[0.12] overflow-hidden flex-shrink-0 bg-white p-1">
+                      <img src={companyLogo} alt="Logo" className="h-full w-full object-contain" />
                     </div>
                   )}
                 </div>
@@ -232,39 +229,22 @@ export function GstCalculatorClient() {
               />
 
               <div className="flex gap-3 mt-6">
-                <button
-                  id="calc-btn"
-                  onClick={handleCalculate}
-                  className="flex-[2] py-[.82rem] px-5 bg-gradient-to-r from-[#8b5cf6]/75 to-[#3b82f6]/60 border border-[#a78bfa]/45 rounded-[.9rem] text-white text-[.93rem] font-bold cursor-pointer font-['Inter'] transition-all duration-300 shadow-[0_4px_20px_rgba(139,92,246,.35)] hover:-translate-y-px hover:shadow-[0_6px_28px_rgba(139,92,246,.55)] hover:from-[#8b5cf6]/90 hover:to-[#3b82f6]/75"
-                >
+                <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
                   Calculate GST
-                </button>
-                <button
-                  onClick={handleReset}
-                  className="flex-1 py-[.82rem] bg-white/[.08] border border-white/[.15] rounded-[.9rem] text-white/60 text-[.9rem] cursor-pointer font-['Inter'] transition-all duration-300 hover:bg-white/[.14] hover:text-white"
-                >
-                  ↺ Reset
-                </button>
+                </UltraPrimaryButton>
+                <UltraResetButton onClick={handleReset} />
               </div>
             </UltraCard>
 
             <UltraCard>
-              <div className="flex items-center gap-2 mb-[1.35rem]">
-                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-                <span className="text-[1rem] font-bold text-white/90">Results</span>
-              </div>
+              <UltraCardHeader title="Results" />
 
               {!calculated || !(numAmount > 0) ? (
-                <div className="flex flex-col items-center justify-center min-h-[280px] text-white/35 text-center gap-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
-                  <p className="text-[.88rem] leading-relaxed">Enter your values and tap<br /><strong className="text-[#a78bfa]/70">Calculate GST</strong></p>
-                </div>
+                <UltraEmptyState actionText="Calculate GST" />
               ) : (
                 <>
-                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-[#8b5cf6]/20 border border-[#8b5cf6]/45 rounded-[2rem] text-[.7rem] font-bold tracking-[.07em] uppercase text-[#c4a8ff]/95 mb-[.55rem] w-fit">
-                    <span className="w-[6px] h-[6px] rounded-full bg-[#a78bfa]/90 shrink-0" />
+                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
+                    <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
                     {mode === "exclusive" ? "GST Exclusive" : "GST Inclusive"}
                   </div>
 
@@ -275,13 +255,13 @@ export function GstCalculatorClient() {
                     <UltraResultCard label="Total Amount" value={`₹${fmt(totalAmount)}`} color="main" />
                   </UltraResultsGrid>
 
-                  <div className="flex justify-between items-center text-[.78rem] text-white/50 mt-4 pb-2 border-b border-white/[.06]">
+                  <div className="flex justify-between items-center text-[.82rem] text-slate-600 dark:text-white/60 mt-4 pb-2 border-b border-slate-200 dark:border-white/[.06]">
                     <span>CGST ({gstRate / 2}%)</span>
-                    <span className="text-white/80 font-semibold">₹{fmt(cgst)}</span>
+                    <span className="text-slate-900 dark:text-white font-mono font-bold">₹{fmt(cgst)}</span>
                   </div>
-                  <div className="flex justify-between items-center text-[.78rem] text-white/50 pb-3">
+                  <div className="flex justify-between items-center text-[.82rem] text-slate-600 dark:text-white/60 pb-3">
                     <span>SGST ({gstRate / 2}%)</span>
-                    <span className="text-white/80 font-semibold">₹{fmt(sgst)}</span>
+                    <span className="text-slate-900 dark:text-white font-mono font-bold">₹{fmt(sgst)}</span>
                   </div>
 
                   <UltraProgressBar label="Base vs GST" value={basePct} />

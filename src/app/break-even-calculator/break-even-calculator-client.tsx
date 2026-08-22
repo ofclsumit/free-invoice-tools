@@ -10,7 +10,7 @@ import {
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
   UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraInput,
+  UltraHeader, UltraCard, UltraCardHeader, UltraSectionLabel, UltraEmptyState, UltraInput,
   UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
 } from "@/components/ultra/ultra-components"
 
@@ -183,7 +183,7 @@ export function BreakEvenCalculatorClient() {
           <div className="flex items-center justify-between mb-6">
             <button
               onClick={togglePreview}
-              className="flex items-center gap-1.5 py-2.5 px-4 bg-white/[0.04] border border-white/[0.1] text-[#f1f5f9]/65 text-sm font-medium rounded-xl hover:bg-white/[0.08] hover:text-[#f1f5f9] transition-all duration-300"
+              className="flex items-center gap-1.5 py-2 px-4 bg-slate-100 border border-slate-300 text-slate-700 font-semibold text-sm rounded-xl hover:bg-slate-200 hover:text-slate-900 dark:bg-white/[0.06] dark:border-white/[0.12] dark:text-white/80 dark:hover:text-white transition-all shadow-xs"
             >
               <EyeOff className="h-4 w-4" />
               Back to Edit
@@ -208,10 +208,7 @@ export function BreakEvenCalculatorClient() {
 
             <UltraGrid>
               <UltraCard>
-                <div className="flex items-center gap-2 mb-[1.35rem]">
-                  <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-                  <span className="text-[1rem] font-bold text-white/90">Calculate</span>
-                </div>
+                <UltraCardHeader title="Calculate Break-Even" />
 
                 <UltraInput
                   type="number"
@@ -238,50 +235,34 @@ export function BreakEvenCalculatorClient() {
                 />
 
                 <div className="flex gap-3 mt-6">
-                  <button
-                    onClick={handleCalculate}
-                    className="flex-[2] py-[.82rem] px-5 bg-gradient-to-r from-[#8b5cf6]/75 to-[#3b82f6]/60 border border-[#a78bfa]/45 rounded-[.9rem] text-white text-[.93rem] font-bold cursor-pointer font-['Inter'] transition-all duration-300 shadow-[0_4px_20px_rgba(139,92,246,.35)] hover:-translate-y-px hover:shadow-[0_6px_28px_rgba(139,92,246,.55)] hover:from-[#8b5cf6]/90 hover:to-[#3b82f6]/75"
-                  >
+                  <UltraPrimaryButton onClick={handleCalculate} className="flex-[2]">
                     Calculate
-                  </button>
-                  <button
-                    onClick={handleReset}
-                    className="flex-1 py-[.82rem] bg-white/[.08] border border-white/[.15] rounded-[.9rem] text-white/60 text-[.9rem] cursor-pointer font-['Inter'] transition-all duration-300 hover:bg-white/[.14] hover:text-white"
-                  >
-                    ↺ Reset
-                  </button>
+                  </UltraPrimaryButton>
+                  <UltraResetButton onClick={handleReset} />
                 </div>
               </UltraCard>
 
               <UltraCard>
-                <div className="flex items-center gap-2 mb-[1.35rem]">
-                  <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-                  <span className="text-[1rem] font-bold text-white/90">Results</span>
-                </div>
+                <UltraCardHeader title="Results" />
 
                 {!canShowResults ? (
-                  <div className="flex flex-col items-center justify-center min-h-[280px] text-white/35 text-center gap-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="1.5">
-                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    <p className="text-[.88rem] leading-relaxed">Enter your values and tap<br /><strong className="text-[#a78bfa]/70">Calculate</strong></p>
-                  </div>
+                  <UltraEmptyState actionText="Calculate" />
                 ) : contribution > 0 ? (
                   <>
                     <UltraResultsGrid>
-                      <UltraResultCard label="Break-Even Point" value={`${fmtUnits(breakEvenUnits)} units`} />
+                      <UltraResultCard label="Break-Even Point" value={`${fmtUnits(breakEvenUnits)} units`} color="main" />
                       <UltraResultCard label="Break-Even Revenue" value={`₹${fmt(breakEvenRevenue)}`} color="blue" />
                       <UltraResultCard label="Contribution Per Unit" value={`₹${fmt(contribution)}`} color="green" />
                     </UltraResultsGrid>
 
                     {sampleVolumes.length > 0 && (
                       <div className="mt-5">
-                        <p className="text-[11px] font-semibold tracking-[0.06em] uppercase text-[#f1f5f9]/65 mb-3">Profit / Loss at Different Volumes</p>
-                        <div className="bg-black/30 rounded-xl border border-white/[0.06] p-4">
+                        <UltraSectionLabel>Profit / Loss at Different Volumes</UltraSectionLabel>
+                        <div className="bg-slate-50 dark:bg-black/30 rounded-xl border border-slate-200 dark:border-white/[0.06] p-4">
                           {sampleVolumes.map(v => (
-                            <div key={v.units} className="flex justify-between items-center py-2.5 border-b border-white/[0.04] last:border-b-0">
-                              <span className="text-sm text-[#f1f5f9]/65">{fmtUnits(v.units)} units</span>
-                              <span className={`font-['Space_Grotesk'] text-sm font-semibold ${v.profit >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                            <div key={v.units} className="flex justify-between items-center py-2.5 border-b border-slate-200 dark:border-white/[0.04] last:border-b-0">
+                              <span className="text-sm font-semibold text-slate-800 dark:text-white/80">{fmtUnits(v.units)} units</span>
+                              <span className={`font-mono text-sm font-bold ${v.profit >= 0 ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400"}`}>
                                 {v.profit >= 0 ? "+" : ""}₹{fmt(v.profit)}
                               </span>
                             </div>
@@ -290,20 +271,20 @@ export function BreakEvenCalculatorClient() {
                       </div>
                     )}
 
-                    <UltraPrimaryButton onClick={togglePreview} className="w-full mt-4">
-                      <Eye className="h-4 w-4" />
-                      Show Preview
-                    </UltraPrimaryButton>
+                    <div className="grid grid-cols-2 gap-3 mt-4">
+                      <button type="button" onClick={togglePreview} className="py-3 px-4 bg-slate-100 hover:bg-slate-200 border border-slate-300 dark:bg-white/[0.06] dark:border-white/[0.12] dark:hover:bg-white/[0.1] rounded-xl text-sm font-semibold text-slate-800 dark:text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+                        <Eye className="h-4 w-4" />
+                        Show Preview
+                      </button>
 
-                    <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-2">
-                      <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-                    </UltraPrimaryButton>
-
-                    <UltraResetButton onClick={handleReset} />
+                      <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating}>
+                        <Download className="h-4 w-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                      </UltraPrimaryButton>
+                    </div>
                   </>
                 ) : (
                   <>
-                    <p className="text-white/50 text-sm text-center py-8">
+                    <p className="text-slate-600 dark:text-white/60 text-sm text-center py-8">
                       Selling price must exceed variable cost to calculate break-even.
                     </p>
                     <UltraResetButton onClick={handleReset} />

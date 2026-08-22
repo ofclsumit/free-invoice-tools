@@ -5,13 +5,16 @@ import {
   numberToWords,
 } from "@/components/invoice-templates/data/invoiceTypes"
 import { sheetStyle, format, Watermark } from "./shared"
+import { DocumentTypeConfig, getDocumentConfig } from "../documentConfig"
 
 interface DocumentProps {
   invoice: InvoiceData
   className?: string
+  config?: DocumentTypeConfig
 }
 
-export function InvoiceDocument({ invoice, className = "" }: DocumentProps) {
+export function InvoiceDocument({ invoice, className = "", config }: DocumentProps) {
+  const docConfig = config || getDocumentConfig(invoice.documentType || "invoice")
   const totals = computeInvoiceTotals(invoice)
   const { company, billTo, shipTo, transportDetails, bankDetails, gstMode } = invoice
   const isGstEnabled = gstMode && gstMode !== "none"
@@ -64,24 +67,26 @@ export function InvoiceDocument({ invoice, className = "" }: DocumentProps) {
           </div>
 
           <div className="text-right shrink-0 min-w-[220px]">
-            <h2 className="text-[26px] font-black uppercase tracking-tight text-[#111111]">INVOICE</h2>
+            <h2 className="text-[26px] font-black uppercase tracking-tight text-[#111111]">
+              {docConfig.title}
+            </h2>
             {isGstEnabled && (
               <p className="text-[11px] font-bold uppercase tracking-widest text-[#555555] -mt-0.5 mb-1.5">
-                Tax Invoice
+                {docConfig.subTitle || "Tax Invoice"}
               </p>
             )}
             <div className="mt-2 text-[14px] space-y-1.5">
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">Invoice No:</span>
+                <span className="text-[#555555] font-medium">{docConfig.numberLabel}</span>
                 <span className="font-mono font-bold text-[#111111]">{invoice.invoiceNumber || "—"}</span>
               </div>
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">Invoice Date:</span>
+                <span className="text-[#555555] font-medium">{docConfig.dateLabel}</span>
                 <span className="font-medium text-[#111111]">{invoice.invoiceDate || "—"}</span>
               </div>
               {invoice.dueDate && (
                 <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                  <span className="text-[#555555] font-medium">Due Date:</span>
+                  <span className="text-[#555555] font-medium">{docConfig.dueDateLabel || "Due Date:"}</span>
                   <span className="font-medium text-[#111111]">{invoice.dueDate}</span>
                 </div>
               )}
@@ -268,7 +273,7 @@ export function InvoiceDocument({ invoice, className = "" }: DocumentProps) {
                 )}
                 <tr className="bg-[#F4F4F4] border-t-2 border-[#111111]">
                   <td className="py-3 px-3 font-bold uppercase tracking-wider text-[#111111] text-[13.5px] border-r border-[#D6D6D6]">
-                    Amount Due ({invoice.currencySymbol || "INR"})
+                    {docConfig.totalLabel || "Amount Due"} ({invoice.currencySymbol || "INR"})
                   </td>
                   <td className="py-3 px-3 text-right font-bold text-[18px] font-mono tabular-nums text-[#111111]">
                     {format(totals.grandTotal, invoice.currencySymbol)}

@@ -81,7 +81,7 @@ export default function EMICalculatorPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-3 mt-8">
               <Link
-                href="/tools/emi-calculator"
+                href="/emi-calculator"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
               >
                 <Calculator className="h-4 w-4" /> Calculate EMI Now
@@ -123,7 +123,7 @@ export default function EMICalculatorPage() {
             </div>
             <div className="text-center mt-8">
               <Link
-                href="/tools/emi-calculator"
+                href="/emi-calculator"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium hover:bg-primary/90 transition-colors"
               >
                 Calculate Your EMI <CheckCircle className="h-4 w-4" />

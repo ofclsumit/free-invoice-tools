@@ -9,8 +9,8 @@ import {
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
   UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraInput,
-  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
+  UltraHeader, UltraCard, UltraCardHeader, UltraSectionLabel, UltraInput,
+  UltraResultsGrid, UltraResultCard, UltraEmptyState, UltraPrimaryButton, UltraResetButton
 } from "@/components/ultra/ultra-components"
 
 const GST_RATES = [0, 5, 12, 18, 28]
@@ -153,10 +153,7 @@ export function GstSplitCalculatorClient() {
           <UltraGrid>
             {/* ─── CALCULATE CARD ─── */}
             <UltraCard>
-              <div className="flex items-center gap-2 mb-[1.35rem]">
-                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-                <span className="text-[1rem] font-bold text-white/90">Calculate</span>
-              </div>
+              <UltraCardHeader title="Calculate" />
 
               <UltraInput
                 type="number"
@@ -167,10 +164,10 @@ export function GstSplitCalculatorClient() {
               />
 
               <div className="space-y-3 mt-4">
-                <label className="block text-[.72rem] font-bold tracking-[.07em] uppercase text-[#a78bfa]/90 mb-[.4rem]">Split Percentage by GST Rate</label>
+                <UltraSectionLabel>Split Percentage by GST Rate</UltraSectionLabel>
                 {splits.map(s => (
                   <div key={s.rate} className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-[#f1f5f9] w-12 flex-shrink-0">{s.rate}%</span>
+                    <span className="text-sm font-bold text-slate-800 dark:text-white w-12 flex-shrink-0">{s.rate}%</span>
                     <div className="flex-1">
                       <input
                         type="number"
@@ -179,62 +176,45 @@ export function GstSplitCalculatorClient() {
                         placeholder="0"
                         value={s.percentage || ""}
                         onChange={e => { updateSplit(s.rate, e.target.value); setCalculated(false) }}
-                        className="w-full bg-black/40 border border-white/[0.12] rounded-xl text-white text-sm outline-none px-4 py-2.5 focus:border-indigo-500/60 focus:shadow-[0_0_0_4px_rgba(99,102,241,0.12)]"
+                        className="w-full bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-900 dark:text-white text-sm outline-none px-4 py-2.5 transition-all focus:border-violet-600 focus:ring-2 focus:ring-violet-500/20 placeholder:text-slate-400 dark:placeholder-white/30"
                       />
                     </div>
-                    <span className="text-sm text-[#f1f5f9]/65 w-24 text-right font-medium font-['Space_Grotesk']">
+                    <span className="text-sm text-slate-700 dark:text-white/70 w-24 text-right font-mono font-semibold">
                       ₹{fmt((total * s.percentage) / 100)}
                     </span>
                   </div>
                 ))}
                 <div className="flex items-center gap-3 pt-1">
-                  <span className="text-sm font-semibold text-[#f1f5f9]/50 w-12 flex-shrink-0">Rem.</span>
+                  <span className="text-sm font-bold text-slate-500 dark:text-white/50 w-12 flex-shrink-0">Rem.</span>
                   <div className="flex-1">
-                    <div className="h-10 rounded-xl border border-dashed border-white/[0.08] flex items-center px-3 text-sm text-[#f1f5f9]/50 bg-black/20">
+                    <div className="h-10 rounded-xl border border-dashed border-slate-300 dark:border-white/[0.12] flex items-center px-3 text-sm text-slate-600 dark:text-white/60 bg-slate-50 dark:bg-black/20 font-medium">
                       {remaining.toFixed(0)}% unallocated
                     </div>
                   </div>
-                  <span className="text-sm text-[#f1f5f9]/50 w-24 text-right font-medium font-['Space_Grotesk']">
+                  <span className="text-sm text-slate-500 dark:text-white/50 w-24 text-right font-mono font-medium">
                     ₹{fmt((total * remaining) / 100)}
                   </span>
                 </div>
               </div>
 
               <div className="flex gap-3 mt-6">
-                <button
-                  id="calc-btn"
-                  onClick={handleCalculate}
-                  className="flex-[2] py-[.82rem] px-5 bg-gradient-to-r from-[#8b5cf6]/75 to-[#3b82f6]/60 border border-[#a78bfa]/45 rounded-[.9rem] text-white text-[.93rem] font-bold cursor-pointer font-['Inter'] transition-all duration-300 shadow-[0_4px_20px_rgba(139,92,246,.35)] hover:-translate-y-px hover:shadow-[0_6px_28px_rgba(139,92,246,.55)] hover:from-[#8b5cf6]/90 hover:to-[#3b82f6]/75"
-                >
+                <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
                   Calculate Split
-                </button>
-                <button
-                  onClick={handleReset}
-                  className="flex-1 py-[.82rem] bg-white/[.08] border border-white/[.15] rounded-[.9rem] text-white/60 text-[.9rem] cursor-pointer font-['Inter'] transition-all duration-300 hover:bg-white/[.14] hover:text-white"
-                >
-                  ↺ Reset
-                </button>
+                </UltraPrimaryButton>
+                <UltraResetButton onClick={handleReset} />
               </div>
             </UltraCard>
 
             {/* ─── RESULTS CARD ─── */}
             <UltraCard>
-              <div className="flex items-center gap-2 mb-[1.35rem]">
-                <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-                <span className="text-[1rem] font-bold text-white/90">Results</span>
-              </div>
+              <UltraCardHeader title="Results" />
 
               {!calculated || !(total > 0 && splits.some(s => s.percentage > 0)) ? (
-                <div className="flex flex-col items-center justify-center min-h-[280px] text-white/35 text-center gap-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="1.5">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
-                  <p className="text-[.88rem] leading-relaxed">Enter your values and tap<br /><strong className="text-[#a78bfa]/70">Calculate Split</strong></p>
-                </div>
+                <UltraEmptyState actionText="Calculate Split" />
               ) : (
                 <>
-                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-[#8b5cf6]/20 border border-[#8b5cf6]/45 rounded-[2rem] text-[.7rem] font-bold tracking-[.07em] uppercase text-[#c4a8ff]/95 mb-[.55rem] w-fit">
-                    <span className="w-[6px] h-[6px] rounded-full bg-[#a78bfa]/90 shrink-0" />
+                  <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
+                    <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
                     GST Split Breakdown
                   </div>
 
@@ -252,12 +232,12 @@ export function GstSplitCalculatorClient() {
                       const cgst = gstOnAllocated / 2
                       const sgst = gstOnAllocated / 2
                       return (
-                        <div key={s.rate} className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-3 space-y-1">
+                        <div key={s.rate} className="bg-slate-50 border border-slate-200 dark:bg-white/[0.04] dark:border-white/[0.06] rounded-xl p-3 space-y-1">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm font-semibold text-[#f1f5f9]">{s.rate}% GST Category ({s.percentage}%)</span>
-                            <span className="text-sm font-semibold text-[#f1f5f9]">₹{fmt(allocated)}</span>
+                            <span className="text-sm font-semibold text-slate-900 dark:text-white">{s.rate}% GST Category ({s.percentage}%)</span>
+                            <span className="text-sm font-bold font-mono text-slate-900 dark:text-white">₹{fmt(allocated)}</span>
                           </div>
-                          <div className="flex justify-between items-center text-xs text-[#f1f5f9]/65">
+                          <div className="flex justify-between items-center text-xs text-slate-600 dark:text-white/65">
                             <span>GST: ₹{fmt(gstOnAllocated)}</span>
                             <span>(CGST: ₹{fmt(cgst)} / SGST: ₹{fmt(sgst)})</span>
                           </div>

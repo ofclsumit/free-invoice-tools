@@ -7,16 +7,20 @@ import {
   formatCurrency,
   numberToWords,
 } from "@/components/invoice-templates/data/invoiceTypes"
+import { DocumentTypeConfig, getDocumentConfig } from "./documentConfig"
 
 interface StandardPaymentReceiptViewProps {
   invoice: InvoiceData
   className?: string
+  config?: DocumentTypeConfig
 }
 
 export function StandardPaymentReceiptView({
   invoice,
   className = "",
+  config,
 }: StandardPaymentReceiptViewProps) {
+  const docConfig = config || getDocumentConfig(invoice.documentType || "payment-receipt")
   const totals = computeInvoiceTotals(invoice)
   const { company, billTo } = invoice
 
@@ -79,19 +83,19 @@ export function StandardPaymentReceiptView({
             {/* Right: Payment Receipt Title & Meta */}
             <div className="text-right shrink-0 min-w-[220px]">
               <h2 className="text-[26px] font-black uppercase tracking-tight text-[#111111]">
-                PAYMENT RECEIPT
+                {docConfig.title}
               </h2>
               <p className="text-[11px] font-bold uppercase tracking-widest text-[#555555] -mt-0.5 mb-1.5">
-                Official Voucher
+                {docConfig.subTitle || "Official Voucher"}
               </p>
 
               <div className="mt-2 text-[14px] space-y-1.5">
                 <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                  <span className="text-[#555555] font-medium">Receipt No:</span>
+                  <span className="text-[#555555] font-medium">{docConfig.numberLabel}</span>
                   <span className="font-mono font-bold text-[#111111]">{invoice.invoiceNumber || "—"}</span>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                  <span className="text-[#555555] font-medium">Receipt Date:</span>
+                  <span className="text-[#555555] font-medium">{docConfig.dateLabel}</span>
                   <span className="font-medium text-[#111111]">{invoice.invoiceDate || "—"}</span>
                 </div>
                 <div className="flex justify-between gap-4 pt-0.5">
@@ -109,7 +113,7 @@ export function StandardPaymentReceiptView({
         <section className="my-4 p-4 bg-[#F4F4F4] border border-[#D6D6D6] flex items-center justify-between">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-wider text-[#555555]">
-              Amount Received
+              {docConfig.totalLabel || "Amount Received"}
             </p>
             <p className="text-[26px] font-black text-[#111111] font-mono tracking-tight tabular-nums mt-0.5">
               {formatCurrency(totals.grandTotal, invoice.currencySymbol)}

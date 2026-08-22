@@ -5,7 +5,7 @@ import { LoadingScreen } from "@/components/shared/loading-screen"
 import { UltraShell } from "@/components/ultra/ultra-shell"
 import {
   UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraInput,
+  UltraHeader, UltraCard, UltraCardHeader, UltraEmptyState, UltraInput,
   UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
 } from "@/components/ultra/ultra-components"
 
@@ -55,10 +55,7 @@ export function CommissionCalculatorClient() {
         <UltraGrid>
           {/* ─── CALCULATE CARD ─── */}
           <UltraCard>
-            <div className="flex items-center gap-2 mb-[1.35rem]">
-              <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-              <span className="text-[1rem] font-bold text-white/90">Calculate</span>
-            </div>
+            <UltraCardHeader title="Calculate Commission" />
 
             <UltraInput
               type="number"
@@ -80,56 +77,40 @@ export function CommissionCalculatorClient() {
             <UltraInput
               type="number"
               placeholder="Your Split Share"
+              suffix="%"
               value={splitRatio}
               onChange={e => { setSplitRatio(e.target.value); setCalculated(false) }}
             />
-            <p className="text-[11px] text-[#f1f5f9]/65 -mt-4 mb-6">Your share of the total commission (0-100%)</p>
+            <p className="text-[11.5px] text-slate-500 dark:text-white/60 -mt-3 mb-6 font-medium">Your share of the total commission (0-100%)</p>
 
             <div className="flex gap-3 mt-6">
-              <button
-                id="calc-btn"
-                onClick={handleCalculate}
-                className="flex-[2] py-[.82rem] px-5 bg-gradient-to-r from-[#8b5cf6]/75 to-[#3b82f6]/60 border border-[#a78bfa]/45 rounded-[.9rem] text-white text-[.93rem] font-bold cursor-pointer font-['Inter'] transition-all duration-300 shadow-[0_4px_20px_rgba(139,92,246,.35)] hover:-translate-y-px hover:shadow-[0_6px_28px_rgba(139,92,246,.55)] hover:from-[#8b5cf6]/90 hover:to-[#3b82f6]/75"
-              >
+              <UltraPrimaryButton id="calc-btn" onClick={handleCalculate} className="flex-[2]">
                 Calculate
-              </button>
-              <button
-                onClick={handleReset}
-                className="flex-1 py-[.82rem] bg-white/[.08] border border-white/[.15] rounded-[.9rem] text-white/60 text-[.9rem] cursor-pointer font-['Inter'] transition-all duration-300 hover:bg-white/[.14] hover:text-white"
-              >
-                ↺ Reset
-              </button>
+              </UltraPrimaryButton>
+              <UltraResetButton onClick={handleReset} />
             </div>
           </UltraCard>
 
           {/* ─── RESULTS CARD ─── */}
           <UltraCard>
-            <div className="flex items-center gap-2 mb-[1.35rem]">
-              <span className="w-[3px] h-[1.05rem] rounded-full shrink-0 bg-gradient-to-b from-[#a78bfa] to-[#60a5fa]" />
-              <span className="text-[1rem] font-bold text-white/90">Results</span>
-            </div>
+            <UltraCardHeader title="Results" />
 
             {!calculated || !(sale > 0 && rate > 0) ? (
-              <div className="flex flex-col items-center justify-center min-h-[280px] text-white/35 text-center gap-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.5)" strokeWidth="1.5">
-                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <p className="text-[.88rem] leading-relaxed">Enter your values and tap<br /><strong className="text-[#a78bfa]/70">Calculate</strong></p>
-              </div>
+              <UltraEmptyState actionText="Calculate" />
             ) : (
               <>
-                <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-[#8b5cf6]/20 border border-[#8b5cf6]/45 rounded-[2rem] text-[.7rem] font-bold tracking-[.07em] uppercase text-[#c4a8ff]/95 mb-[.55rem] w-fit">
-                  <span className="w-[6px] h-[6px] rounded-full bg-[#a78bfa]/90 shrink-0" />
+                <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.55rem] w-fit">
+                  <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
                   Commission Breakdown
                 </div>
 
                 <UltraResultsGrid>
                   <UltraResultCard label={`Total Commission (${rate}%)`} value={`₹${fmt(commissionAmount)}`} color="blue" />
-                  <UltraResultCard label={`Your Share (${split}%)`} value={`₹${fmt(yourShare)}`} color="green" />
+                  <UltraResultCard label={`Your Share (${split}%)`} value={`₹${fmt(yourShare)}`} color="main" />
                   {split < 100 && (
                     <UltraResultCard label={`Other Party Share (${(100 - split).toFixed(0)}%)`} value={`₹${fmt(otherShare)}`} color="amber" />
                   )}
-                  <UltraResultCard label="Net Amount After Commission" value={`₹${fmt(netAmount)}`} />
+                  <UltraResultCard label="Net Amount After Commission" value={`₹${fmt(netAmount)}`} color="green" />
                 </UltraResultsGrid>
 
                 <UltraPrimaryButton
@@ -154,7 +135,7 @@ export function CommissionCalculatorClient() {
                   className="w-full mt-4"
                 >
                   <Download className="h-4 w-4" />
-                  Download PDF
+                  {isGenerating ? "Generating..." : "Download PDF"}
                 </UltraPrimaryButton>
               </>
             )}

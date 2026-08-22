@@ -1,13 +1,16 @@
 import React from "react"
 import { InvoiceData } from "@/components/invoice-templates/data/invoiceTypes"
 import { sheetStyle, Watermark } from "./shared"
+import { DocumentTypeConfig, getDocumentConfig } from "../documentConfig"
 
 interface DocumentProps {
   invoice: InvoiceData
   className?: string
+  config?: DocumentTypeConfig
 }
 
-export function DeliveryChallanDocument({ invoice, className = "" }: DocumentProps) {
+export function DeliveryChallanDocument({ invoice, className = "", config }: DocumentProps) {
+  const docConfig = config || getDocumentConfig(invoice.documentType || "delivery-challan")
   const { company, billTo, shipTo, transportDetails } = invoice
   const totalQty = invoice.items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)
 
@@ -21,7 +24,7 @@ export function DeliveryChallanDocument({ invoice, className = "" }: DocumentPro
         {/* Logistics Notice */}
         <div className="mb-4 py-1.5 px-3 bg-[#111111] text-white rounded text-center">
           <p className="text-[11px] font-bold uppercase tracking-widest">
-            Goods Transport & Delivery Document • Not a Tax Invoice • For Cargo Movement & Receipt Acknowledgement
+            {docConfig.badgeLabel || "Goods Transport & Delivery Document"} • Not a Tax Invoice • For Cargo Movement & Receipt Acknowledgement
           </p>
         </div>
 
@@ -57,20 +60,20 @@ export function DeliveryChallanDocument({ invoice, className = "" }: DocumentPro
 
           <div className="text-right shrink-0 min-w-[230px]">
             <h2 className="text-[24px] font-black uppercase tracking-tight text-[#111111]">
-              DELIVERY CHALLAN
+              {docConfig.title}
             </h2>
             <div className="mt-2 text-[14px] space-y-1.5">
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">Challan No:</span>
+                <span className="text-[#555555] font-medium">{docConfig.numberLabel}</span>
                 <span className="font-mono font-bold text-[#111111]">{invoice.invoiceNumber || "—"}</span>
               </div>
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">Dispatch Date:</span>
+                <span className="text-[#555555] font-medium">{docConfig.dateLabel}</span>
                 <span className="font-medium text-[#111111]">{invoice.invoiceDate || "—"}</span>
               </div>
               {(invoice as any).purchaseOrderNumber && (
                 <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                  <span className="text-[#555555] font-medium">Order / Indent Ref:</span>
+                  <span className="text-[#555555] font-medium">{docConfig.referenceLabel || "Order / Indent Ref:"}</span>
                   <span className="font-mono font-bold text-[#111111]">{(invoice as any).purchaseOrderNumber}</span>
                 </div>
               )}

@@ -5,13 +5,16 @@ import {
   numberToWords,
 } from "@/components/invoice-templates/data/invoiceTypes"
 import { sheetStyle, format, Watermark } from "./shared"
+import { DocumentTypeConfig, getDocumentConfig } from "../documentConfig"
 
 interface DocumentProps {
   invoice: InvoiceData
   className?: string
+  config?: DocumentTypeConfig
 }
 
-export function PurchaseOrderDocument({ invoice, className = "" }: DocumentProps) {
+export function PurchaseOrderDocument({ invoice, className = "", config }: DocumentProps) {
+  const docConfig = config || getDocumentConfig(invoice.documentType || "purchase-order")
   const totals = computeInvoiceTotals(invoice)
   const { company, billTo, shipTo, gstMode } = invoice
   const isGstEnabled = gstMode && gstMode !== "none"
@@ -59,23 +62,23 @@ export function PurchaseOrderDocument({ invoice, className = "" }: DocumentProps
           {/* Top-Right: PURCHASE ORDER Badge & Metadata */}
           <div className="text-right shrink-0 min-w-[230px]">
             <div className="inline-block bg-[#111111] text-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest rounded-sm mb-1.5">
-              Official Procurement
+              {docConfig.badgeLabel || "Official Procurement"}
             </div>
             <h2 className="text-[24px] font-black uppercase tracking-tight text-[#111111]">
-              PURCHASE ORDER
+              {docConfig.title}
             </h2>
             <div className="mt-2 text-[14px] space-y-1.5">
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">PO Number:</span>
+                <span className="text-[#555555] font-medium">{docConfig.numberLabel}</span>
                 <span className="font-mono font-bold text-[#111111]">{invoice.invoiceNumber || "—"}</span>
               </div>
               <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                <span className="text-[#555555] font-medium">PO Date:</span>
+                <span className="text-[#555555] font-medium">{docConfig.dateLabel}</span>
                 <span className="font-medium text-[#111111]">{invoice.invoiceDate || "—"}</span>
               </div>
               {invoice.dueDate && (
                 <div className="flex justify-between gap-4 border-b border-[#EAEAEA] pb-1">
-                  <span className="text-[#555555] font-medium">Delivery Due:</span>
+                  <span className="text-[#555555] font-medium">{docConfig.dueDateLabel || "Delivery Due:"}</span>
                   <span className="font-bold text-[#111111]">{invoice.dueDate}</span>
                 </div>
               )}
@@ -196,7 +199,7 @@ export function PurchaseOrderDocument({ invoice, className = "" }: DocumentProps
                 )}
                 <tr className="bg-[#181818] text-white">
                   <td className="py-3 px-3 font-bold uppercase tracking-wider text-[13px] border-r border-[#333333]">
-                    Authorized PO Value
+                    {docConfig.totalLabel || "Authorized PO Value"}
                   </td>
                   <td className="py-3 px-3 text-right font-bold text-[17px] font-mono tabular-nums text-white">
                     {format(totals.grandTotal, invoice.currencySymbol)}
