@@ -2,23 +2,15 @@
 
 import type { ReactNode, InputHTMLAttributes } from "react"
 
-/* ─── NAV ─── */
+/* ─── NAV (Unified: Handled by ToolLayout) ─── */
 export function UltraNav() {
-  return (
-    <nav className="flex items-center justify-between max-w-[920px] mx-auto w-full px-5 pt-10 pb-0">
-      <a href="/" className="inline-flex items-center gap-[.45rem] text-slate-600 hover:text-slate-900 dark:text-white/65 dark:hover:text-white no-underline text-[.85rem] font-semibold transition-colors">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 shrink-0"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        Back to Home
-      </a>
-      <span className="brand-wordmark brand-wordmark-theme text-[.95rem]">TURNIVO</span>
-    </nav>
-  )
+  return null
 }
 
 /* ─── PAGE WRAPPER ─── */
 export function UltraPage({ children }: { children: ReactNode }) {
   return (
-    <div className="max-w-[920px] mx-auto w-full px-5 py-10 flex flex-col items-center">
+    <div className="w-full flex flex-col items-center">
       {children}
     </div>
   )
@@ -33,38 +25,21 @@ export function UltraGrid({ children }: { children: ReactNode }) {
   )
 }
 
-/* ─── HEADER ─── */
+/* ─── HEADER (Unified: Handled by ToolLayout) ─── */
 export function UltraBadge({ children }: { children: ReactNode }) {
-  return (
-    <div className="inline-flex items-center gap-[.35rem] px-3 py-[.22rem] bg-violet-50 border border-violet-200 dark:bg-[#8b5cf6]/20 dark:border-[#8b5cf6]/45 rounded-full text-[.72rem] font-bold tracking-[.08em] uppercase text-violet-700 dark:text-[#c4a8ff] mb-[.6rem] w-fit">
-      <span className="w-[6px] h-[6px] rounded-full bg-violet-600 dark:bg-[#a78bfa] shrink-0" />
-      {children}
-    </div>
-  )
+  return null
 }
 
 export function UltraTitle({ children }: { children: ReactNode }) {
-  return (
-    <h1
-      className="font-sans text-[clamp(28px,5vw,2.4rem)] font-bold leading-[1.1] tracking-[-.03em] text-slate-900 dark:text-white mb-3"
-    >
-      {children}
-    </h1>
-  )
+  return null
 }
 
 export function UltraSubtitle({ children }: { children: ReactNode }) {
-  return <p className="text-[.95rem] text-slate-600 dark:text-white/60 mt-[.55rem] max-w-[460px] mx-auto leading-relaxed">{children}</p>
+  return null
 }
 
-export function UltraHeader({ badge, title, subtitle }: { badge?: ReactNode; title: ReactNode; subtitle?: ReactNode }) {
-  return (
-    <div className="text-center mb-8">
-      {badge && <UltraBadge>{badge}</UltraBadge>}
-      <UltraTitle>{title}</UltraTitle>
-      {subtitle && <UltraSubtitle>{subtitle}</UltraSubtitle>}
-    </div>
-  )
+export function UltraHeader({ badge, title, subtitle }: { badge?: ReactNode; title?: ReactNode; subtitle?: ReactNode }) {
+  return null
 }
 
 /* ─── CARD ─── */

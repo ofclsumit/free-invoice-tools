@@ -140,123 +140,33 @@ export function ToolLayout({
     }))
   }
 
-  if (isUltra) {
-    return (
-      <>
-        <JsonLd data={webAppSchema} />
-        <JsonLd data={softwareAppSchema} />
-        <JsonLd data={organizationSchema} />
-        <JsonLd data={websiteSchema} />
-        <JsonLd data={breadcrumbSchema} />
-        {faqs.length > 0 && <JsonLd data={faqSchema} />}
-        {howToUse.steps.length > 0 && <JsonLd data={howToSchema} />}
-        
-        <StarsBackground className="font-['Inter'] min-h-screen w-full text-foreground py-8 px-4 sm:py-12 relative">
-          <div className="fixed top-4 right-4 z-50">
-            <ThemeToggle />
-          </div>
+  const isCalculator = [
+    "gst-calculator", "reverse-gst-calculator", "gst-split-calculator",
+    "discount-calculator", "profit-margin", "break-even-calculator",
+    "commission-calculator", "emi-calculator", "loan-calculator", "interest-calculator"
+  ].some(slug => schemaUrl?.includes(slug));
 
-          <svg style={{display:"none"}} aria-hidden="true">
-            <defs>
-              <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise"/>
-                <feGaussianBlur in="noise" stdDeviation="2" result="blurred"/>
-                <feDisplacementMap in="SourceGraphic" in2="blurred" scale="70" xChannelSelector="R" yChannelSelector="G"/>
-              </filter>
-            </defs>
-          </svg>
+  const isUtility = [
+    "hsn-finder", "gstin-validator", "gst-rate-finder"
+  ].some(slug => schemaUrl?.includes(slug));
 
-          {/* Main Tool Interface without outer border wrapper */}
-          <div className="w-full max-w-4xl mx-auto mb-16">
-            {tool}
-          </div>
+  const categoryName = isCalculator 
+    ? "Financial Calculators" 
+    : isUtility 
+    ? "Utilities & Tools" 
+    : "Document Generators";
 
-          {/* Long Form Content for SEO */}
-          <div className="max-w-4xl mx-auto space-y-16 text-foreground pb-12">
-            <article className="prose prose-gray dark:prose-invert max-w-none space-y-12 prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
-              
-              {/* How To Use */}
-              {howToUse.steps.length > 0 && (
-                <section>
-                  <h2 className="text-2xl font-bold font-display text-foreground">{howToUse.title}</h2>
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {howToUse.steps.map((step, idx) => (
-                      <div key={idx} id={`step-${idx + 1}`} className="saas-card-premium p-6 relative overflow-hidden">
-                        <div className="absolute inset-x-0 top-0 h-1 brand-gradient" />
-                        <div className="text-4xl font-bold text-indigo-600/30 dark:text-[#a78bfa]/40 mb-4">0{idx + 1}</div>
-                        <p className="font-medium text-foreground">{step}</p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
+  const categoryHref = isCalculator 
+    ? "/#cat-calculators" 
+    : isUtility 
+    ? "/#cat-utilities" 
+    : "/#cat-document";
 
-              {/* Features & Benefits */}
-              {(features.length > 0 || benefits.length > 0) && (
-                <div className="grid md:grid-cols-2 gap-8">
-                  {features.length > 0 && (
-                    <section>
-                      <h2 className="text-2xl font-bold font-display mb-6 text-foreground">Key Features</h2>
-                      <ul className="space-y-4">
-                        {features.map((feature, idx) => (
-                          <li key={idx} className="flex items-start gap-3">
-                            <CheckCircle2 className="h-5 w-5 text-indigo-600 dark:text-[#a78bfa] shrink-0 mt-0.5" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-
-                  {benefits.length > 0 && (
-                    <section>
-                      <h2 className="text-2xl font-bold font-display mb-6 text-foreground">Why Use This Tool?</h2>
-                      <ul className="space-y-4">
-                        {benefits.map((benefit, idx) => (
-                          <li key={idx} className="flex items-start gap-3">
-                            <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                            <span>{benefit}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  )}
-                </div>
-              )}
-
-              {/* FAQs */}
-              {faqs.length > 0 && (
-                <section className="border-t border-border pt-12">
-                  <h2 className="text-2xl font-bold font-display mb-8 text-foreground">Frequently Asked Questions</h2>
-                  <Accordion type="single" collapsible className="w-full">
-                    {faqs.map((faq, idx) => (
-                      <AccordionItem key={idx} value={`item-${idx}`} className="border-border">
-                        <AccordionTrigger className="text-left font-medium text-foreground hover:no-underline">
-                          {faq.question}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground leading-relaxed">
-                          {faq.answer}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </section>
-              )}
-              
-            </article>
-
-            {/* Internal Linking */}
-            {relatedTools.length > 0 && (
-              <div className="border-t border-border pt-12">
-                <RelatedTools tools={relatedTools} isUltra={true} />
-              </div>
-            )}
-            
-          </div>
-        </StarsBackground>
-      </>
-    )
-  }
+  const categoryBadge = isCalculator 
+    ? "Financial Calculator" 
+    : isUtility 
+    ? "Utility & Tool" 
+    : "Document Generator";
 
   return (
     <>
@@ -288,13 +198,13 @@ export function ToolLayout({
             <nav className="flex items-center justify-center text-[11px] font-semibold text-muted-foreground gap-2 tracking-wide" aria-label="Breadcrumb">
               <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
               <span>&gt;</span>
-              <a href="/#tools" className="hover:text-foreground transition-colors">Business Documents</a>
+              <a href={categoryHref} className="hover:text-foreground transition-colors">{categoryName}</a>
               <span>&gt;</span>
               <span className="text-foreground truncate max-w-[180px] font-bold" aria-current="page">{h1}</span>
             </nav>
 
             <span className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white brand-gradient shadow-md shadow-violet-500/30 animate-pulse">
-              Turnivo Tool
+              {categoryBadge}
             </span>
             <h1 className="text-3xl sm:text-5xl font-display font-bold tracking-tight text-gray-900 dark:text-white">
               {h1}
@@ -306,76 +216,90 @@ export function ToolLayout({
         </div>
 
         {/* Main Tool Interface */}
-        <div className="w-full max-w-4xl mx-auto saas-card-premium p-4 sm:p-6 mb-16">
+        <div className={isUltra ? "w-full max-w-4xl mx-auto mb-16" : "w-full max-w-4xl mx-auto saas-card-premium p-4 sm:p-6 mb-16"}>
           {tool}
         </div>
 
         {/* Long Form Content for SEO */}
         <div className="max-w-4xl mx-auto space-y-16">
-          <article className="prose prose-gray dark:prose-invert max-w-none space-y-12">
+          <article className="prose prose-gray dark:prose-invert max-w-none space-y-12 prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
             
             {/* How To Use */}
-            <section>
-              <h2 className="text-2xl font-bold font-display">{howToUse.title}</h2>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {howToUse.steps.map((step, idx) => (
-                  <div key={idx} id={`step-${idx + 1}`} className="saas-card-premium p-6 relative overflow-hidden">
-                    <div className="absolute inset-x-0 top-0 h-1 brand-gradient" />
-                    <div className="text-4xl font-bold text-primary/20 mb-4">0{idx + 1}</div>
-                    <p className="font-medium text-foreground">{step}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
+            {howToUse.steps.length > 0 && (
+              <section>
+                <h2 className="text-2xl font-bold font-display">{howToUse.title}</h2>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {howToUse.steps.map((step, idx) => (
+                    <div key={idx} id={`step-${idx + 1}`} className="saas-card-premium p-6 relative overflow-hidden">
+                      <div className="absolute inset-x-0 top-0 h-1 brand-gradient" />
+                      <div className="text-4xl font-bold text-primary/20 mb-4">0{idx + 1}</div>
+                      <p className="font-medium text-foreground">{step}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Features & Benefits */}
-            <div className="grid md:grid-cols-2 gap-8">
-              <section>
-                <h2 className="text-2xl font-bold font-display mb-6">Key Features</h2>
-                <ul className="space-y-4">
-                  {features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
+            {(features.length > 0 || benefits.length > 0) && (
+              <div className="grid md:grid-cols-2 gap-8">
+                {features.length > 0 && (
+                  <section>
+                    <h2 className="text-2xl font-bold font-display mb-6">Key Features</h2>
+                    <ul className="space-y-4">
+                      {features.map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-3">
+                          <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
 
-              <section>
-                <h2 className="text-2xl font-bold font-display mb-6">Why Use This Tool?</h2>
-                <ul className="space-y-4">
-                  {benefits.map((benefit, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                      <span>{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </div>
+                {benefits.length > 0 && (
+                  <section>
+                    <h2 className="text-2xl font-bold font-display mb-6">Why Use This Tool?</h2>
+                    <ul className="space-y-4">
+                      {benefits.map((benefit, idx) => (
+                        <li key={idx} className="flex items-start gap-3">
+                          <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>{benefit}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+              </div>
+            )}
 
             {/* FAQs */}
-            <section className="border-t border-border pt-12">
-              <h2 className="text-2xl font-bold font-display mb-8">Frequently Asked Questions</h2>
-              <Accordion type="single" collapsible className="w-full">
-                {faqs.map((faq, idx) => (
-                  <AccordionItem key={idx} value={`item-${idx}`}>
-                    <AccordionTrigger className="text-left font-medium">
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground leading-relaxed">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </section>
+            {faqs.length > 0 && (
+              <section className="border-t border-border pt-12">
+                <h2 className="text-2xl font-bold font-display mb-8">Frequently Asked Questions</h2>
+                <Accordion type="single" collapsible className="w-full">
+                  {faqs.map((faq, idx) => (
+                    <AccordionItem key={idx} value={`item-${idx}`}>
+                      <AccordionTrigger className="text-left font-medium">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-muted-foreground leading-relaxed">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </section>
+            )}
             
           </article>
 
           {/* Internal Linking */}
-          <RelatedTools tools={relatedTools} isUltra={true} />
+          {relatedTools.length > 0 && (
+            <div className="border-t border-border pt-12">
+              <RelatedTools tools={relatedTools} isUltra={true} />
+            </div>
+          )}
           
         </div>
       </StarsBackground>
