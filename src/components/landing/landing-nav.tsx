@@ -12,70 +12,13 @@ export function LandingNav() {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const headerRef = useRef<HTMLDivElement>(null)
 
-  const { scrollY } = useScroll()
-
-  // --- Scroll-Linked capsule animations (interpolates between 40px scroll and 180px scroll) ---
-
-  // 1. Light Mode Background (Low opacity so background text remains 50% clearly visible)
-  const headerBg = useTransform(
-    scrollY,
-    [40, 180],
-    [
-      "linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), rgba(255, 255, 255, 0)",
-      "linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), rgba(255, 255, 255, 0.05)"
-    ]
-  )
-
-  // 2. Dark Mode Background (Low opacity dark capsule)
-  const headerBgDark = useTransform(
-    scrollY,
-    [40, 180],
-    [
-      "linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)), rgba(0, 0, 0, 0)",
-      "linear-gradient(to bottom, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.005)), rgba(10, 7, 32, 0.15)"
-    ]
-  )
-
-  // 3. Filters: Lighter blur (8px) and moderate saturation (130%) so underlying text is readable
-  const headerFilter = useTransform(
-    scrollY,
-    [40, 180],
-    ["blur(0px) saturate(100%)", "blur(8px) saturate(130%)"]
-  )
-
-  // 4. Border rings all-around the capsule
-  const headerBorder = useTransform(
-    scrollY,
-    [40, 180],
-    ["rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0.06)"]
-  )
-  const headerBorderDark = useTransform(
-    scrollY,
-    [40, 180],
-    ["rgba(255, 255, 255, 0)", "rgba(255, 255, 255, 0.06)"]
-  )
-
-  // 5. Layered Ambient Glass Shadows
-  const headerShadow = useTransform(
-    scrollY,
-    [40, 180],
-    [
-      "0 0 0 rgba(0, 0, 0, 0), inset 0 1px 0 rgba(255, 255, 255, 0)",
-      "0 4px 20px rgba(0, 0, 0, 0.01), 0 10px 30px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
-    ]
-  )
-  const headerShadowDark = useTransform(
-    scrollY,
-    [40, 180],
-    [
-      "0 0 0 rgba(0, 0, 0, 0), inset 0 1px 0 rgba(255, 255, 255, 0)",
-      "0 4px 24px rgba(0, 0, 0, 0.1), 0 12px 40px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.03)"
-    ]
-  )
-
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20)
-    window.addEventListener("scroll", handleScroll)
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 20
+      setIsScrolled(scrolled)
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll()
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
@@ -87,31 +30,15 @@ export function LandingNav() {
   ]
 
   return (
-    <motion.header
+    <header
       ref={headerRef}
-      className="fixed top-4 left-4 right-4 z-50 max-w-6xl mx-auto rounded-full"
+      className={cn(
+        "fixed top-4 left-4 right-4 z-50 max-w-6xl mx-auto rounded-full transition-all duration-300",
+        isScrolled
+          ? "bg-white/80 dark:bg-[#0d0a1b]/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 shadow-lg shadow-black/5 dark:shadow-black/20"
+          : "bg-transparent border border-transparent"
+      )}
     >
-      {/* Light Mode Layered Glass Panel */}
-      <motion.div
-        className="absolute inset-0 dark:hidden rounded-full"
-        style={{
-          background: headerBg,
-          backdropFilter: headerFilter,
-          border: useTransform(headerBorder, v => `1px solid ${v}`),
-          boxShadow: headerShadow,
-        }}
-      />
-      
-      {/* Dark Mode Layered Glass Panel */}
-      <motion.div
-        className="absolute inset-0 hidden dark:block rounded-full"
-        style={{
-          background: headerBgDark,
-          backdropFilter: headerFilter,
-          border: useTransform(headerBorderDark, v => `1px solid ${v}`),
-          boxShadow: headerShadowDark,
-        }}
-      />
 
       {/* Content wrapper */}
       <div className={cn(
@@ -193,6 +120,6 @@ export function LandingNav() {
           </AnimatePresence>
         </div>
       </div>
-    </motion.header>
+    </header>
   )
 }

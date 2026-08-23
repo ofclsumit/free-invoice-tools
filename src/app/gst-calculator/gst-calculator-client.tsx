@@ -1,24 +1,33 @@
 "use client"
+
 import { useState } from "react"
-import { Download } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Download, Eye } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
 import { useToast } from "@/hooks/use-toast"
-import { numToWords } from "@/lib/pdf/shared"
+import { exportNodeToPdf } from "@/components/invoice-templates/components"
+import { savePreviewData } from "@/lib/preview-store"
+import { GstDocument } from "@/components/calculator-documents"
 import {
-  InvoicePreview,
-  exportNodeToPdf,
-} from "@/components/invoice-templates/components"
-import { UltraShell } from "@/components/ultra/ultra-shell"
-import {
-  UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraCardHeader, UltraResetButton, UltraEmptyState, UltraToggle, UltraInput, UltraTextInput,
+  UltraGrid,
+  UltraCard,
+  UltraCardHeader,
+  UltraResetButton,
+  UltraEmptyState,
+  UltraToggle,
+  UltraInput,
+  UltraTextInput,
   UltraRateSelector,
-  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraProgressBar
+  UltraResultsGrid,
+  UltraResultCard,
+  UltraPrimaryButton,
+  UltraProgressBar,
 } from "@/components/ultra/ultra-components"
 
 const GST_RATES = [0, 5, 12, 18, 28]
 
 export function GstCalculatorClient() {
+  const router = useRouter()
   const { toast } = useToast()
   const [amount, setAmount] = useState("")
   const [gstRate, setGstRate] = useState(18)
@@ -30,7 +39,9 @@ export function GstCalculatorClient() {
 
   const numAmount = parseFloat(amount) || 0
 
-  let baseAmount = 0, gstAmount = 0, totalAmount = 0
+  let baseAmount = 0
+  let gstAmount = 0
+  let totalAmount = 0
   if (calculated && numAmount > 0) {
     if (mode === "exclusive") {
       baseAmount = numAmount
@@ -46,7 +57,8 @@ export function GstCalculatorClient() {
   const cgst = gstAmount / 2
   const sgst = gstAmount / 2
 
-  const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const fmt = (n: number) =>
+    n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -73,133 +85,87 @@ export function GstCalculatorClient() {
     setCalculated(false)
   }
 
+  const getDocData = () => ({
+    mode,
+    baseAmount,
+    gstRate,
+    gstAmount,
+    totalAmount,
+    cgst,
+    sgst,
+    companyName: companyName || "Turnivo Business",
+    companyLogo,
+  })
+
+  const handlePreviewPDF = () => {
+    if (!calculated || !(numAmount > 0)) {
+      toast({ title: "Calculate first", description: "Please calculate GST before previewing.", variant: "destructive" })
+      return
+    }
+    const id = savePreviewData({
+      docType: "gst-calculator",
+      title: "GST Calculation Report Preview",
+      fileName: `gst-report-${new Date().toISOString().split("T")[0]}.pdf`,
+      data: getDocData(),
+    })
+    router.push(`/preview/${id}`)
+  }
+
   const handleDownloadPDF = async () => {
-    if (!calculated) {
+    if (!calculated || !(numAmount > 0)) {
       toast({ title: "Calculate first", description: "Please calculate GST before downloading.", variant: "destructive" })
       return
     }
     setIsGenerating(true)
     try {
-      const node = document.getElementById("invoice-print-root");
+      const node = document.getElementById("calculator-print-root")
       if (node) {
-        await exportNodeToPdf(node, `gst-report-${new Date().toISOString().split('T')[0]}.pdf`);
+        await exportNodeToPdf(node, `gst-report-${new Date().toISOString().split("T")[0]}.pdf`)
       }
     } finally {
       setIsGenerating(false)
     }
   }
 
-  const gstPct = calculated && totalAmount > 0 ? (gstAmount / totalAmount) * 100 : 0
-  const basePct = calculated && totalAmount > 0 ? 100 - gstPct : 0
-
   return (
     <>
       {isGenerating && <LoadingScreen message="Generating GST Report PDF..." />}
-      <div className="absolute -left-[9999px] -top-[9999px]">
-        <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
-          <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
-            <div className="flex-1 overflow-auto rounded-2xl shadow-glass bg-white border border-border pb-8">
-              <InvoicePreview hideToolbar={true}>
-                <div id="invoice-print-root">
-                  <div
-                    className="bg-white text-black p-8 sm:p-12 print:shadow-none print:p-8 print:rounded-none w-full border-gray-100"
-                    style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box", minHeight: "297mm" }}
-                  >
-                    <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-8">
-                      <div className="max-w-[50%]">
-                        {companyLogo && <img src={companyLogo} alt="Company Logo" className="h-16 object-contain mb-3" />}
-                        <h2 className="text-2xl font-display font-bold text-gray-900">{companyName || "Your Company Name"}</h2>
-                      </div>
-                      <div className="text-right">
-                        <h1 className="text-3xl font-light text-blue-600 uppercase tracking-widest mb-2">GST Report</h1>
-                        <p className="text-gray-500 text-sm">Date: <span className="font-medium text-gray-900">{new Date().toLocaleDateString("en-IN")}</span></p>
-                      </div>
-                    </div>
 
-                    <div className="mb-12 text-center">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">GST Calculation Report</h3>
-                      <p className="text-gray-500 text-sm">Mode: {mode === "exclusive" ? "GST Exclusive" : "GST Inclusive"}</p>
-                    </div>
-
-                    <div className="space-y-6 mb-12">
-                      <div className="grid grid-cols-2 gap-4 border-b border-gray-100 pb-6">
-                        <div className="bg-gray-50 p-4 rounded-xl text-center">
-                          <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Base Amount</p>
-                          <p className="text-2xl font-medium text-gray-900">₹{fmt(baseAmount)}</p>
-                        </div>
-                        <div className="bg-gray-50 p-4 rounded-xl text-center">
-                          <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">GST Rate</p>
-                          <p className="text-2xl font-medium text-gray-900">{gstRate}%</p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-blue-50 p-6 rounded-xl text-center col-span-2">
-                          <p className="text-3xl font-display font-bold text-amber-600">₹{fmt(gstAmount)}</p>
-                          <p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">GST Amount</p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-6">
-                        <div className="bg-cyan-50 p-4 rounded-xl text-center">
-                          <p className="text-lg font-display font-bold text-cyan-700">₹{fmt(cgst)}</p>
-                          <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">CGST ({gstRate / 2}%)</p>
-                        </div>
-                        <div className="bg-cyan-50 p-4 rounded-xl text-center">
-                          <p className="text-lg font-display font-bold text-cyan-700">₹{fmt(sgst)}</p>
-                          <p className="text-xs font-medium text-gray-600 mt-1 uppercase tracking-wider">SGST ({gstRate / 2}%)</p>
-                        </div>
-                      </div>
-
-                      <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl p-6 text-center text-white">
-                        <p className="text-sm uppercase tracking-widest opacity-80 mb-2">Total Amount</p>
-                        <p className="text-4xl font-display font-bold">₹{fmt(totalAmount)}</p>
-                      </div>
-
-                      <div className="text-center pt-2">
-                        <p className="text-gray-500 text-xs">Amount in Words</p>
-                        <p className="text-gray-700 font-medium text-sm mt-1">{numToWords(totalAmount)}</p>
-                      </div>
-                    </div>
-
-                    <div className="mt-16 pt-8 border-t border-gray-100 text-center">
-                      <p className="text-gray-400 text-xs italic">
-                        This report was generated using the Turnivo GST Calculator.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </InvoicePreview>
-            </div>
-          </div>
-        </div>
+      {/* Hidden print document for instant export */}
+      <div className="absolute -left-[9999px] -top-[9999px] pointer-events-none" aria-hidden="true">
+        <GstDocument {...getDocData()} />
       </div>
 
       <UltraGrid>
         <UltraCard>
-          <UltraCardHeader title="Calculate" />
+          <UltraCardHeader title="Input Details" />
 
-          <div className="space-y-3 mb-4">
-            <UltraTextInput placeholder="Company Name" value={companyName} onChange={e => setCompanyName(e.target.value)} />
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  className="w-full bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[0.12] rounded-xl text-slate-800 dark:text-white text-xs outline-none px-3 py-2 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-violet-100 dark:file:bg-violet-500/20 file:text-violet-700 dark:file:text-violet-300 file:cursor-pointer cursor-pointer"
-                />
-              </div>
-              {companyLogo && (
-                <div className="h-9 w-9 rounded-lg border border-slate-200 dark:border-white/[0.12] overflow-hidden flex-shrink-0 bg-white p-0.5">
-                  <img src={companyLogo} alt="Logo" className="h-full w-full object-contain" />
-                </div>
-              )}
+          <div className="mb-4 space-y-3">
+            <UltraTextInput
+              label="Company Name (Optional)"
+              placeholder="e.g. Acme Corp"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+            />
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Company Logo (Optional)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoUpload}
+                className="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 dark:file:bg-violet-950/40 dark:file:text-violet-300 border border-border rounded-lg p-1"
+              />
             </div>
           </div>
 
           <UltraToggle
-            options={[{value:"exclusive",label:"Exclusive (Add GST)"},{value:"inclusive",label:"Inclusive (Remove GST)"}]}
+            options={[
+              { value: "exclusive", label: "Exclusive (Add GST)" },
+              { value: "inclusive", label: "Inclusive (Remove GST)" },
+            ]}
             value={mode}
             onChange={(v) => setMode(v as "exclusive" | "inclusive")}
           />
@@ -209,7 +175,7 @@ export function GstCalculatorClient() {
             placeholder={mode === "exclusive" ? "Base Amount" : "Total Amount (with GST)"}
             currencySymbol="₹"
             value={amount}
-            onChange={e => setAmount(e.target.value)}
+            onChange={(e) => setAmount(e.target.value)}
           />
 
           <UltraRateSelector
@@ -257,9 +223,19 @@ export function GstCalculatorClient() {
 
               <UltraProgressBar label="Base vs GST" percent={totalAmount > 0 ? (baseAmount / totalAmount) * 100 : 0} />
 
-              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
-                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-              </UltraPrimaryButton>
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={handlePreviewPDF}
+                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors"
+                >
+                  <Eye className="w-4 h-4" /> Preview PDF
+                </button>
+
+                <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating}>
+                  <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                </UltraPrimaryButton>
+              </div>
             </>
           )}
         </UltraCard>

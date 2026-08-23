@@ -8,6 +8,14 @@ import { RentReceiptView } from "@/components/preview/rent-receipt-view"
 import { SalarySlipView } from "@/components/preview/salary-slip-view"
 import { InvoicePreview } from "@/components/invoice-templates/components"
 import { StandardDocumentView, StandardPaymentReceiptView } from "@/components/documents"
+import {
+  GstDocument,
+  EmiDocument,
+  BreakEvenDocument,
+  ProfitMarginDocument,
+  InterestDocument,
+  CommissionDocument,
+} from "@/components/calculator-documents"
 import { fetchPreviewData } from "@/lib/preview-store"
 import type { PreviewStoreItem } from "@/lib/preview-store"
 import type { InvoiceData as TemplateInvoiceData } from "@/components/invoice-templates/data/invoiceTypes"
@@ -96,6 +104,37 @@ export default function PreviewPage() {
       case "salary-slip": {
         return <SalarySlipView {...(customData as any)} />
       }
+      case "gst-calculator":
+      case "reverse-gst-calculator":
+      case "gst-split-calculator": {
+        return <GstDocument {...(customData as any)} />
+      }
+      case "emi-calculator":
+      case "loan-calculator": {
+        return <EmiDocument {...(customData as any)} />
+      }
+      case "break-even-calculator": {
+        return <BreakEvenDocument {...(customData as any)} />
+      }
+      case "profit-margin":
+      case "discount-calculator": {
+        return <ProfitMarginDocument {...(customData as any)} />
+      }
+      case "interest-calculator": {
+        return <InterestDocument {...(customData as any)} />
+      }
+      case "commission-calculator": {
+        return <CommissionDocument {...(customData as any)} />
+      }
+      case "calculator-report": {
+        const d = customData as any
+        if (d?.calcType === "emi" || d?.calcType === "loan") return <EmiDocument {...d} />
+        if (d?.calcType === "break-even") return <BreakEvenDocument {...d} />
+        if (d?.calcType === "profit-margin" || d?.calcType === "discount") return <ProfitMarginDocument {...d} />
+        if (d?.calcType === "interest") return <InterestDocument {...d} />
+        if (d?.calcType === "commission") return <CommissionDocument {...d} />
+        return <GstDocument {...d} />
+      }
       default:
         return (
           <InvoicePreview hideToolbar={true}>
@@ -105,6 +144,8 @@ export default function PreviewPage() {
     }
   }
 
+  const isCalculator = docType.includes("calculator") || docType === "profit-margin" || docType === "calculator-report"
+
   return (
     <PreviewShell
       title={title}
@@ -112,6 +153,7 @@ export default function PreviewPage() {
       onBack={handleBack}
       documentType={docType}
       documentData={data}
+      printRootId={isCalculator ? "calculator-print-root" : "preview-print-root"}
     >
       {renderContent()}
     </PreviewShell>

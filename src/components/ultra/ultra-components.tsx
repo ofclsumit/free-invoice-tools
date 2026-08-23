@@ -114,11 +114,11 @@ export function UltraInput(props: InputHTMLAttributes<HTMLInputElement> & { curr
   )
 }
 
-export function UltraTextInput(props: InputHTMLAttributes<HTMLInputElement>) {
-  const { className = "", ...rest } = props
+export function UltraTextInput(props: InputHTMLAttributes<HTMLInputElement> & { label?: string }) {
+  const { label, className = "", ...rest } = props
   return (
     <div className="mb-4">
-      <label className="block text-[.75rem] font-bold tracking-[.07em] uppercase text-slate-700 dark:text-[#a78bfa]/90 mb-[.4rem]">{props.placeholder || "Input"}</label>
+      <label className="block text-[.75rem] font-bold tracking-[.07em] uppercase text-slate-700 dark:text-[#a78bfa]/90 mb-[.4rem]">{label || props.placeholder || "Input"}</label>
       <input
         {...rest}
         className={`w-full px-[.9rem] py-[.7rem] bg-white dark:bg-black/30 border border-slate-300 dark:border-white/[.12] rounded-[.75rem] text-slate-900 dark:text-white text-[.9rem] font-sans outline-none transition-all duration-200 focus:border-violet-600 focus:ring-2 focus:ring-violet-500/20 placeholder:text-slate-400 dark:placeholder-white/25 shadow-xs ${className}`}

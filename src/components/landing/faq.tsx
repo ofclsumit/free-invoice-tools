@@ -40,12 +40,18 @@ const faqs = [
 
 export function FaqSection() {
   return (
-    <section id="faq" className="py-16 sm:py-24 bg-transparent">
+    <section id="faq" className="py-20 sm:py-28 relative z-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-4 mb-16">
-          <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 tracking-widest uppercase">FAQ</p>
-          <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight">Questions & answers</h2>
-          <p className="text-lg text-muted-foreground">Everything you need to know about Turnivo.</p>
+        <div className="text-center space-y-3 mb-14 sm:mb-16">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-violet-500/10 text-violet-600 dark:text-violet-300 border border-violet-500/20">
+            FAQ
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            Questions & answers
+          </h2>
+          <p className="text-sm sm:text-base text-zinc-500 dark:text-white/50">
+            Everything you need to know about Turnivo.
+          </p>
         </div>
 
         <Accordion type="single" collapsible className="space-y-3">
@@ -53,19 +59,27 @@ export function FaqSection() {
             <AccordionItem
               key={i}
               value={`item-${i}`}
-              className="glass-card-liquid border border-transparent px-6 data-[state=open]:shadow-sm"
+              className="
+                rounded-[18px]
+                border border-black/[0.07] bg-white/70
+                dark:border-white/[0.08] dark:bg-white/[0.03]
+                backdrop-blur-xl
+                px-5 sm:px-6
+                shadow-[0_1px_2px_0_rgba(23,22,43,0.04)] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]
+                transition-all duration-200
+                hover:border-violet-300/60 dark:hover:border-white/[0.14]
+                hover:bg-white dark:hover:bg-white/[0.05]
+                data-[state=open]:border-violet-400/40 dark:data-[state=open]:border-white/[0.16]
+                data-[state=open]:bg-white dark:data-[state=open]:bg-white/[0.06]
+                data-[state=open]:shadow-[0_8px_24px_-12px_rgba(124,58,237,0.2)]
+              "
             >
-              <div className="glass-filter" />
-              <div className="glass-overlay" />
-              <div className="glass-specular" />
-              <div className="glass-content relative z-10 w-full">
-                <AccordionTrigger className="text-left font-display font-semibold text-sm hover:no-underline py-5">
-                  {faq.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-sm text-foreground leading-relaxed pb-5">
-                  {faq.a}
-                </AccordionContent>
-              </div>
+              <AccordionTrigger className="text-left text-[14.5px] font-semibold text-zinc-900 dark:text-white hover:no-underline py-4 sm:py-5">
+                {faq.q}
+              </AccordionTrigger>
+              <AccordionContent className="text-[13.5px] text-zinc-600 dark:text-white/60 leading-relaxed pb-5 pt-1">
+                {faq.a}
+              </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>

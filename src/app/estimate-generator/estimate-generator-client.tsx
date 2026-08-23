@@ -13,8 +13,9 @@ import {
 import { useToast } from "@/hooks/use-toast"
 import { computeInvoiceTotals, type InvoiceData as TemplateInvoiceData } from "@/components/invoice-templates/components"
 import { savePreviewData } from "@/lib/preview-store"
-import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-store"
+import { savePreviewSession, consumePreviewSession } from "@/lib/preview-session"
 import { numberToWords } from "@/components/invoice-templates/data/invoiceTypes"
+import { ImageUploadField, type ImageEditSettings, DEFAULT_IMAGE_EDIT_SETTINGS } from "@/components/shared/image-editor"
 
 interface LineItem {
   id: string
@@ -75,6 +76,8 @@ export function EstimateGeneratorClient() {
   // Estimating Business Information
   const [companyName, setCompanyName] = useState("")
   const [companyLogo, setCompanyLogo] = useState("")
+  const [logoOriginal, setLogoOriginal] = useState("")
+  const [logoSettings, setLogoSettings] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT_SETTINGS)
   const [companyAddress, setCompanyAddress] = useState("")
   const [companyPhone, setCompanyPhone] = useState("")
   const [companyEmail, setCompanyEmail] = useState("")
@@ -216,22 +219,13 @@ export function EstimateGeneratorClient() {
 
   useEffect(() => {
     setMounted(true)
-    const draft = loadDraft<EstimateData>("estimate")
-    if (draft) {
-      setState(draft)
-    } else {
-      const saved = loadSaved()
-      if (saved) setState(saved)
+    const session = consumePreviewSession<EstimateData>("estimate")
+    if (session?.formValues) {
+      setState(session.formValues)
+      if (session.extraState?.logoOriginal) setLogoOriginal(session.extraState.logoOriginal)
+      if (session.extraState?.logoSettings) setLogoSettings(session.extraState.logoSettings)
     }
   }, [setState])
-
-  useEffect(() => {
-    if (!mounted) return
-    const timer = setTimeout(() => {
-      saveDraft("estimate", getState())
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [getState, mounted])
 
   const validate = useCallback(() => {
     if (!clientName.trim()) {
@@ -248,7 +242,6 @@ export function EstimateGeneratorClient() {
   const handleSave = () => {
     if (!validate()) return
     saveData(getState())
-    saveDraft("estimate", getState())
     toast({ title: "Estimate saved as draft!", description: "Saved securely to your browser." })
   }
 
@@ -263,9 +256,10 @@ export function EstimateGeneratorClient() {
   }
 
   const resetForm = useCallback(() => {
-    clearDraft("estimate")
     setCompanyName("")
     setCompanyLogo("")
+    setLogoOriginal("")
+    setLogoSettings(DEFAULT_IMAGE_EDIT_SETTINGS)
     setCompanyAddress("")
     setCompanyPhone("")
     setCompanyEmail("")
@@ -289,7 +283,10 @@ export function EstimateGeneratorClient() {
 
   const handleShowPreview = useCallback(() => {
     if (!validate()) return
-    saveDraft("estimate", getState())
+    savePreviewSession("estimate", getState(), {
+      logoOriginal,
+      logoSettings,
+    })
     const id = savePreviewData({
       docType: "estimate",
       invoiceData,
@@ -297,7 +294,7 @@ export function EstimateGeneratorClient() {
       fileName: `estimate-${(estimateNo || "draft").toLowerCase().replace(/\s+/g, "-")}.pdf`,
     })
     router.push(`/preview/${id}`)
-  }, [validate, invoiceData, estimateNo, getState, router])
+  }, [validate, invoiceData, estimateNo, getState, router, logoOriginal, logoSettings])
 
   if (!mounted) return null
 
@@ -316,9 +313,6 @@ export function EstimateGeneratorClient() {
           <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleSave}>
             <Save className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Save Draft</span>
           </Button>
-          <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={resetForm}>
-            <RotateCcw className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Reset</span>
-          </Button>
         </div>
       </div>
 
@@ -333,29 +327,24 @@ export function EstimateGeneratorClient() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5 sm:col-span-2">
-              <div className="flex items-center gap-4">
-                <div className="relative shrink-0 border-2 border-dashed border-border rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group h-24 w-28 overflow-hidden">
-                  {companyLogo ? (
-                    <>
-                      <img src={companyLogo} alt="Logo" className="max-h-full max-w-full object-contain p-1.5" />
-                      <div
-                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setCompanyLogo("")
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 text-white" />
-                      </div>
-                    </>
-                  ) : (
-                    <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
-                      <Plus className="h-5 w-5 text-muted-foreground mb-1" />
-                      <span className="text-[10px] text-muted-foreground font-medium">Add Logo</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
-                    </label>
-                  )}
-                </div>
+              <div className="flex items-start gap-4">
+                <ImageUploadField
+                  assetType="logo"
+                  compact={true}
+                  value={companyLogo}
+                  originalValue={logoOriginal}
+                  settings={logoSettings}
+                  onChange={(editedUrl, orig, newSettings) => {
+                    setCompanyLogo(editedUrl);
+                    setLogoOriginal(orig);
+                    setLogoSettings(newSettings);
+                  }}
+                  onRemove={() => {
+                    setCompanyLogo("");
+                    setLogoOriginal("");
+                    setLogoSettings(DEFAULT_IMAGE_EDIT_SETTINGS);
+                  }}
+                />
                 <div className="space-y-1.5 flex-1">
                   <Label className="text-xs font-medium">Business / Studio Name</Label>
                   <Input

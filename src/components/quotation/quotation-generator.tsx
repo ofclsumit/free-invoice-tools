@@ -28,7 +28,8 @@ import { useToast } from "@/hooks/use-toast"
 import { useQuotationStorage } from "@/hooks/use-quotation-storage"
 import { useRouter } from "next/navigation"
 import { savePreviewData } from "@/lib/preview-store"
-import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-store"
+import { savePreviewSession, consumePreviewSession } from "@/lib/preview-session"
+import { ImageUploadField, type ImageEditSettings, DEFAULT_IMAGE_EDIT_SETTINGS } from "@/components/shared/image-editor"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -127,6 +128,13 @@ export function QuotationGenerator() {
   const [mounted, setMounted] = useState(false)
   const [isPreviewing, setIsPreviewing] = useState(false)
 
+  const [logoOriginal, setLogoOriginal] = useState<string>("")
+  const [logoSettings, setLogoSettings] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT_SETTINGS)
+  const [signatureOriginal, setSignatureOriginal] = useState<string>("")
+  const [signatureSettings, setSignatureSettings] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT_SETTINGS)
+  const [watermarkOriginal, setWatermarkOriginal] = useState<string>("")
+  const [watermarkSettings, setWatermarkSettings] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT_SETTINGS)
+
   useEffect(() => setMounted(true), [])
 
 
@@ -158,22 +166,21 @@ export function QuotationGenerator() {
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "items" })
   const watchedValues = form.watch()
 
-  // Auto-restore draft from session storage on mount
+  // Single-use restoration ONLY when returning from Preview -> Back
   useEffect(() => {
-    const draft = loadDraft<QuotationFormData>("quotation")
-    if (draft) {
-      form.reset(draft)
+    const session = consumePreviewSession<QuotationFormData>("quotation")
+    if (session?.formValues) {
+      form.reset(session.formValues)
+      if (session.extraState) {
+        if (session.extraState.logoOriginal) setLogoOriginal(session.extraState.logoOriginal)
+        if (session.extraState.logoSettings) setLogoSettings(session.extraState.logoSettings)
+        if (session.extraState.signatureOriginal) setSignatureOriginal(session.extraState.signatureOriginal)
+        if (session.extraState.signatureSettings) setSignatureSettings(session.extraState.signatureSettings)
+        if (session.extraState.watermarkOriginal) setWatermarkOriginal(session.extraState.watermarkOriginal)
+        if (session.extraState.watermarkSettings) setWatermarkSettings(session.extraState.watermarkSettings)
+      }
     }
   }, [form])
-
-  // Auto-save draft to session storage on form change
-  useEffect(() => {
-    if (!mounted) return
-    const timer = setTimeout(() => {
-      saveDraft("quotation", form.getValues())
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [watchedValues, mounted, form])
 
   const validateEssentialFields = useCallback(() => {
     const values = form.getValues()
@@ -302,7 +309,14 @@ export function QuotationGenerator() {
     if (!validateEssentialFields()) return
     setIsPreviewing(true)
     const currentValues = form.getValues()
-    saveDraft("quotation", currentValues)
+    savePreviewSession("quotation", currentValues, {
+      logoOriginal,
+      logoSettings,
+      signatureOriginal,
+      signatureSettings,
+      watermarkOriginal,
+      watermarkSettings,
+    })
     const currentQuoteNumber = currentValues.quoteNumber
     const id = savePreviewData({
       docType: "quotation",
@@ -311,7 +325,7 @@ export function QuotationGenerator() {
       fileName: `quotation-${currentQuoteNumber || "draft"}.pdf`,
     })
     router.push(`/preview/${id}`)
-  }, [validateEssentialFields, form, invoiceData, router])
+  }, [validateEssentialFields, form, invoiceData, router, logoOriginal, logoSettings, signatureOriginal, signatureSettings, watermarkOriginal, watermarkSettings])
 
   const handleUseCurrency = (code: string) => {
     const currency = CURRENCIES.find(c => c.code === code)
@@ -407,43 +421,24 @@ export function QuotationGenerator() {
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5 sm:col-span-2">
-                  <div className="flex items-center gap-4">
-                    <div className="relative shrink-0 border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group" style={{ minWidth: "80px", minHeight: "80px", maxWidth: "200px", maxHeight: "200px" }}>
-                      {watchedValues.businessLogo ? (
-                        <>
-                          <img src={watchedValues.businessLogo} alt="Logo" className="max-h-[150px] max-w-full object-contain p-1" />
-                          <div
-                            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              form.setValue("businessLogo", "");
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 text-white" />
-                          </div>
-                        </>
-                      ) : (
-                        <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
-                          <Plus className="h-5 w-5 text-muted-foreground mb-1" />
-                          <span className="text-[10px] text-muted-foreground font-medium">Add Logo</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  form.setValue("businessLogo", reader.result as string);
-                                };
-                                reader.readAsDataURL(file);
-                              }
-                            }}
-                          />
-                        </label>
-                      )}
-                    </div>
+                  <div className="flex items-start gap-4">
+                    <ImageUploadField
+                      assetType="logo"
+                      compact={true}
+                      value={watchedValues.businessLogo}
+                      originalValue={logoOriginal}
+                      settings={logoSettings}
+                      onChange={(editedUrl, orig, newSettings) => {
+                        form.setValue("businessLogo", editedUrl);
+                        setLogoOriginal(orig);
+                        setLogoSettings(newSettings);
+                      }}
+                      onRemove={() => {
+                        form.setValue("businessLogo", "");
+                        setLogoOriginal("");
+                        setLogoSettings(DEFAULT_IMAGE_EDIT_SETTINGS);
+                      }}
+                    />
                     <div className="space-y-1.5 flex-1">
                       <Label className="text-xs font-medium">Business Name *</Label>
                       <Input {...form.register("businessName")} placeholder="e.g. Acme Traders Pvt Ltd" className="h-9 text-sm" />
@@ -779,40 +774,25 @@ export function QuotationGenerator() {
                       <span className="h-4 w-4 rounded bg-emerald-600 flex items-center justify-center text-white text-[10px] font-bold">W</span>
                       Watermark (optional)
                     </p>
-                    <div className="relative h-24 w-full max-w-sm shrink-0 overflow-hidden rounded-xl border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group">
-                      {watchedValues.watermarkUrl ? (
-                        <>
-                          <img src={watchedValues.watermarkUrl} alt="Watermark" className="h-full w-full object-contain p-2 opacity-50" />
-                          <div
-                            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                            onClick={(e) => { e.preventDefault(); form.setValue("watermarkUrl", "") }}
-                          >
-                            <Trash2 className="h-5 w-5 text-white" />
-                          </div>
-                        </>
-                      ) : (
-                        <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
-                          <FileUp className="h-5 w-5 text-muted-foreground mb-1" />
-                          <span className="text-xs text-muted-foreground font-medium">Upload Watermark Image</span>
-                          <span className="text-[10px] text-muted-foreground mt-0.5">PNG with transparency works best</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  form.setValue("watermarkUrl", reader.result as string);
-                                };
-                                reader.readAsDataURL(file);
-                              }
-                            }}
-                          />
-                        </label>
-                      )}
-                    </div>
+                    <ImageUploadField
+                      assetType="watermark"
+                      aspectRatio="wide"
+                      title="Upload Watermark Image"
+                      helpText="PNG with transparency works best"
+                      value={watchedValues.watermarkUrl}
+                      originalValue={watermarkOriginal}
+                      settings={watermarkSettings}
+                      onChange={(editedUrl, orig, newSettings) => {
+                        form.setValue("watermarkUrl", editedUrl);
+                        setWatermarkOriginal(orig);
+                        setWatermarkSettings(newSettings);
+                      }}
+                      onRemove={() => {
+                        form.setValue("watermarkUrl", "");
+                        setWatermarkOriginal("");
+                        setWatermarkSettings(DEFAULT_IMAGE_EDIT_SETTINGS);
+                      }}
+                    />
                     <p className="text-[11px] text-muted-foreground mt-2">A faint watermark will appear across the document background. Best with a transparent PNG logo or text.</p>
                   </div>
                 </div>
@@ -822,46 +802,26 @@ export function QuotationGenerator() {
             {/* Signature */}
             <section className="form-section">
               <h2 className="font-display font-semibold text-sm mb-4">Authorized Signature (optional)</h2>
-              <div className="space-y-1.5">
-                <div className="relative h-28 w-full max-w-sm shrink-0 overflow-hidden rounded-xl border-2 border-dashed border-border bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group">
-                  {watchedValues.businessSignature ? (
-                    <>
-                      <img src={watchedValues.businessSignature} alt="Signature" className="h-full w-full object-contain p-2" />
-                      <div
-                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          form.setValue("businessSignature", "");
-                        }}
-                      >
-                        <Trash2 className="h-5 w-5 text-white" />
-                      </div>
-                    </>
-                  ) : (
-                    <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
-                      <FileUp className="h-5 w-5 text-muted-foreground mb-1" />
-                      <span className="text-xs text-muted-foreground font-medium">Upload Signature Image</span>
-                      <span className="text-[10px] text-muted-foreground mt-0.5">PNG or JPG</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              form.setValue("businessSignature", reader.result as string);
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
-                      />
-                    </label>
-                  )}
-                </div>
-                <p className="text-[11px] text-muted-foreground">Appears at the bottom of the quotation document.</p>
-              </div>
+              <ImageUploadField
+                assetType="signature"
+                aspectRatio="signature"
+                title="Upload Signature Image"
+                helpText="PNG or JPG"
+                value={watchedValues.businessSignature}
+                originalValue={signatureOriginal}
+                settings={signatureSettings}
+                onChange={(editedUrl, orig, newSettings) => {
+                  form.setValue("businessSignature", editedUrl);
+                  setSignatureOriginal(orig);
+                  setSignatureSettings(newSettings);
+                }}
+                onRemove={() => {
+                  form.setValue("businessSignature", "");
+                  setSignatureOriginal("");
+                  setSignatureSettings(DEFAULT_IMAGE_EDIT_SETTINGS);
+                }}
+              />
+              <p className="text-[11px] text-muted-foreground mt-1.5">Appears at the bottom of the quotation document.</p>
             </section>
 
             {/* Actions */}

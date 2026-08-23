@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import {
-  Eye, RotateCcw, Save
-} from "lucide-react"
+import { Eye, RotateCcw, Save } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { savePreviewData } from "@/lib/preview-store"
+import { savePreviewSession, consumePreviewSession } from "@/lib/preview-session"
 
 const STORAGE_KEY = "qf_rent_receipt"
 
@@ -64,10 +63,6 @@ export function RentReceiptClient() {
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split("T")[0])
-
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-
   const numRent = parseFloat(monthlyRent) || 0
 
   const getState = useCallback((): RentReceiptData => ({
@@ -84,6 +79,15 @@ export function RentReceiptClient() {
     setEndDate(d.endDate || "")
     setPaymentDate(d.paymentDate || new Date().toISOString().split("T")[0])
   }, [])
+
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+    const session = consumePreviewSession<RentReceiptData>("rent-receipt")
+    if (session?.formValues) {
+      setState(session.formValues)
+    }
+  }, [setState])
 
   const validateEssentialFields = useCallback(() => {
     if (!tenantName) { toast({ title: "Tenant name is required", variant: "destructive" }); return false }
@@ -115,14 +119,16 @@ export function RentReceiptClient() {
 
   const handleShowPreview = useCallback(() => {
     if (!validateEssentialFields()) return
+    const currentState = getState()
+    savePreviewSession("rent-receipt", currentState)
     const id = savePreviewData({
       docType: "rent-receipt",
       title: "Rent Receipt Preview",
       fileName: `rent-receipt.pdf`,
-      data: { tenantName, landlordName, landlordPan, propertyAddress, monthlyRent, startDate, endDate, paymentDate },
+      data: currentState,
     })
     router.push(`/preview/${id}`)
-  }, [validateEssentialFields, tenantName, landlordName, landlordPan, propertyAddress, monthlyRent, startDate, endDate, paymentDate, router])
+  }, [validateEssentialFields, getState, router])
 
   if (!mounted) return null
 
@@ -139,9 +145,6 @@ export function RentReceiptClient() {
           </Button>
           <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleSave}>
             <Save className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Save Draft</span>
-          </Button>
-          <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={resetForm}>
-            <RotateCcw className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Reset</span>
           </Button>
         </div>
       </div>

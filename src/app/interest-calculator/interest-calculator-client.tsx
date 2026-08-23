@@ -1,16 +1,26 @@
 "use client"
+
 import { useState } from "react"
-import { Download } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Download, Eye } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
+import { useToast } from "@/hooks/use-toast"
+import { exportNodeToPdf } from "@/components/invoice-templates/components"
+import { savePreviewData } from "@/lib/preview-store"
+import { InterestDocument } from "@/components/calculator-documents"
 import {
-  InvoicePreview,
-  exportNodeToPdf,
-} from "@/components/invoice-templates/components"
-import { UltraShell } from "@/components/ultra/ultra-shell"
-import {
-  UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraCardHeader, UltraSectionLabel, UltraEmptyState, UltraToggle, UltraInput,
-  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton, UltraProgressBar
+  UltraGrid,
+  UltraCard,
+  UltraCardHeader,
+  UltraSectionLabel,
+  UltraEmptyState,
+  UltraToggle,
+  UltraInput,
+  UltraResultsGrid,
+  UltraResultCard,
+  UltraPrimaryButton,
+  UltraResetButton,
+  UltraProgressBar,
 } from "@/components/ultra/ultra-components"
 
 const COMPOUND_FREQUENCIES = [
@@ -21,6 +31,8 @@ const COMPOUND_FREQUENCIES = [
 ]
 
 export function InterestCalculatorClient() {
+  const router = useRouter()
+  const { toast } = useToast()
   const [mode, setMode] = useState<"simple" | "compound">("simple")
   const [principal, setPrincipal] = useState("")
   const [rate, setRate] = useState("")
@@ -33,7 +45,8 @@ export function InterestCalculatorClient() {
   const r = parseFloat(rate) || 0
   const t = parseFloat(time) || 0
 
-  let maturity = 0, interest = 0
+  let maturity = 0
+  let interest = 0
   if (calculated && P > 0 && r > 0 && t > 0) {
     if (mode === "simple") {
       interest = (P * r * t) / 100
@@ -44,89 +57,112 @@ export function InterestCalculatorClient() {
     }
   }
 
-  const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const fmt = (n: number) =>
+    n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
   const handleCalculate = () => {
-    if (P > 0 && r > 0 && t > 0) setCalculated(true)
-    else {
+    if (P > 0 && r > 0 && t > 0) {
+      setCalculated(true)
+    } else {
       setCalculated(false)
-      const btn = document.getElementById("calc-btn")
-      if (btn) { btn.style.animation = "none"; void btn.offsetWidth; btn.style.animation = "shake .4s ease" }
+      toast({ title: "Valid principal, rate, and time duration required", variant: "destructive" })
     }
   }
 
   const handleReset = () => {
-    setPrincipal(""); setRate(""); setTime(""); setCalculated(false)
+    setPrincipal("")
+    setRate("")
+    setTime("")
+    setCalculated(false)
+  }
+
+  const freqLabel =
+    frequency === 1
+      ? "Annually (Yearly)"
+      : frequency === 2
+      ? "Semi-Annually (Half-Yearly)"
+      : frequency === 4
+      ? "Quarterly"
+      : "Monthly"
+
+  const getDocData = () => ({
+    title: `${mode === "compound" ? "Compound" : "Simple"} Interest Accrual & Growth Report`,
+    type: mode,
+    principal: P,
+    rate: r,
+    timeYears: t,
+    frequency: freqLabel,
+    totalInterest: interest,
+    totalAmount: maturity,
+  })
+
+  const handlePreviewPDF = () => {
+    if (!calculated || !(P > 0 && r > 0 && t > 0)) {
+      toast({ title: "Calculate first", description: "Please calculate interest before previewing.", variant: "destructive" })
+      return
+    }
+    const id = savePreviewData({
+      docType: "interest-calculator",
+      title: "Interest Report Preview",
+      fileName: `interest-report-${new Date().toISOString().split("T")[0]}.pdf`,
+      data: getDocData(),
+    })
+    router.push(`/preview/${id}`)
   }
 
   const handleDownloadPDF = async () => {
+    if (!calculated || !(P > 0 && r > 0 && t > 0)) {
+      toast({ title: "Calculate first", description: "Please calculate interest before downloading.", variant: "destructive" })
+      return
+    }
     setIsGenerating(true)
     try {
-      const node = document.getElementById("invoice-print-root");
+      const node = document.getElementById("calculator-print-root")
       if (node) {
-        await exportNodeToPdf(node, `interest-report-${new Date().toISOString().split('T')[0]}.pdf`);
+        await exportNodeToPdf(node, `interest-report-${new Date().toISOString().split("T")[0]}.pdf`)
       }
     } finally {
       setIsGenerating(false)
     }
   }
 
-  const iPct = calculated && maturity > 0 ? ((interest / maturity) * 100) : 0
-  const pPct = calculated && maturity > 0 ? (100 - iPct) : 0
+  const iPct = calculated && maturity > 0 ? (interest / maturity) * 100 : 0
 
   return (
     <>
-      <div className="absolute -left-[9999px] -top-[9999px]">
-        {isGenerating && <LoadingScreen message="Generating PDF..." />}
-        <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
-          <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
-            <div className="flex-1 overflow-auto rounded-2xl shadow-glass bg-white border border-border pb-8">
-              <InvoicePreview hideToolbar={true}>
-                <div className="bg-white text-black p-8 sm:p-12 print:shadow-none print:p-8 print:rounded-none w-full border-gray-100" style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box", minHeight: "297mm" }}>
-                  <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-8">
-                    <div className="text-right w-full">
-                      <h1 className="text-3xl font-light text-blue-600 uppercase tracking-widest mb-2">Interest Report</h1>
-                      <p className="text-gray-500 text-sm">Date: <span className="font-medium text-gray-900">{new Date().toLocaleDateString("en-IN")}</span></p>
-                    </div>
-                  </div>
-                  <div className="mb-12 text-center">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{mode === "simple" ? "Simple" : "Compound"} Interest Calculation Report</h3>
-                  </div>
-                  <div className="space-y-6 mb-12">
-                    <div className="grid grid-cols-2 gap-4 border-b border-gray-100 pb-6">
-                      <div className="bg-gray-50 p-4 rounded-xl text-center"><p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Principal Amount</p><p className="text-2xl font-medium text-gray-900">₹{fmt(P)}</p></div>
-                      <div className="bg-gray-50 p-4 rounded-xl text-center"><p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Interest Rate</p><p className="text-2xl font-medium text-gray-900">{rate}% p.a.</p></div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-emerald-50 p-6 rounded-xl text-center col-span-2 sm:col-span-1"><p className="text-3xl font-display font-bold text-emerald-600">₹{fmt(interest)}</p><p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">Total Interest</p></div>
-                      <div className="bg-blue-50 p-6 rounded-xl text-center sm:col-span-1"><p className="text-3xl font-display font-bold text-blue-600">₹{fmt(maturity)}</p><p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">Maturity Amount</p></div>
-                    </div>
-                  </div>
-                  <div className="mt-16 pt-8 border-t border-gray-100 text-center"><p className="text-gray-400 text-xs italic">This report was generated using the Turnivo Interest Calculator.</p></div>
-                </div>
-              </InvoicePreview>
-            </div>
-          </div>
-        </div>
+      {isGenerating && <LoadingScreen message="Generating Interest Report PDF..." />}
+
+      {/* Hidden print document for instant export */}
+      <div className="absolute -left-[9999px] -top-[9999px] pointer-events-none" aria-hidden="true">
+        <InterestDocument {...getDocData()} />
       </div>
 
       <UltraGrid>
-        {/* ─── CALCULATE CARD ─── */}
+        {/* CALCULATE CARD */}
         <UltraCard>
           <UltraCardHeader title="Calculate Interest" />
 
           <UltraToggle
-            options={[{value:"simple",label:"Simple Interest"},{value:"compound",label:"Compound Interest"}]}
+            options={[
+              { value: "simple", label: "Simple Interest" },
+              { value: "compound", label: "Compound Interest" },
+            ]}
             value={mode}
-            onChange={(v) => setMode(v as "simple" | "compound")}
+            onChange={(v) => {
+              setMode(v as "simple" | "compound")
+              setCalculated(false)
+            }}
           />
 
           <UltraInput
             type="number"
-            placeholder="Principal Amount"
+            placeholder="Principal Deposit Amount"
             currencySymbol="₹"
             value={principal}
-            onChange={e => { setPrincipal(e.target.value); setCalculated(false) }}
+            onChange={(e) => {
+              setPrincipal(e.target.value)
+              setCalculated(false)
+            }}
           />
 
           <UltraInput
@@ -135,14 +171,20 @@ export function InterestCalculatorClient() {
             placeholder="Annual Interest Rate"
             suffix="%"
             value={rate}
-            onChange={e => { setRate(e.target.value); setCalculated(false) }}
+            onChange={(e) => {
+              setRate(e.target.value)
+              setCalculated(false)
+            }}
           />
 
           <UltraInput
             type="number"
-            placeholder="Time Period (Years)"
+            placeholder="Time Duration (Years)"
             value={time}
-            onChange={e => { setTime(e.target.value); setCalculated(false) }}
+            onChange={(e) => {
+              setTime(e.target.value)
+              setCalculated(false)
+            }}
           />
 
           {mode === "compound" && (
@@ -151,7 +193,10 @@ export function InterestCalculatorClient() {
               <UltraToggle
                 options={COMPOUND_FREQUENCIES}
                 value={frequency}
-                onChange={setFrequency}
+                onChange={(f) => {
+                  setFrequency(f as number)
+                  setCalculated(false)
+                }}
               />
             </div>
           )}
@@ -164,7 +209,7 @@ export function InterestCalculatorClient() {
           </div>
         </UltraCard>
 
-        {/* ─── RESULTS CARD ─── */}
+        {/* RESULTS CARD */}
         <UltraCard>
           <UltraCardHeader title="Results" />
 
@@ -181,14 +226,24 @@ export function InterestCalculatorClient() {
                 <UltraResultCard label="Principal Amount" value={`₹${fmt(P)}`} color="blue" />
                 <UltraResultCard label="Rate & Duration" value={`${rate}% × ${t} ${t === 1 ? "Year" : "Years"}`} color="blue" />
                 <UltraResultCard label="Interest Earned" value={`₹${fmt(interest)}`} color="green" />
-                <UltraResultCard label="Maturity Amount" value={`₹${fmt(maturity)}`} color="main" />
+                <UltraResultCard label="Maturity Value" value={`₹${fmt(maturity)}`} color="main" />
               </UltraResultsGrid>
 
-              <UltraProgressBar label="Interest vs Principal" percent={iPct} />
+              <UltraProgressBar label="Interest vs Principal Share" percent={iPct} />
 
-              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
-                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-              </UltraPrimaryButton>
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={handlePreviewPDF}
+                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors"
+                >
+                  <Eye className="w-4 h-4" /> Preview PDF
+                </button>
+
+                <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating}>
+                  <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                </UltraPrimaryButton>
+              </div>
             </>
           )}
         </UltraCard>

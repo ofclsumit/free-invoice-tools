@@ -118,15 +118,16 @@ export function PreviewShell({
             <div className="flex items-center gap-3 min-w-0">
               {!hideBack && onBack && (
                 <Button 
-                  variant="ghost" 
-                  size="icon" 
+                  variant="outline" 
+                  size="sm" 
                   onClick={onBack} 
-                  className="h-8 w-8 rounded-full shrink-0 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition-all duration-200 shadow-xs"
+                  className="h-8 gap-1.5 px-3 rounded-lg shrink-0 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition-all duration-200 shadow-xs font-semibold text-xs"
                 >
-                  <ArrowLeft className="h-4 w-4" />
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  <span>Back to Edit</span>
                 </Button>
               )}
-              <h1 className="text-sm font-bold truncate text-slate-900 dark:text-slate-100">{title}</h1>
+              <h1 className="text-sm font-bold truncate text-slate-900 dark:text-slate-100 hidden md:block">{title}</h1>
             </div>
             
             <div className="flex items-center gap-1.5 shrink-0">

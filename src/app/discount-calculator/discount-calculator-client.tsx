@@ -1,26 +1,32 @@
 "use client"
-import { useState, useRef } from "react"
-import { useReactToPrint } from "react-to-print"
-import { Download } from "lucide-react"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Download, Eye } from "lucide-react"
 import { LoadingScreen } from "@/components/shared/loading-screen"
+import { useToast } from "@/hooks/use-toast"
+import { exportNodeToPdf } from "@/components/invoice-templates/components"
+import { savePreviewData } from "@/lib/preview-store"
+import { ProfitMarginDocument } from "@/components/calculator-documents"
 import {
-  InvoicePreview,
-  exportNodeToPdf,
-} from "@/components/invoice-templates/components"
-import { UltraShell } from "@/components/ultra/ultra-shell"
-import {
-  UltraNav, UltraPage, UltraGrid,
-  UltraHeader, UltraCard, UltraCardHeader, UltraEmptyState, UltraInput,
-  UltraResultsGrid, UltraResultCard, UltraPrimaryButton, UltraResetButton
+  UltraGrid,
+  UltraCard,
+  UltraCardHeader,
+  UltraEmptyState,
+  UltraInput,
+  UltraResultsGrid,
+  UltraResultCard,
+  UltraPrimaryButton,
+  UltraResetButton,
 } from "@/components/ultra/ultra-components"
 
 export function DiscountCalculatorClient() {
+  const router = useRouter()
+  const { toast } = useToast()
   const [originalPrice, setOriginalPrice] = useState("")
   const [discountRate, setDiscountRate] = useState("")
   const [calculated, setCalculated] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
-
-  const printRef = useRef<HTMLDivElement>(null)
 
   const price = parseFloat(originalPrice) || 0
   const rate = parseFloat(discountRate) || 0
@@ -28,27 +34,57 @@ export function DiscountCalculatorClient() {
   const discountAmount = (price * rate) / 100
   const finalPrice = price - discountAmount
 
-  const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const fmt = (n: number) =>
+    n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
   const handleCalculate = () => {
-    if (price > 0 && rate > 0) setCalculated(true)
-    else {
+    if (price > 0 && rate > 0) {
+      setCalculated(true)
+    } else {
       setCalculated(false)
-      const btn = document.getElementById("calc-btn")
-      if (btn) { btn.style.animation = "none"; void btn.offsetWidth; btn.style.animation = "shake .4s ease" }
+      toast({ title: "Valid original price and discount rate required", variant: "destructive" })
     }
   }
 
   const handleReset = () => {
-    setOriginalPrice(""); setDiscountRate(""); setCalculated(false)
+    setOriginalPrice("")
+    setDiscountRate("")
+    setCalculated(false)
+  }
+
+  const getDocData = () => ({
+    title: "Discount & Pricing Calculation Report",
+    isDiscount: true,
+    costPrice: price,
+    sellingPrice: finalPrice,
+    profitOrDiscountAmount: discountAmount,
+    percentage: rate,
+  })
+
+  const handlePreviewPDF = () => {
+    if (!calculated || !(price > 0 && rate > 0)) {
+      toast({ title: "Calculate first", description: "Please calculate discount before previewing.", variant: "destructive" })
+      return
+    }
+    const id = savePreviewData({
+      docType: "discount-calculator",
+      title: "Discount Calculation Preview",
+      fileName: `discount-report-${new Date().toISOString().split("T")[0]}.pdf`,
+      data: getDocData(),
+    })
+    router.push(`/preview/${id}`)
   }
 
   const handleDownloadPDF = async () => {
+    if (!calculated || !(price > 0 && rate > 0)) {
+      toast({ title: "Calculate first", description: "Please calculate discount before downloading.", variant: "destructive" })
+      return
+    }
     setIsGenerating(true)
     try {
-      const node = document.getElementById("invoice-print-root");
+      const node = document.getElementById("calculator-print-root")
       if (node) {
-        await exportNodeToPdf(node, `discount-report-${new Date().toISOString().split('T')[0]}.pdf`);
+        await exportNodeToPdf(node, `discount-report-${new Date().toISOString().split("T")[0]}.pdf`)
       }
     } finally {
       setIsGenerating(false)
@@ -57,82 +93,38 @@ export function DiscountCalculatorClient() {
 
   return (
     <>
-      <div className="absolute -left-[9999px] -top-[9999px]">
-        {isGenerating && <LoadingScreen message="Generating PDF..." />}
-        <div className="min-h-screen bg-mesh py-8 px-4 sm:py-12 flex flex-col h-screen overflow-hidden">
-          <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
-            <div className="flex-1 overflow-auto rounded-2xl shadow-glass bg-white border border-border pb-8">
-              <InvoicePreview hideToolbar={true}>
-                <div
-                  className="bg-white text-black p-8 sm:p-12 print:shadow-none print:p-8 print:rounded-none w-full border-gray-100"
-                  style={{ maxWidth: "210mm", margin: "0 auto", boxSizing: "border-box", minHeight: "297mm" }}
-                >
-                  <div className="flex justify-between items-start mb-8 border-b border-gray-100 pb-8">
-                    <div className="text-right w-full">
-                      <h1 className="text-3xl font-light text-emerald-600 uppercase tracking-widest mb-2">Discount Report</h1>
-                      <p className="text-gray-500 text-sm">Date: <span className="font-medium text-gray-900">{new Date().toLocaleDateString("en-IN")}</span></p>
-                    </div>
-                  </div>
+      {isGenerating && <LoadingScreen message="Generating Discount Report PDF..." />}
 
-                  <div className="mb-12 text-center">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Discount Calculation Report</h3>
-                    <p className="text-gray-500 text-sm">A detailed breakdown of the discount applied.</p>
-                  </div>
-
-                  <div className="space-y-6 mb-12">
-                    <div className="bg-gray-50 p-6 rounded-xl text-center">
-                      <p className="text-gray-500 text-sm uppercase tracking-wider mb-1">Original Price</p>
-                      <p className="text-3xl font-display font-bold text-gray-900">₹{fmt(price)}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-red-50 p-6 rounded-xl text-center">
-                        <p className="text-xl font-display font-bold text-red-600">-₹{fmt(discountAmount)}</p>
-                        <p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">Discount ({rate}%)</p>
-                      </div>
-                      <div className="bg-emerald-50 p-6 rounded-xl text-center">
-                        <p className="text-xl font-display font-bold text-emerald-600">₹{fmt(finalPrice)}</p>
-                        <p className="text-sm font-medium text-gray-600 mt-2 uppercase tracking-wider">Final Price</p>
-                      </div>
-                    </div>
-
-                    <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-6 text-center text-white">
-                      <p className="text-sm uppercase tracking-widest opacity-80 mb-2">You Save</p>
-                      <p className="text-3xl font-display font-bold">₹{fmt(discountAmount)} ({rate}%)</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-16 pt-8 border-t border-gray-100 text-center">
-                    <p className="text-gray-400 text-xs italic">
-                      This report was generated using the Turnivo Discount Calculator.
-                    </p>
-                  </div>
-                </div>
-              </InvoicePreview>
-            </div>
-          </div>
-        </div>
+      {/* Hidden print document for instant export */}
+      <div className="absolute -left-[9999px] -top-[9999px] pointer-events-none" aria-hidden="true">
+        <ProfitMarginDocument {...getDocData()} />
       </div>
 
       <UltraGrid>
-        {/* ─── CALCULATE CARD ─── */}
+        {/* CALCULATE CARD */}
         <UltraCard>
           <UltraCardHeader title="Calculate Discount" />
 
           <UltraInput
             type="number"
-            placeholder="Original Price"
+            placeholder="Original Catalog / List Price"
             currencySymbol="₹"
             value={originalPrice}
-            onChange={e => { setOriginalPrice(e.target.value); setCalculated(false) }}
+            onChange={(e) => {
+              setOriginalPrice(e.target.value)
+              setCalculated(false)
+            }}
           />
           <UltraInput
             type="number"
             step="0.1"
-            placeholder="Discount Rate"
+            placeholder="Discount Percentage"
             suffix="%"
             value={discountRate}
-            onChange={e => { setDiscountRate(e.target.value); setCalculated(false) }}
+            onChange={(e) => {
+              setDiscountRate(e.target.value)
+              setCalculated(false)
+            }}
           />
 
           <div className="flex gap-3 mt-6">
@@ -143,7 +135,7 @@ export function DiscountCalculatorClient() {
           </div>
         </UltraCard>
 
-        {/* ─── RESULTS CARD ─── */}
+        {/* RESULTS CARD */}
         <UltraCard>
           <UltraCardHeader title="Results" />
 
@@ -163,9 +155,19 @@ export function DiscountCalculatorClient() {
                 <UltraResultCard label="You Save" value={`₹${fmt(discountAmount)} (${rate}%)`} color="green" />
               </UltraResultsGrid>
 
-              <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating} className="w-full mt-4">
-                <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
-              </UltraPrimaryButton>
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={handlePreviewPDF}
+                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors"
+                >
+                  <Eye className="w-4 h-4" /> Preview PDF
+                </button>
+
+                <UltraPrimaryButton onClick={handleDownloadPDF} disabled={isGenerating}>
+                  <Download className="w-4 h-4" /> {isGenerating ? "Generating..." : "Download PDF"}
+                </UltraPrimaryButton>
+              </div>
             </>
           )}
         </UltraCard>

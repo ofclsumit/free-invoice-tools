@@ -19,7 +19,8 @@ import {
 } from "@/components/invoice-templates/components"
 import { useToast } from "@/hooks/use-toast"
 import { savePreviewData } from "@/lib/preview-store"
-import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-store"
+import { savePreviewSession, consumePreviewSession } from "@/lib/preview-session"
+import { ImageUploadField, type ImageEditSettings, DEFAULT_IMAGE_EDIT_SETTINGS } from "@/components/shared/image-editor"
 
 const PHONE_CODES = ["+91", "+1", "+44", "+61", "+971", "+65", "+60", "+94", "+977", "+880"]
 const PAYMENT_MODES = ["Cash", "Cheque", "UPI", "Bank Transfer"]
@@ -30,7 +31,11 @@ export function PaymentReceiptClient() {
 
   const [companyName, setCompanyName] = useState("")
   const [companyLogo, setCompanyLogo] = useState("")
+  const [logoOriginal, setLogoOriginal] = useState("")
+  const [logoSettings, setLogoSettings] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT_SETTINGS)
   const [businessSignature, setBusinessSignature] = useState("")
+  const [signatureOriginal, setSignatureOriginal] = useState("")
+  const [signatureSettings, setSignatureSettings] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT_SETTINGS)
   const [businessEmail, setBusinessEmail] = useState("")
   const [businessPhoneCode, setBusinessPhoneCode] = useState("+91")
   const [businessPhone, setBusinessPhone] = useState("")
@@ -160,13 +165,17 @@ export function PaymentReceiptClient() {
   }
 
   const resetForm = () => {
-    clearDraft("payment-receipt")
-    setCompanyName(""); setCompanyLogo(""); setBusinessSignature(""); setBusinessEmail(""); setBusinessPhoneCode("+91"); setBusinessPhone(""); setBusinessAddress(""); setBusinessGstin(""); setBusinessPan(""); setReceivedFrom(""); setPayerEmail(""); setPayerPhoneCode("+91"); setPayerPhone(""); setPayerAddress(""); setAmount(""); setPurpose(""); setPaymentMode("Cash"); setTransactionId(""); setInvoiceReference(""); setReceiptNo(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(new Date().toISOString().split("T")[0]); setNotes("")
+    setCompanyName(""); setCompanyLogo(""); setLogoOriginal(""); setLogoSettings(DEFAULT_IMAGE_EDIT_SETTINGS); setBusinessSignature(""); setSignatureOriginal(""); setSignatureSettings(DEFAULT_IMAGE_EDIT_SETTINGS); setBusinessEmail(""); setBusinessPhoneCode("+91"); setBusinessPhone(""); setBusinessAddress(""); setBusinessGstin(""); setBusinessPan(""); setReceivedFrom(""); setPayerEmail(""); setPayerPhoneCode("+91"); setPayerPhone(""); setPayerAddress(""); setAmount(""); setPurpose(""); setPaymentMode("Cash"); setTransactionId(""); setInvoiceReference(""); setReceiptNo(`CR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 1000)).padStart(4, "0")}`); setReceiptDate(new Date().toISOString().split("T")[0]); setNotes("")
   }
 
   const handleShowPreview = useCallback(() => {
     if (!validateEssentialFields()) return
-    saveDraft("payment-receipt", getState())
+    savePreviewSession("payment-receipt", getState(), {
+      logoOriginal,
+      logoSettings,
+      signatureOriginal,
+      signatureSettings,
+    })
     const id = savePreviewData({
       docType: "payment-receipt",
       invoiceData,
@@ -174,25 +183,20 @@ export function PaymentReceiptClient() {
       fileName: `receipt-${receiptNo || "draft"}.pdf`,
     })
     router.push(`/preview/${id}`)
-  }, [validateEssentialFields, invoiceData, receiptNo, getState, router])
+  }, [validateEssentialFields, invoiceData, receiptNo, getState, router, logoOriginal, logoSettings, signatureOriginal, signatureSettings])
 
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     setMounted(true)
-    const draft = loadDraft<any>("payment-receipt")
-    if (draft) {
-      setState(draft)
+    const session = consumePreviewSession<any>("payment-receipt")
+    if (session?.formValues) {
+      setState(session.formValues)
+      if (session.extraState?.logoOriginal) setLogoOriginal(session.extraState.logoOriginal)
+      if (session.extraState?.logoSettings) setLogoSettings(session.extraState.logoSettings)
+      if (session.extraState?.signatureOriginal) setSignatureOriginal(session.extraState.signatureOriginal)
+      if (session.extraState?.signatureSettings) setSignatureSettings(session.extraState.signatureSettings)
     }
   }, [setState])
-
-  // Auto-save draft on state change
-  useEffect(() => {
-    if (!mounted) return
-    const timer = setTimeout(() => {
-      saveDraft("payment-receipt", getState())
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [getState, mounted])
 
   if (!mounted) return null
 
@@ -212,9 +216,6 @@ export function PaymentReceiptClient() {
             <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={handleSave}>
               <Save className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Save Draft</span>
             </Button>
-            <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs flex" onClick={resetForm}>
-              <RotateCcw className="h-3.5 w-3.5 shrink-0" /> <span className="hidden sm:inline">Reset</span>
-            </Button>
           </div>
         </div>
 
@@ -233,26 +234,24 @@ export function PaymentReceiptClient() {
               <Input placeholder="Your company name" value={companyName} onChange={e => setCompanyName(e.target.value)} className="h-9 text-sm" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Company Logo (Optional)</Label>
-              <div className="relative border-2 border-dashed border-border rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group h-28 w-full max-w-[200px] overflow-hidden">
-                {companyLogo ? (
-                  <>
-                    <img src={companyLogo} alt="Logo" className="max-h-full max-w-full object-contain p-2" />
-                    <div
-                      className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                      onClick={(e) => { e.preventDefault(); setCompanyLogo("") }}
-                    >
-                      <Trash2 className="h-5 w-5 text-white" />
-                    </div>
-                  </>
-                ) : (
-                  <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
-                    <Plus className="h-5 w-5 text-muted-foreground mb-1" />
-                    <span className="text-[10px] text-muted-foreground font-medium">Upload Logo</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
-                  </label>
-                )}
-              </div>
+              <ImageUploadField
+                label="Company Logo (Optional)"
+                assetType="logo"
+                aspectRatio="square"
+                value={companyLogo}
+                originalValue={logoOriginal}
+                settings={logoSettings}
+                onChange={(editedUrl, orig, newSettings) => {
+                  setCompanyLogo(editedUrl);
+                  setLogoOriginal(orig);
+                  setLogoSettings(newSettings);
+                }}
+                onRemove={() => {
+                  setCompanyLogo("");
+                  setLogoOriginal("");
+                  setLogoSettings(DEFAULT_IMAGE_EDIT_SETTINGS);
+                }}
+              />
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -398,26 +397,24 @@ export function PaymentReceiptClient() {
               <Textarea placeholder="Additional notes..." value={notes} onChange={e => setNotes(e.target.value)} className="min-h-[80px] text-sm" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Authorized Signature (Optional)</Label>
-              <div className="relative border-2 border-dashed border-border rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group h-28 w-full max-w-[200px] overflow-hidden">
-                {businessSignature ? (
-                  <>
-                    <img src={businessSignature} alt="Signature" className="max-h-full max-w-full object-contain p-2" />
-                    <div
-                      className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                      onClick={(e) => { e.preventDefault(); setBusinessSignature("") }}
-                    >
-                      <Trash2 className="h-5 w-5 text-white" />
-                    </div>
-                  </>
-                ) : (
-                  <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
-                    <Plus className="h-5 w-5 text-muted-foreground mb-1" />
-                    <span className="text-[10px] text-muted-foreground font-medium">Upload Signature</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleSignatureUpload} />
-                  </label>
-                )}
-              </div>
+              <ImageUploadField
+                label="Authorized Signature (Optional)"
+                assetType="signature"
+                aspectRatio="signature"
+                value={businessSignature}
+                originalValue={signatureOriginal}
+                settings={signatureSettings}
+                onChange={(editedUrl, orig, newSettings) => {
+                  setBusinessSignature(editedUrl);
+                  setSignatureOriginal(orig);
+                  setSignatureSettings(newSettings);
+                }}
+                onRemove={() => {
+                  setBusinessSignature("");
+                  setSignatureOriginal("");
+                  setSignatureSettings(DEFAULT_IMAGE_EDIT_SETTINGS);
+                }}
+              />
             </div>
           </div>
         </section>

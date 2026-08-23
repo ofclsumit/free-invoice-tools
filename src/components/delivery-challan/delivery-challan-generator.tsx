@@ -29,7 +29,8 @@ import { SkeletonDocumentForm } from "@/components/shared/loading"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { savePreviewData } from "@/lib/preview-store"
-import { saveDraft, loadDraft, clearDraft } from "@/lib/draft-store"
+import { savePreviewSession, consumePreviewSession } from "@/lib/preview-session"
+import { ImageUploadField, type ImageEditSettings, DEFAULT_IMAGE_EDIT_SETTINGS } from "@/components/shared/image-editor"
 
 const itemSchema = z.object({
   description: z.string().min(1, "Description required"),
@@ -148,6 +149,11 @@ export function DeliveryChallanGenerator() {
   const [challans, setChallans] = useState<SavedChallan[]>([])
   const router = useRouter()
 
+  const [logoOriginal, setLogoOriginal] = useState<string>("")
+  const [logoSettings, setLogoSettings] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT_SETTINGS)
+  const [signatureOriginal, setSignatureOriginal] = useState<string>("")
+  const [signatureSettings, setSignatureSettings] = useState<ImageEditSettings>(DEFAULT_IMAGE_EDIT_SETTINGS)
+
   useEffect(() => setMounted(true), [])
 
   useEffect(() => {
@@ -188,22 +194,19 @@ export function DeliveryChallanGenerator() {
   const { fields, append, remove } = useFieldArray({ control: form.control, name: "items" })
   const watchedValues = form.watch()
 
-  // Auto-restore draft from session storage on mount
+  // Single-use restoration ONLY when returning from Preview -> Back
   useEffect(() => {
-    const draft = loadDraft<DeliveryChallanFormData>("delivery-challan")
-    if (draft) {
-      form.reset(draft)
+    const session = consumePreviewSession<DeliveryChallanFormData>("delivery-challan")
+    if (session?.formValues) {
+      form.reset(session.formValues)
+      if (session.extraState) {
+        if (session.extraState.logoOriginal) setLogoOriginal(session.extraState.logoOriginal)
+        if (session.extraState.logoSettings) setLogoSettings(session.extraState.logoSettings)
+        if (session.extraState.signatureOriginal) setSignatureOriginal(session.extraState.signatureOriginal)
+        if (session.extraState.signatureSettings) setSignatureSettings(session.extraState.signatureSettings)
+      }
     }
   }, [form])
-
-  // Auto-save draft to session storage on form change
-  useEffect(() => {
-    if (!mounted) return
-    const timer = setTimeout(() => {
-      saveDraft("delivery-challan", form.getValues())
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [watchedValues, mounted, form])
 
   const validateEssentialFields = useCallback(() => {
     const values = form.getValues()
@@ -356,7 +359,12 @@ export function DeliveryChallanGenerator() {
     if (!validateEssentialFields()) return
     setIsPreviewing(true)
     const currentValues = form.getValues()
-    saveDraft("delivery-challan", currentValues)
+    savePreviewSession("delivery-challan", currentValues, {
+      logoOriginal,
+      logoSettings,
+      signatureOriginal,
+      signatureSettings,
+    })
     const currentChallanNumber = currentValues.challanNumber
     const id = savePreviewData({
       docType: "delivery-challan",
@@ -365,7 +373,7 @@ export function DeliveryChallanGenerator() {
       fileName: `delivery-challan-${currentChallanNumber || "draft"}.pdf`,
     })
     router.push(`/preview/${id}`)
-  }, [validateEssentialFields, form, invoiceData, router])
+  }, [validateEssentialFields, form, invoiceData, router, logoOriginal, logoSettings, signatureOriginal, signatureSettings])
 
   const handleUseCurrency = (code: string) => {
     const currency = CURRENCIES.find(c => c.code === code)
@@ -511,67 +519,43 @@ export function DeliveryChallanGenerator() {
               </div>
 
               <div className="grid sm:grid-cols-2 gap-6 pt-2">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Business Logo (Optional)</Label>
-                  <div className="relative border-2 border-dashed border-border rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group h-28 w-full max-w-[200px] overflow-hidden">
-                    {watchedValues.businessLogo ? (
-                      <>
-                        <img src={watchedValues.businessLogo} alt="Logo" className="max-h-full max-w-full object-contain p-2" />
-                        <div
-                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            form.setValue("businessLogo", "");
-                          }}
-                        >
-                          <Trash2 className="h-5 w-5 text-white" />
-                        </div>
-                      </>
-                    ) : (
-                      <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
-                        <Plus className="h-5 w-5 text-muted-foreground mb-1" />
-                        <span className="text-[10px] text-muted-foreground font-medium">Upload Logo</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleLogoUpload}
-                        />
-                      </label>
-                    )}
-                  </div>
-                </div>
+                <ImageUploadField
+                  label="Business Logo (Optional)"
+                  assetType="logo"
+                  aspectRatio="square"
+                  value={watchedValues.businessLogo}
+                  originalValue={logoOriginal}
+                  settings={logoSettings}
+                  onChange={(editedUrl, orig, newSettings) => {
+                    form.setValue("businessLogo", editedUrl);
+                    setLogoOriginal(orig);
+                    setLogoSettings(newSettings);
+                  }}
+                  onRemove={() => {
+                    form.setValue("businessLogo", "");
+                    setLogoOriginal("");
+                    setLogoSettings(DEFAULT_IMAGE_EDIT_SETTINGS);
+                  }}
+                />
 
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium">Authorized Signature (Optional)</Label>
-                  <div className="relative border-2 border-dashed border-border rounded-xl bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center cursor-pointer group h-28 w-full max-w-[200px] overflow-hidden">
-                    {watchedValues.businessSignature ? (
-                      <>
-                        <img src={watchedValues.businessSignature} alt="Signature" className="max-h-full max-w-full object-contain p-2" />
-                        <div
-                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            form.setValue("businessSignature", "");
-                          }}
-                        >
-                          <Trash2 className="h-5 w-5 text-white" />
-                        </div>
-                      </>
-                    ) : (
-                      <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center">
-                        <Plus className="h-5 w-5 text-muted-foreground mb-1" />
-                        <span className="text-[10px] text-muted-foreground font-medium">Upload Signature</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleSignatureUpload}
-                        />
-                      </label>
-                    )}
-                  </div>
-                </div>
+                <ImageUploadField
+                  label="Authorized Signature (Optional)"
+                  assetType="signature"
+                  aspectRatio="signature"
+                  value={watchedValues.businessSignature}
+                  originalValue={signatureOriginal}
+                  settings={signatureSettings}
+                  onChange={(editedUrl, orig, newSettings) => {
+                    form.setValue("businessSignature", editedUrl);
+                    setSignatureOriginal(orig);
+                    setSignatureSettings(newSettings);
+                  }}
+                  onRemove={() => {
+                    form.setValue("businessSignature", "");
+                    setSignatureOriginal("");
+                    setSignatureSettings(DEFAULT_IMAGE_EDIT_SETTINGS);
+                  }}
+                />
               </div>
             </section>
 
