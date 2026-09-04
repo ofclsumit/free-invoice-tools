@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { SiteLogo } from "@/components/shared/site-logo";
 
 export interface CalculatorDocumentShellProps {
   title: string;
@@ -28,67 +27,77 @@ export function CalculatorDocumentShell({
   children,
   disclaimer = "Figures and calculations presented in this document are estimates based on user-supplied inputs and standard financial formulas. Actual values may vary based on specific lending terms, tax rates, regulatory changes, or institutional rounding.",
 }: CalculatorDocumentShellProps) {
+  const pageStyle: React.CSSProperties = {
+    width: "210mm",
+    minHeight: "297mm",
+    boxSizing: "border-box",
+    padding: "14mm 15mm",
+    margin: "0 auto",
+    backgroundColor: "#ffffff",
+    color: "#111111",
+    fontFamily: "Arial, Helvetica, sans-serif",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    position: "relative",
+  };
+
   return (
     <div
       id="calculator-print-root"
-      className="bg-white text-slate-900 font-sans p-8 sm:p-12 print:p-6 print:shadow-none w-full max-w-[210mm] mx-auto min-h-[297mm] flex flex-col justify-between box-border border border-slate-200 print:border-none shadow-sm"
-      style={{
-        fontFamily:
-          "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-      }}
+      className="document-page pdf-page"
+      style={pageStyle}
     >
-      <div className="space-y-6">
+      <div>
         {/* Document Header */}
-        <header className="border-b border-slate-200 pb-5 flex flex-row justify-between items-start">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded bg-slate-900 flex items-center justify-center text-white text-xs font-bold font-mono">
+        <header style={{ borderBottom: "2px solid #111111", paddingBottom: "12px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+              <div style={{ height: "20px", width: "20px", borderRadius: "3px", backgroundColor: "#111111", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "10pt", fontWeight: "bold", fontFamily: "monospace" }}>
                 T
               </div>
-              <span className="text-sm font-bold tracking-tight uppercase text-slate-900">
+              <span style={{ fontSize: "10pt", fontWeight: "bold", letterSpacing: "1.5px", color: "#666666", textTransform: "uppercase" }}>
                 TURNIVO
               </span>
             </div>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight mt-2">
+            <h1 style={{ fontSize: "18pt", fontWeight: "bold", color: "#111111", margin: "4px 0 0 0", textTransform: "uppercase", letterSpacing: "-0.5px" }}>
               {title}
             </h1>
-            <p className="text-xs text-slate-500 font-medium">{subtitle}</p>
+            <p style={{ fontSize: "10pt", color: "#555555", margin: "3px 0 0 0", fontWeight: "normal" }}>
+              {subtitle}
+            </p>
           </div>
 
-          <div className="text-right space-y-1">
+          <div style={{ textAlign: "right", fontSize: "9.5pt", color: "#444444", lineHeight: "1.4" }}>
             {companyLogo && (
               <img
                 src={companyLogo}
                 alt={companyName || "Company Logo"}
-                className="h-10 object-contain ml-auto mb-1"
+                style={{ height: "32px", objectFit: "contain", marginLeft: "auto", marginBottom: "4px", display: "block" }}
               />
             )}
             {companyName && (
-              <p className="text-xs font-bold text-slate-800">{companyName}</p>
+              <p style={{ fontWeight: "bold", color: "#111111", fontSize: "10.5pt", margin: "0 0 2px 0" }}>{companyName}</p>
             )}
-            <div className="text-[11px] text-slate-500 space-y-0.5 mt-1">
-              <p>
-                <span className="font-semibold text-slate-700">Date:</span>{" "}
-                {generatedDate}
-              </p>
-              <p>
-                <span className="font-semibold text-slate-700">Ref ID:</span>{" "}
-                {reportId}
-              </p>
+            <div suppressHydrationWarning>
+              <span style={{ color: "#666666" }}>Date:</span> <strong>{generatedDate}</strong>
+            </div>
+            <div suppressHydrationWarning>
+              <span style={{ color: "#666666" }}>Ref ID:</span> <span style={{ fontFamily: "monospace", fontWeight: "bold" }}>{reportId}</span>
             </div>
           </div>
         </header>
 
         {/* Dynamic Report Content */}
-        <main className="space-y-6">{children}</main>
+        <main style={{ width: "100%" }}>{children}</main>
       </div>
 
       {/* Document Footer */}
-      <footer className="border-t border-slate-200 pt-4 mt-8 space-y-2 text-[10px] text-slate-500">
-        <p className="leading-relaxed">{disclaimer}</p>
-        <div className="flex justify-between items-center pt-2 border-t border-slate-100 font-medium">
-          <span>Generated with TURNIVO • Business & Financial Documents</span>
-          <span className="text-slate-700 font-semibold">turnivo.in</span>
+      <footer style={{ borderTop: "1px solid #D6D6D6", paddingTop: "8px", marginTop: "16px", fontSize: "8.5pt", color: "#666666", lineHeight: "1.35" }}>
+        <p style={{ margin: "0 0 6px 0" }}>{disclaimer}</p>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #EAEAEA", paddingTop: "6px", fontSize: "9pt" }}>
+          <span>Generated with <strong>TURNIVO</strong> • Business Diagnostic & Financial Tools</span>
+          <span style={{ fontWeight: "bold", color: "#111111" }}>turnivo.in</span>
         </div>
       </footer>
     </div>

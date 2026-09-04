@@ -15,6 +15,8 @@ import {
   ProfitMarginDocument,
   InterestDocument,
   CommissionDocument,
+  ProfitLeakDocument,
+  SubscriptionLeakDocument,
 } from "@/components/calculator-documents"
 import { fetchPreviewData } from "@/lib/preview-store"
 import type { PreviewStoreItem } from "@/lib/preview-store"
@@ -126,6 +128,22 @@ export default function PreviewPage() {
       case "commission-calculator": {
         return <CommissionDocument {...(customData as any)} />
       }
+      case "profit-leak-detector": {
+        return <ProfitLeakDocument diagnostic={(customData as any)?.diagnostic} companyName={(customData as any)?.companyName} companyLogo={(customData as any)?.companyLogo} />
+      }
+      case "subscription-leak-detector": {
+        const d = customData as any
+        return (
+          <SubscriptionLeakDocument
+            diagnostic={d?.diagnostic}
+            currency={d?.currency}
+            country={d?.country}
+            userType={d?.userType}
+            companyName={d?.companyName}
+            companyLogo={d?.companyLogo}
+          />
+        )
+      }
       case "calculator-report": {
         const d = customData as any
         if (d?.calcType === "emi" || d?.calcType === "loan") return <EmiDocument {...d} />
@@ -144,8 +162,6 @@ export default function PreviewPage() {
     }
   }
 
-  const isCalculator = docType.includes("calculator") || docType === "profit-margin" || docType === "calculator-report"
-
   return (
     <PreviewShell
       title={title}
@@ -153,7 +169,7 @@ export default function PreviewPage() {
       onBack={handleBack}
       documentType={docType}
       documentData={data}
-      printRootId={isCalculator ? "calculator-print-root" : "preview-print-root"}
+      printRootId="preview-print-root"
     >
       {renderContent()}
     </PreviewShell>

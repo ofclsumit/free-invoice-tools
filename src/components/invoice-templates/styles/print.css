@@ -26,7 +26,9 @@
   #invoice-print-root,
   #invoice-print-root *,
   #preview-print-root,
-  #preview-print-root * {
+  #preview-print-root *,
+  #calculator-print-root,
+  #calculator-print-root * {
     visibility: visible;
   }
 
@@ -37,7 +39,8 @@
   }
 
   #invoice-print-root,
-  #preview-print-root {
+  #preview-print-root,
+  #calculator-print-root {
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
@@ -48,13 +51,17 @@
 
   .invoice-sheet,
   .receipt-sheet,
-  .invoice-page {
+  .invoice-page,
+  .pld-page,
+  .sld-page,
+  .document-page,
+  .pdf-page {
     box-shadow: none !important;
     width: 210mm !important;
     min-height: 297mm !important;
     margin: 0 !important;
-    padding: 0 !important;
     page-break-after: always;
+    break-after: page;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }

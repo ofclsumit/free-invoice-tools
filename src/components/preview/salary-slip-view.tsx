@@ -60,8 +60,8 @@ export function SalarySlipView(props: SalarySlipViewProps) {
 
   return (
     <div
-      className="bg-white text-[#111111] p-8 sm:p-10 print:shadow-none print:p-0 print:rounded-none w-full mx-auto"
-      style={{ maxWidth: "210mm", minHeight: "297mm", boxSizing: "border-box", fontFamily: "Arial, Helvetica, sans-serif" }}
+      className="bg-white text-[#111111] document-page pdf-page mx-auto"
+      style={{ width: "210mm", minWidth: "210mm", maxWidth: "210mm", minHeight: "297mm", boxSizing: "border-box", padding: "14mm 15mm", fontFamily: "Arial, Helvetica, sans-serif", backgroundColor: "#ffffff" }}
     >
       {/* Top Header */}
       <div className="border-b-2 border-[#111111] pb-5 mb-5 flex justify-between items-start gap-6">

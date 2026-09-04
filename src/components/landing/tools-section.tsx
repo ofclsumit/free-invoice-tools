@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
@@ -23,6 +24,8 @@ import {
   Landmark,
   Banknote,
   TrendingUp,
+  TrendingDown,
+  Layers,
   BarChart3,
   Scale,
   HandCoins,
@@ -32,35 +35,101 @@ import {
   ChevronDown,
   ArrowRight,
   X,
-  type LucideIcon,
+  FileCheck,
 } from "lucide-react"
 
 // ---------------------------------------------------------------------------
-// Tool & Category Data Model
+// Tool & Category Data Model + Smart Badge System
 // ---------------------------------------------------------------------------
 
+export type ToolBadgeType = "NEW" | "TRENDING" | "POPULAR" | "UPDATED"
+
+/**
+ * Central configuration for badge durations in days.
+ */
+export const NEW_BADGE_DAYS = 30
+export const UPDATED_BADGE_DAYS = 14
+
 export type ToolItem = {
+  id?: string
   href: string
   title: string
   name: string
   desc: string
   description: string
-  icon: LucideIcon
+  icon: React.ComponentType<any>
   color?: string
   bg?: string
+  createdAt?: string      // e.g. "2026-08-30" — automatically triggers NEW for NEW_BADGE_DAYS
+  updatedAt?: string      // e.g. "2026-08-25" — automatically triggers UPDATED for UPDATED_BADGE_DAYS
+  badge?: ToolBadgeType   // Manually configured badge: "TRENDING" | "POPULAR" | "UPDATED"
+  badgeExpiresAt?: string // Optional manual badge expiry date
 }
 
 export type ToolCategory = {
   id: string
   label: string
   anchorId: string
-  icon: LucideIcon
+  icon: React.ComponentType<any>
   accent: "violet" | "blue" | "emerald"
   tools: ToolItem[]
 }
 
+/**
+ * Centralized helper: Determines the active badge for a tool based on priority:
+ * 1. Automatic NEW (within NEW_BADGE_DAYS)
+ * 2. Manual badge assignment (TRENDING / POPULAR / UPDATED)
+ * 3. Automatic UPDATED (within UPDATED_BADGE_DAYS)
+ * 4. null (No badge by default)
+ */
+export function getToolBadge(tool: ToolItem, currentDate = new Date()): ToolBadgeType | null {
+  // 1. Automatic NEW check (Highest priority)
+  if (tool.createdAt) {
+    const createdDate = new Date(tool.createdAt)
+    if (!isNaN(createdDate.getTime())) {
+      const diffMs = currentDate.getTime() - createdDate.getTime()
+      const diffDays = diffMs / (1000 * 60 * 60 * 24)
+      if (diffDays >= 0 && diffDays <= NEW_BADGE_DAYS) {
+        return "NEW"
+      }
+    }
+  }
+
+  // 2. Explicit manual badge assignment
+  if (tool.badge) {
+    if (tool.badgeExpiresAt) {
+      const expiryDate = new Date(tool.badgeExpiresAt)
+      if (!isNaN(expiryDate.getTime()) && currentDate > expiryDate) {
+        return null
+      }
+    }
+    return tool.badge
+  }
+
+  // 3. Automatic UPDATED check
+  if (tool.updatedAt) {
+    const updatedDate = new Date(tool.updatedAt)
+    if (!isNaN(updatedDate.getTime())) {
+      const diffMs = currentDate.getTime() - updatedDate.getTime()
+      const diffDays = diffMs / (1000 * 60 * 60 * 24)
+      if (diffDays >= 0 && diffDays <= UPDATED_BADGE_DAYS) {
+        return "UPDATED"
+      }
+    }
+  }
+
+  return null
+}
+
+const BADGE_STYLES: Record<ToolBadgeType, string> = {
+  NEW: "bg-violet-500/10 text-violet-700 dark:text-violet-300 border-violet-500/25 dark:border-violet-400/30",
+  TRENDING: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/25 dark:border-amber-400/30",
+  POPULAR: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/25 dark:border-blue-400/30",
+  UPDATED: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/25 dark:border-emerald-400/30",
+}
+
 // ---------------------------------------------------------------------------
-// 25 Live Tools on turnivo.in
+// Live Tools on turnivo.in
 // ---------------------------------------------------------------------------
 
 export const toolCategories: ToolCategory[] = [
@@ -72,6 +141,7 @@ export const toolCategories: ToolCategory[] = [
     accent: "violet",
     tools: [
       {
+        id: "invoice-generator",
         href: "/invoice-generator",
         title: "Invoice Generator",
         name: "Invoice Generator",
@@ -82,6 +152,7 @@ export const toolCategories: ToolCategory[] = [
         bg: "bg-violet-50 dark:bg-violet-950/30",
       },
       {
+        id: "quotation-generator",
         href: "/quotation-generator",
         title: "Quotation Generator",
         name: "Quotation Generator",
@@ -90,6 +161,19 @@ export const toolCategories: ToolCategory[] = [
         icon: FileSignature,
         color: "from-indigo-500 to-indigo-600",
         bg: "bg-indigo-50 dark:bg-indigo-950/30",
+        badge: "TRENDING",
+      },
+      {
+        id: "resume-generator",
+        href: "/resume-generator",
+        title: "Resume Generator",
+        name: "Resume Generator",
+        desc: "Create professional A4 resumes with live editor and PDF download",
+        description: "Create professional A4 resumes with live editor and PDF download",
+        icon: FileCheck,
+        color: "from-purple-500 to-indigo-600",
+        bg: "bg-purple-50 dark:bg-purple-950/30",
+        createdAt: "2026-08-30",
       },
       {
         href: "/proforma-invoice",
@@ -201,6 +285,33 @@ export const toolCategories: ToolCategory[] = [
     accent: "blue",
     tools: [
       {
+        id: "profit-leak-detector",
+        href: "/profit-leak-detector",
+        title: "Profit Leak Detector",
+        name: "Profit Leak Detector",
+        desc: "Identify hidden business costs and calculate profit leakage",
+        description: "Identify hidden business costs and calculate profit leakage",
+        icon: TrendingDown,
+        color: "from-rose-500 to-violet-600",
+        bg: "bg-rose-50 dark:bg-rose-950/30",
+        createdAt: "2026-08-30",
+        badge: "NEW",
+      },
+      {
+        id: "subscription-leak-detector",
+        href: "/subscription-leak-detector",
+        title: "Subscription Leak Detector",
+        name: "Subscription Leak Detector",
+        desc: "Identify unused, duplicate, or overpriced subscriptions",
+        description: "Identify unused, duplicate, or overpriced subscriptions",
+        icon: Layers,
+        color: "from-violet-500 to-indigo-600",
+        bg: "bg-violet-50 dark:bg-violet-950/30",
+        createdAt: "2026-08-30",
+        badge: "NEW",
+      },
+      {
+        id: "gst-calculator",
         href: "/gst-calculator",
         title: "GST Calculator",
         name: "GST Calculator",
@@ -209,6 +320,7 @@ export const toolCategories: ToolCategory[] = [
         icon: Percent,
         color: "from-blue-500 to-indigo-600",
         bg: "bg-blue-50 dark:bg-blue-950/30",
+        badge: "POPULAR",
       },
       {
         href: "/reverse-gst-calculator",
@@ -355,6 +467,7 @@ function ToolCard({
   accent: "violet" | "blue" | "emerald"
 }) {
   const Icon = tool.icon
+  const badge = getToolBadge(tool)
 
   // Category-specific subtle accent styling for the icon badge
   const iconAccentClasses = {
@@ -406,12 +519,26 @@ function ToolCard({
             </h3>
           </div>
 
-          <ArrowRight
-            size={16}
-            strokeWidth={2}
-            className="mt-1 shrink-0 text-zinc-400 dark:text-white/30 transition-all duration-200 group-hover:translate-x-1 group-hover:text-violet-500 dark:group-hover:text-violet-300"
-            aria-hidden="true"
-          />
+          <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+            {badge && (
+              <span
+                className={`
+                  inline-flex items-center px-1.5 py-0.5 rounded-[5px]
+                  text-[9.5px] font-bold tracking-wide uppercase leading-none border select-none
+                  ${BADGE_STYLES[badge]}
+                `}
+                aria-label={`${badge} tool`}
+              >
+                {badge}
+              </span>
+            )}
+            <ArrowRight
+              size={16}
+              strokeWidth={2}
+              className="shrink-0 text-zinc-400 dark:text-white/30 transition-all duration-200 group-hover:translate-x-1 group-hover:text-violet-500 dark:group-hover:text-violet-300"
+              aria-hidden="true"
+            />
+          </div>
         </div>
 
         <p className="mt-2.5 pl-12 text-[13px] leading-snug text-zinc-500 dark:text-white/45 line-clamp-2">
@@ -437,9 +564,9 @@ function CategorySection({
   const [collapsed, setCollapsed] = useState(false)
   const [expanded, setExpanded] = useState(false)
 
-  // Thresholds: Desktop displays 8 tools initially, Mobile displays 4
-  const INITIAL_COUNT_DESKTOP = 8
-  const INITIAL_COUNT_MOBILE = 4
+  // Thresholds: Desktop displays up to 12 tools cleanly in the 4-column grid, Mobile displays 6
+  const INITIAL_COUNT_DESKTOP = 12
+  const INITIAL_COUNT_MOBILE = 6
 
   // When searching, show all matched tools
   const visibleTools = isSearching || expanded
@@ -467,46 +594,49 @@ function CategorySection({
 
   return (
     <section id={category.anchorId} className="mb-10 sm:mb-12 scroll-mt-24">
-      {/* Category Header with Expand/Collapse */}
-      <button
-        type="button"
-        onClick={() => setCollapsed((c) => !c)}
-        aria-expanded={!collapsed}
-        aria-controls={`category-content-${category.id}`}
-        className="
-          group flex w-full items-center justify-between gap-3 rounded-2xl
-          px-2 py-2.5 text-left
-          transition-colors duration-150
-          hover:bg-black/[0.02] dark:hover:bg-white/[0.02]
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60
-        "
-      >
-        <span className="flex items-center gap-3 min-w-0">
-          <span
-            className={`
-              flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border
-              ${catIconClasses}
-            `}
-          >
-            <Icon size={16} strokeWidth={1.85} />
+      {/* Category Header with Heading 2 and Accordion Toggle */}
+      <h2>
+        <button
+          type="button"
+          onClick={() => setCollapsed((c) => !c)}
+          aria-expanded={!collapsed}
+          aria-controls={`category-content-${category.id}`}
+          className="
+            group flex w-full items-center justify-between gap-3 rounded-2xl
+            px-2 py-2.5 text-left
+            transition-colors duration-150
+            hover:bg-black/[0.02] dark:hover:bg-white/[0.02]
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60
+          "
+        >
+          <span className="flex items-center gap-3 min-w-0">
+            <span
+              className={`
+                flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border
+                ${catIconClasses}
+              `}
+            >
+              <Icon size={16} strokeWidth={1.85} />
+            </span>
+            <span className="text-[17px] sm:text-[18px] font-semibold text-zinc-900 dark:text-white tracking-tight truncate">
+              {category.label}
+            </span>
           </span>
-          <span className="text-[17px] sm:text-[18px] font-semibold text-zinc-900 dark:text-white tracking-tight truncate">
-            {category.label}
-          </span>
-        </span>
 
-        <span className="flex items-center gap-3 shrink-0">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium bg-black/[0.04] dark:bg-white/[0.06] text-zinc-500 dark:text-white/45 border border-black/[0.04] dark:border-white/[0.06]">
-            {category.tools.length} {category.tools.length === 1 ? "tool" : "tools"}
+          <span className="flex items-center gap-3 shrink-0">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium bg-black/[0.04] dark:bg-white/[0.06] text-zinc-500 dark:text-white/45 border border-black/[0.04] dark:border-white/[0.06]">
+              {category.tools.length} {category.tools.length === 1 ? "tool" : "tools"}
+            </span>
+            <ChevronDown
+              size={18}
+              className={`text-zinc-400 dark:text-white/40 transition-transform duration-200 ${
+                collapsed ? "rotate-0" : "rotate-180"
+              }`}
+              aria-hidden="true"
+            />
           </span>
-          <ChevronDown
-            size={18}
-            className={`text-zinc-400 dark:text-white/40 transition-transform duration-200 ${
-              collapsed ? "-rotate-90" : "rotate-0"
-            }`}
-          />
-        </span>
-      </button>
+        </button>
+      </h2>
 
       <AnimatePresence initial={false}>
         {!collapsed && (
@@ -534,7 +664,7 @@ function CategorySection({
                   <div
                     key={tool.href}
                     className={
-                      // Hide items 5-8 on mobile screen (<560px) in initial view, show on desktop or when expanded/searching
+                      // Hide overflow items on mobile screen (<560px) in initial view, show on desktop or when expanded/searching
                       !expanded && !isSearching && i >= INITIAL_COUNT_MOBILE
                         ? "hidden min-[560px]:block"
                         : "block"
@@ -568,14 +698,13 @@ function CategorySection({
                       active:scale-[0.98]
                     "
                   >
-                    {expanded
-                      ? "Show less"
-                      : `Show all ${category.tools.length} tools`}
+                    {expanded ? "Show less" : "Show all tools"}
                     <ChevronDown
                       size={14}
                       className={`transition-transform duration-200 ${
                         expanded ? "rotate-180" : ""
                       }`}
+                      aria-hidden="true"
                     />
                   </button>
                 </div>

@@ -34,14 +34,18 @@ export interface BusinessLetterViewProps {
 export function BusinessLetterView(props: BusinessLetterViewProps) {
   return (
     <div
-      className="bg-white text-[#111111] p-10 sm:p-14 print:shadow-none print:p-8 print:rounded-none w-full mx-auto"
+      className="bg-white text-[#111111] document-page pdf-page mx-auto"
       style={{
+        width: "210mm",
+        minWidth: "210mm",
         maxWidth: "210mm",
         minHeight: "297mm",
+        padding: "16mm 18mm",
         boxSizing: "border-box",
         fontFamily: "Times New Roman, Garamond, Georgia, serif",
         fontSize: "14.5px",
         lineHeight: "1.6",
+        backgroundColor: "#ffffff",
       }}
     >
       {/* ── Letterhead / Sender Information ───────────────────────── */}

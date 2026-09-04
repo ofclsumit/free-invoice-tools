@@ -46,7 +46,7 @@ export function UltraHeader({ badge, title, subtitle }: { badge?: ReactNode; tit
 export function UltraCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div
-      className={`relative rounded-[1.5rem] overflow-hidden transition-all duration-300 bg-white dark:bg-card border border-slate-200 dark:border-white/[.12] shadow-sm hover:shadow-md dark:shadow-[0_8px_32px_rgba(0,0,0,.4)] hover:-translate-y-[2px] ${className}`}
+      className={`relative rounded-[1.5rem] overflow-hidden transition-all duration-300 bg-white dark:bg-card border border-slate-200 dark:border-white/[.12] shadow-sm hover:shadow-md dark:shadow-[0_8px_32px_rgba(0,0,0,.4)] ${className}`}
     >
       <div className="relative z-[3] p-[1.85rem] pb-[1.75rem] text-slate-900 dark:text-white">
         {children}
@@ -77,7 +77,7 @@ export function UltraSectionLabel({ children }: { children: ReactNode }) {
 /* ─── TOGGLE ─── */
 export function UltraToggle<T extends string | number = string>({ options, value, onChange }: { options: { value: T; label: string }[]; value: T; onChange: (v: T) => void }) {
   return (
-    <div className="flex gap-[.25rem] bg-slate-100 dark:bg-black/30 border border-slate-200 dark:border-white/10 rounded-[.9rem] p-[.28rem] mb-[1.35rem]">
+    <div className="flex gap-[.25rem] bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-[.9rem] p-[.28rem] mb-[1.35rem]">
       {options.map(o => (
         <button
           key={String(o.value)}
@@ -85,8 +85,8 @@ export function UltraToggle<T extends string | number = string>({ options, value
           onClick={() => onChange(o.value)}
           className={`flex-1 py-[.55rem] px-[.6rem] rounded-[.65rem] text-[.82rem] font-semibold cursor-pointer font-sans transition-all duration-200 whitespace-nowrap ${
             value === o.value
-              ? "bg-white text-violet-900 shadow-sm border border-slate-200 dark:bg-gradient-to-r dark:from-[#8b5cf6]/60 dark:to-[#3b82f6]/45 dark:text-white dark:border-transparent dark:shadow-[0_2px_12px_rgba(139,92,246,.35)]"
-              : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-white/45 dark:hover:text-white/70 dark:hover:bg-white/[.06]"
+              ? "bg-white text-violet-900 shadow-xs border border-slate-200/80 dark:bg-violet-600 dark:text-white dark:border-transparent dark:shadow-sm"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/[.06]"
           }`}
         >
           {o.label}
@@ -142,12 +142,12 @@ export function UltraRateSelector({ rates, value, selectedRate, onChange, onSele
             onClick={() => handler(rate)}
             className={`flex-1 min-w-[60px] py-[.55rem] px-[.6rem] rounded-[.65rem] text-[.82rem] font-semibold cursor-pointer font-sans transition-all duration-200 ${
               currentRate === rate
-                ? "bg-violet-600 text-white shadow-sm dark:bg-gradient-to-r dark:from-[#8b5cf6]/60 dark:to-[#3b82f6]/45 dark:shadow-[0_2px_12px_rgba(139,92,246,.35)]"
-                : "bg-slate-50 border border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400 dark:bg-black/30 dark:border-white/[.12] dark:text-white/60 dark:hover:text-white dark:hover:bg-white/[.06]"
+                ? "bg-violet-600 text-white shadow-xs dark:bg-violet-600 dark:text-white dark:shadow-none"
+                : "bg-slate-50 border border-slate-300 text-slate-700 hover:bg-slate-100 hover:border-slate-400 dark:bg-black/30 dark:border-white/[.12] dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/[.06]"
             }`}
           >
             {rate}%
-            {labels?.[rate] && <span className={`block text-[10px] font-normal mt-0.5 ${currentRate === rate ? "text-violet-100" : "text-slate-500 dark:text-white/45"}`}>{labels[rate]}</span>}
+            {labels?.[rate] && <span className={`block text-[10px] font-normal mt-0.5 ${currentRate === rate ? "text-violet-100" : "text-slate-500 dark:text-slate-400"}`}>{labels[rate]}</span>}
           </button>
         ))}
       </div>
@@ -157,7 +157,7 @@ export function UltraRateSelector({ rates, value, selectedRate, onChange, onSele
 
 /* ─── DIVIDER ─── */
 export function UltraDivider() {
-  return <div className="h-px bg-slate-200 dark:bg-gradient-to-r dark:from-transparent dark:via-white/[.08] dark:to-transparent my-6" />
+  return <div className="h-px bg-slate-200 dark:bg-white/[.08] my-6" />
 }
 
 /* ─── RESULTS ─── */
@@ -166,13 +166,13 @@ export function UltraResultCard({ label, value, color = "main" }: { label: strin
   return (
     <div className={`flex items-center justify-between px-4 py-[.85rem] rounded-[.75rem] border gap-3 ${
       isHighlight
-        ? "bg-gradient-to-r from-violet-50 to-indigo-50/80 border-violet-200 dark:from-[#8b5cf6]/22 dark:to-[#3b82f6]/15 dark:border-[#8b5cf6]/35"
-        : "bg-slate-50 border-slate-200 dark:bg-black/25 dark:border-white/[.08]"
+        ? "bg-violet-50/90 border-violet-200 dark:bg-violet-950/40 dark:border-violet-800/50"
+        : "bg-slate-50 border-slate-200 dark:bg-black/30 dark:border-white/[.08]"
     }`}>
-      <span className="text-[.84rem] text-slate-600 dark:text-white/60 font-medium shrink-0">{label}</span>
+      <span className="text-[.84rem] text-slate-600 dark:text-slate-300 font-medium shrink-0">{label}</span>
       <span className={`text-right font-bold ${
         isHighlight
-          ? "text-[1.2rem] text-violet-950 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-[#c4b5fd] dark:to-[#93c5fd]"
+          ? "text-[1.2rem] text-violet-900 dark:text-violet-200"
           : "text-[1rem] text-slate-900 dark:text-white"
       }`}>
         {value}
@@ -221,15 +221,15 @@ export function UltraSplitContainer({ children }: { children: ReactNode }) {
 export function UltraProgressBar({ label, value, percent, color }: { label: string; value?: number; percent?: number; color?: "indigo" | "emerald" }) {
   const finalVal = typeof value === "number" ? value : (typeof percent === "number" ? percent : 0)
   return (
-    <div className="mt-[.2rem] px-4 py-[.85rem] bg-slate-50 dark:bg-black/25 border border-slate-200 dark:border-white/[.07] rounded-[.75rem]">
-      <div className="flex justify-between text-[.75rem] font-semibold text-slate-700 dark:text-white/45 mb-2">
+    <div className="mt-[.2rem] px-4 py-[.85rem] bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/10 rounded-[.75rem]">
+      <div className="flex justify-between text-[.75rem] font-semibold text-slate-700 dark:text-slate-300 mb-2">
         <span>{label}</span>
         <span className="font-mono text-slate-900 dark:text-white font-bold">{finalVal.toFixed(1)}%</span>
       </div>
-      <div className="h-[8px] bg-slate-200 dark:bg-white/[.1] rounded-[2rem] overflow-hidden">
+      <div className="h-[8px] bg-slate-200 dark:bg-white/10 rounded-[2rem] overflow-hidden">
         <div
-          className="h-full rounded-[2rem] transition-all duration-700 bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-[#a78bfa] dark:to-[#60a5fa]"
-          style={{ width: `${Math.min(finalVal, 100)}%` }}
+          className="h-full rounded-[2rem] transition-all duration-700 bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-500 dark:to-indigo-500"
+          style={{ width: `${Math.min(Math.max(finalVal, 0), 100)}%` }}
         />
       </div>
     </div>
@@ -244,7 +244,7 @@ export function UltraPrimaryButton({ children, onClick, disabled = false, classN
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`flex items-center justify-center gap-2 px-5 py-[.82rem] bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white rounded-[.9rem] text-[.93rem] font-bold cursor-pointer font-sans transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-px disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 ${className}`}
+      className={`flex items-center justify-center gap-2 px-5 py-[.82rem] bg-violet-600 hover:bg-violet-700 text-white rounded-[.9rem] text-[.93rem] font-bold cursor-pointer font-sans transition-all duration-200 shadow-sm hover:shadow active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
     >
       {children}
     </button>
@@ -256,7 +256,7 @@ export function UltraResetButton({ onClick, children = "↺ Reset" }: { onClick:
     <button
       type="button"
       onClick={onClick}
-      className="flex-1 py-[.82rem] px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 dark:bg-white/[.08] dark:hover:bg-white/[.14] dark:border-white/[.15] dark:text-white/70 rounded-[.9rem] text-[.9rem] font-semibold cursor-pointer font-sans transition-all duration-200"
+      className="flex-1 py-[.82rem] px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 dark:bg-white/[.08] dark:hover:bg-white/[.14] dark:border-white/[.15] dark:text-slate-300 rounded-[.9rem] text-[.9rem] font-semibold cursor-pointer font-sans transition-all duration-200 active:scale-[0.98]"
     >
       {children}
     </button>
@@ -266,11 +266,11 @@ export function UltraResetButton({ onClick, children = "↺ Reset" }: { onClick:
 /* ─── RATE TABLE ─── */
 export function UltraRateTable({ rows, onSelect }: { rows: { rate: string; label: string; desc: string }[]; onSelect?: (rate: string) => void }) {
   const colorMap: Record<string, string> = {
-    "0%": "bg-slate-100 text-slate-700 dark:bg-white/8 dark:text-slate-400",
-    "5%": "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-400",
-    "12%": "bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-400",
-    "18%": "bg-purple-100 text-purple-800 dark:bg-purple-500/15 dark:text-purple-400",
-    "28%": "bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-400",
+    "0%": "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-400",
+    "5%": "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400",
+    "12%": "bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-400",
+    "18%": "bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-400",
+    "28%": "bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-400",
   }
   return (
     <div className="mt-5 bg-white dark:bg-black/30 border border-slate-200 dark:border-white/[.12] rounded-[.75rem] p-6 shadow-xs">

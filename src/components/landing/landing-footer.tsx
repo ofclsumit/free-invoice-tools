@@ -6,6 +6,7 @@ const footerLinks = {
   "Document Generators": [
     { label: "Invoice Generator", href: "/invoice-generator" },
     { label: "Quotation Generator", href: "/quotation-generator" },
+    { label: "Resume Generator", href: "/resume-generator" },
     { label: "Proforma Invoice", href: "/proforma-invoice" },
     { label: "Purchase Order", href: "/purchase-order" },
     { label: "Delivery Challan", href: "/delivery-challan" },
@@ -18,6 +19,8 @@ const footerLinks = {
     { label: "Business Letter", href: "/business-letter" },
   ],
   Calculators: [
+    { label: "Profit Leak Detector", href: "/profit-leak-detector" },
+    { label: "Subscription Leak Detector", href: "/subscription-leak-detector" },
     { label: "GST Calculator", href: "/gst-calculator" },
     { label: "Reverse GST Calculator", href: "/reverse-gst-calculator" },
     { label: "GST Split Calculator", href: "/gst-split-calculator" },
@@ -49,28 +52,32 @@ const footerLinks = {
 
 export function LandingFooter() {
   return (
-    <footer className="border-t border-border bg-white dark:bg-gray-950">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-          <div className="col-span-2 md:col-span-1 space-y-4">
+    <footer className="border-t border-border bg-white/80 dark:bg-gray-950/80 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-14 sm:py-16">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-6 gap-8 sm:gap-10">
+          <div className="col-span-2 md:col-span-2 space-y-4 pr-0 sm:pr-4">
             <SiteLogo size="sm" />
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              India&apos;s most comprehensive free business document platform. Create invoices, quotations, receipts and more.
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-sm">
+              India&apos;s most comprehensive free business document platform. Create invoices, quotations, receipts, and run financial calculations in seconds.
             </p>
-            <p className="text-xs text-muted-foreground">
-              Made in India 🇮🇳 · 100% Free · No Signup
-            </p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-black/[0.03] dark:bg-white/[0.05] text-muted-foreground border border-border">
+              <span>Made in India 🇮🇳</span>
+              <span>·</span>
+              <span>100% Free</span>
+              <span>·</span>
+              <span>No Signup</span>
+            </div>
           </div>
 
           {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <p className="font-display font-semibold text-sm mb-4">{category}</p>
-              <ul className="space-y-2.5">
+            <div key={category} className="col-span-1 md:col-span-1">
+              <p className="font-display font-semibold text-xs sm:text-sm text-foreground mb-3.5 tracking-tight">{category}</p>
+              <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-xs text-muted-foreground hover:text-violet-600 dark:hover:text-violet-400 transition-colors block truncate"
                     >
                       {link.label}
                     </Link>
@@ -86,7 +93,7 @@ export function LandingFooter() {
             &copy; {new Date().getFullYear()} Turnivo. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">
-            27+ free business tools for India
+            25+ free business document tools &amp; calculators for India
           </p>
         </div>
       </div>

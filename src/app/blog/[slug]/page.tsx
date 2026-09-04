@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Metadata } from 'next'
 import { SchemaMarkup } from '@/components/seo/SchemaMarkup'
+import { SwapadAd } from '@/components/ads/swapad-ad'
 
 export async function generateStaticParams() {
   const posts = getAllPosts()
@@ -91,6 +92,9 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             {post.content}
           </ReactMarkdown>
         </div>
+
+        {/* Non-intrusive Swapad ad exchange banner */}
+        <SwapadAd className="mt-14" />
       </article>
     </>
   )

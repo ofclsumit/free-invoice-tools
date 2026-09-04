@@ -28,6 +28,8 @@ const allTools: RelatedTool[] = [
   { title: "Debit Note Generator", description: "Raise debit notes for additional charges.", href: "/debit-note" },
   { title: "Discount Calculator", description: "Calculate savings and final price after discount.", href: "/discount-calculator" },
   { title: "Profit Margin Calculator", description: "Calculate profit margin, markup, and selling price.", href: "/profit-margin" },
+  { title: "Profit Leak Detector", description: "Identify hidden business costs and calculate profit leakage.", href: "/profit-leak-detector" },
+  { title: "Subscription Leak Detector", description: "Find unused, duplicated, or overpriced recurring subscriptions.", href: "/subscription-leak-detector" },
   { title: "Break Even Calculator", description: "Calculate break-even point for your business.", href: "/break-even-calculator" },
   { title: "Commission Calculator", description: "Calculate commission amounts easily.", href: "/commission-calculator" },
   { title: "Reverse GST Calculator", description: "Calculate original price before GST.", href: "/reverse-gst-calculator" },
@@ -526,6 +528,60 @@ export const quotationGeneratorDictionary: Record<string, SeoContent> = {
 }
 
 export const toolContentDictionary: Record<string, SeoContent> = {
+  "resume-generator": {
+    slug: "resume-generator",
+    title: "Free Resume Generator & Live Editor | Professional A4 PDF Resume | Turnivo",
+    metaDescription: "Create clean, professional A4 resumes for free. Fill your information and edit directly on the live visual resume canvas. Download vector PDF instantly without signup.",
+    h1: "Free Professional Resume Generator",
+    heroDescription: "Build a modern, job-winning A4 resume in minutes. Enter your experience, edit directly on the live document canvas, and export a print-ready vector PDF instantly.",
+    howToUse: {
+      title: "How to Create Your Resume",
+      steps: [
+        "Enter your personal info, work experience, education, skills, and languages in the form.",
+        "Click 'Continue to Resume Editor' to open the direct live editable document canvas.",
+        "Click any text, date, or role directly on the resume to refine formatting in real time.",
+        "Click 'Download PDF' or 'Print' to save your 100% digital vector A4 resume.",
+      ],
+    },
+    features: [
+      "Direct on-canvas editing: click any text to edit directly on the document",
+      "Exact A4 proportions with clean typography and spacing",
+      "Dynamic add/remove controls for experiences, educations, bullet points, skills, and languages",
+      "100% selectable and copyable vector text in generated PDFs",
+      "Intelligent conditional rendering: empty sections hide cleanly with zero clutter",
+      "Privacy-first: all data stays local in your web browser with zero server tracking",
+    ],
+    benefits: [
+      "Completely free forever with no watermarks or locked premium templates",
+      "No registration or signup required — start immediately",
+      "One single source of truth: the editable resume IS the live preview",
+      "Passes ATS parsers with standard clean semantic structure and typography",
+      "Saves hours of formatting hassle in Word or Google Docs",
+    ],
+    faqs: [
+      {
+        question: "Is Turnivo Resume Generator completely free?",
+        answer: "Yes! You can create, edit, and download unlimited resumes without paying anything and without creating an account. No watermarks, no limits, and no subscription fees.",
+      },
+      {
+        question: "How does the direct live editor work?",
+        answer: "After filling in your details, you are taken directly to the visual A4 document. You can click on any text, job title, company name, date, or bullet point and type to edit it instantly. The editable document itself is the live preview.",
+      },
+      {
+        question: "Will the PDF match what I see on screen?",
+        answer: "Yes, exactly. The PDF is generated directly from the same A4 document you edit. All editing affordances (like dashed outlines and add/delete buttons) automatically disappear during print and PDF export.",
+      },
+      {
+        question: "Can I add multiple bullet points and jobs?",
+        answer: "Yes. You can add as many work experiences and bullet points as you need. You can also add or remove bullet points directly while looking at the resume.",
+      },
+      {
+        question: "Is my personal career data private?",
+        answer: "Absolutely. Turnivo is built privacy-first. All resume compilation, direct editing, and PDF generation happen locally inside your browser. No personal data is stored on our servers.",
+      },
+    ],
+    relatedTools: defaultRelatedTools,
+  },
   "gst-calculator": {
     slug: "gst-calculator",
     title: "Free GST Calculator Online | Calculate GST Amount Instantly | Turnivo",
@@ -1647,4 +1703,160 @@ export const toolContentDictionary: Record<string, SeoContent> = {
       }],
     relatedTools: allTools.filter(t => ["/emi-calculator", "/loan-calculator", "/gst-calculator", "/discount-calculator"].includes(t.href)),
   },
+  "profit-leak-detector": {
+    slug: "profit-leak-detector",
+    title: "Profit Leak Detector – Find Hidden Business Costs | TURNIVO",
+    metaDescription: "Find hidden business costs and estimate where profit may be leaking. Use TURNIVO's free Profit Leak Detector to identify the biggest areas to investigate.",
+    h1: "Profit Leak Detector",
+    heroDescription: "Find business costs that may be reducing your profit. Enter a few numbers to see which areas are worth checking first.",
+    howToUse: {
+      title: "How to Use the Profit Leak Detector",
+      steps: [
+        "Select your business location (United States, India, or International) and select your primary industry model.",
+        "Enter your average monthly revenue along with known cost categories like discounts, ad spend, returns, or payment fees.",
+        "View your ranked profit leaks, spotlight diagnostic breakdown, what-if improvement scenario, and export a clean PDF report.",
+      ],
+    },
+    features: [
+      "Country-adaptive diagnostic framework with localized support for United States (USD $) and India (INR ₹)",
+      "Strict separation between true Profit Leakage and Cash-Flow Working Capital Pressure",
+      "Ranked Top Profit Leaks breakdown categorized by High, Medium, and Low financial severity",
+      "Dedicated 'Biggest Profit Leak' spotlight providing targeted, actionable investigation checklists",
+      "Interactive 'What-If I Reduce This Leak?' scenario modeling simulator (5%, 10%, 15%, 20% savings)",
+      "100% calculation transparency with inspectable mathematical formulas and zero artificial AI claims",
+      "Instant print-ready grayscale PDF diagnostic report export with optional company branding",
+      "Privacy-first architecture: all calculations run locally in your browser with zero signup or email required",
+    ],
+    benefits: [
+      "Detect silent margin erosion before micro-costs compound into serious operational losses",
+      "Engineered specifically for ecommerce D2C brands, service agencies, retail stores, and wholesale distributors",
+      "Gain immediate clarity on which vendor agreements, platform fees, or return policies to renegotiate first",
+      "Prevents misidentifying trapped working capital (such as unpaid invoices or sitting stock) as lost profit",
+      "Completely free forever without subscription paywalls, watermarks, or gated report downloads",
+    ],
+    faqs: [
+      {
+        question: "What is a profit leak?",
+        answer: "A profit leak is an unmonitored, avoidable, or inefficient operational expense, margin concession, or transactional friction that quietly erodes your company's net profitability. Common examples include uncoordinated customer discounting, payment gateway micro-fees, excessive return logistics, out-of-scope client revision hours, and inactive SaaS subscriptions.",
+      },
+      {
+        question: "How does the Profit Leak Detector work?",
+        answer: "The detector uses a deterministic diagnostic engine that analyzes your top-line revenue against reported or benchmarked cost categories for your specific industry and country. It isolates direct margin drains from working capital lockup, ranks your leaks by financial impact, spotlights your largest vulnerability, and models realistic scenario improvements.",
+      },
+      {
+        question: "What expenses can reduce business profit?",
+        answer: "Profit can be reduced by both visible overhead (wages, rent) and stealth micro-drains. Stealth drains include discretionary sales discounting, payment processing interchange markups, marketplace commissions (Amazon/Flipkart referral fees), restocking and return freight, failed COD deliveries (RTO in India), unbilled service revisions, and dead inventory write-offs.",
+      },
+      {
+        question: "Is the result an accounting figure?",
+        answer: "No. The figures produced by the Profit Leak Detector are diagnostic estimates designed to highlight areas worth operational investigation. They are not audited financial statements, tax records, or a substitute for professional certified public accounting (CPA/CA) advisory.",
+      },
+      {
+        question: "Can I use this for a small business?",
+        answer: "Yes! Small businesses often experience the highest percentage of profit leakage because small teams lack dedicated procurement or pricing analysts. Even saving 3% to 5% on payment gateway fees, return rates, or discounting can significantly boost a small business's cash reserves.",
+      },
+      {
+        question: "Can I use this for ecommerce?",
+        answer: "Absolutely. The detector includes dedicated ecommerce diagnostic parameters including ad spend CAC drag, return and refund logistics, marketplace platform commission fees, and India-specific Cash on Delivery (COD) Return-to-Origin (RTO) waste.",
+      },
+      {
+        question: "Can I use this for a service business?",
+        answer: "Yes. For agencies, consultants, and service firms, the tool evaluates unbilled scope creep, unaccounted client revision hours, contractor utilization inefficiencies, recurring SaaS tech stacks, and merchant payment processing fees.",
+      },
+      {
+        question: "Does the tool work for US businesses?",
+        answer: "Yes. The tool features complete US market support with USD ($) formatting, standard US payment processing fee structures (e.g. Stripe/Square interchange drag), US marketplace commission analyses, and domestic fulfillment cost metrics.",
+      },
+      {
+        question: "Does the tool work for Indian businesses?",
+        answer: "Yes. The tool provides dedicated localization for India with INR (₹) formatting, Indian payment gateway models (Razorpay, Cashfree, PayU, UPI), Indian marketplace fees (Amazon.in, Flipkart), and D2C Cash-on-Delivery (COD) RTO freight failure analysis.",
+      },
+      {
+        question: "What is the difference between profit leakage and cash-flow pressure?",
+        answer: "Profit leakage represents permanent wealth erosion (e.g., money given away in discounts, lost to merchant gateway fees, or destroyed in return logistics). Cash-flow pressure represents working capital that is temporarily trapped (such as unpaid customer invoices or inventory sitting on warehouse shelves). While cash-flow delays hurt liquidity, the money has not permanently disappeared as a cost.",
+      },
+      {
+        question: "Can the estimated savings be guaranteed?",
+        answer: "No. All scenario improvements (such as modeling a 10% reduction in advertising CAC or discounts) are mathematical scenario estimates intended for strategic goal-setting and operational review. Actual real-world savings depend on supplier negotiations, market demand, and business execution.",
+      },
+    ],
+    relatedTools: allTools.filter(t => ["/profit-margin", "/break-even-calculator", "/discount-calculator", "/gst-calculator", "/invoice-generator", "/quotation-generator"].includes(t.href)),
+  },
+  "subscription-leak-detector": {
+    slug: "subscription-leak-detector",
+    title: "Subscription Leak Detector – Find Unused Subscriptions | TURNIVO",
+    metaDescription: "Find recurring subscriptions that may be unused, duplicated or costing more than expected. Use TURNIVO's free Subscription Leak Detector to review recurring costs.",
+    h1: "Subscription Leak Detector",
+    heroDescription: "Find recurring software, streaming, and tool subscriptions you may not be using. See where you can save money.",
+    features: [
+      "Calculates total monthly and annual recurring subscription commitments instantly",
+      "Identifies potentially unused services based on activity recency and usage frequency",
+      "Highlights potential category overlaps across multiple design, streaming, and SaaS tools",
+      "Tracks historical price increases and percentage rate hikes per subscription",
+      "Spotlights the single largest subscription requiring review with actionable next steps",
+      "Models custom what-if cancellation scenarios without assuming guaranteed savings",
+      "Generates clean, professional grayscale PDF reports using Turnivo's native document engine",
+    ],
+    benefits: [
+      "Find recurring costs that may be unused, duplicated, or overpriced",
+      "Normalize weekly, monthly, and annual subscriptions into clear annualized figures",
+      "Identify duplicate software tools and unnecessary seat sprawl across teams",
+      "100% private client-side calculations with zero bank credentials required",
+      "Export professional PDF audit reports for business accounting and personal budgeting",
+    ],
+    howToUse: {
+      title: "How to Detect & Audit Subscription Leaks",
+      steps: [
+        "Select your base country (United States, India, or International) and select whether you are reviewing personal or business subscriptions.",
+        "Add your active subscriptions with their billing interval (monthly, quarterly, annual, or weekly) and reported usage frequency.",
+        "Inspect subscriptions flagged for dormancy, category overlap, price increases, or high relative proportion of your recurring budget.",
+        "Simulate financial reductions by reviewing top flagged tools and download a clean diagnostic PDF summary for your records.",
+      ],
+    },
+    faqs: [
+      {
+        question: "What is a subscription leak?",
+        answer: "A subscription leak is an unmonitored recurring fee for software, streaming media, cloud storage, or memberships that you no longer actively use, duplicate elsewhere, or continue paying for at inflated rates.",
+      },
+      {
+        question: "How do I calculate my yearly subscription spending?",
+        answer: "Multiply monthly subscriptions by 12, quarterly subscriptions by 4, and weekly services by 52, then sum all normalized amounts. The Subscription Leak Detector calculates both monthly equivalents and annualized commitments automatically.",
+      },
+      {
+        question: "How can I find unused subscriptions?",
+        answer: "Review your last 60 days of credit card statements and app store receipts. For every recurring charge, verify whether you logged in or used the service within the last 30 days.",
+      },
+      {
+        question: "Can I use this for business subscriptions?",
+        answer: "Yes! The tool supports business users with optional team seat counts, business purpose tracking, and seat sprawl cost assessments for SaaS applications.",
+      },
+      {
+        question: "Can I use it for personal subscriptions?",
+        answer: "Yes. You can review personal streaming services, gym memberships, cloud storage plans, news subscriptions, and consumer apps with ease.",
+      },
+      {
+        question: "Does the tool connect to my bank account?",
+        answer: "No. For complete privacy and security, the Subscription Leak Detector never asks for bank credentials, credit card numbers, or financial passwords. All calculations run client-side using information you enter manually.",
+      },
+      {
+        question: "How is potential cost to review calculated?",
+        answer: "The tool calculates the sum of annual costs for subscriptions flagged as potentially unused (dormant for 3+ months), duplicated in functional category, increased in price, or disproportionately expensive.",
+      },
+      {
+        question: "Can I use the tool in the US?",
+        answer: "Yes. The tool features complete US market support with USD ($) formatting and standard US SaaS, streaming, and membership pricing intervals.",
+      },
+      {
+        question: "Can I use the tool in India?",
+        answer: "Yes. The tool provides full localization for India with INR (₹) formatting and common Indian subscription intervals.",
+      },
+      {
+        question: "Does the calculator guarantee savings?",
+        answer: "No. The figures produced are strategic diagnostic estimates to highlight recurring costs worth investigating. Actual savings depend on your decision to cancel, downgrade, or renegotiate contracts.",
+      },
+    ],
+    relatedTools: allTools.filter(t => ["/profit-leak-detector", "/profit-margin", "/break-even-calculator", "/discount-calculator", "/invoice-generator"].includes(t.href)),
+  },
 }
+
+

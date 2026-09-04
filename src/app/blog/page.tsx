@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getAllPosts } from '@/lib/blog'
 import { Metadata } from 'next'
+import { SwapadAd } from '@/components/ads/swapad-ad'
 
 export const metadata: Metadata = {
   title: 'Blog | Turnivo',
@@ -43,6 +44,9 @@ export default function BlogIndex() {
           </Link>
         ))}
       </div>
+
+      {/* Non-intrusive Swapad banner */}
+      <SwapadAd className="mt-12" />
     </div>
   )
 }

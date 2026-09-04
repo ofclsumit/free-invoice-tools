@@ -40,10 +40,10 @@ const faqs = [
 
 export function FaqSection() {
   return (
-    <section id="faq" className="py-20 sm:py-28 relative z-20">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-3 mb-14 sm:mb-16">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-violet-500/10 text-violet-600 dark:text-violet-300 border border-violet-500/20">
+    <section id="faq" className="py-14 sm:py-20 relative z-20">
+      <div className="max-w-2xl sm:max-w-[700px] mx-auto px-4 sm:px-6">
+        <div className="text-center space-y-2.5 mb-8 sm:mb-10">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-violet-500/10 text-violet-600 dark:text-violet-300 border border-violet-500/20">
             FAQ
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">

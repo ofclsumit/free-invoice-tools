@@ -5,3 +5,5 @@ export * from "./break-even-document";
 export * from "./profit-margin-document";
 export * from "./interest-document";
 export * from "./commission-document";
+export * from "./profit-leak-document";
+export * from "./subscription-leak-document";

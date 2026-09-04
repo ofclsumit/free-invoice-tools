@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { ImageEditSettings, DEFAULT_IMAGE_EDIT_SETTINGS, ImageAssetType } from "./types";
 import { renderEditedImageToDataUrl } from "./canvas-utils";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/scroll-lock";
 
 interface ImageEditorModalProps {
   isOpen: boolean;
@@ -49,19 +50,21 @@ export function ImageEditorModal({
     posY: 0,
   });
 
-  // Re-initialize settings when modal opens or initialSettings change
+  // Re-initialize settings when modal opens or initialSettings change with scroll lock
   useEffect(() => {
     if (isOpen) {
       setSettings({
         ...DEFAULT_IMAGE_EDIT_SETTINGS,
         ...(initialSettings || {}),
       });
-      document.body.style.overflow = "hidden";
+      lockBodyScroll();
     } else {
-      document.body.style.overflow = "";
+      unlockBodyScroll();
     }
     return () => {
-      document.body.style.overflow = "";
+      if (isOpen) {
+        unlockBodyScroll();
+      }
     };
   }, [isOpen, initialSettings]);
 

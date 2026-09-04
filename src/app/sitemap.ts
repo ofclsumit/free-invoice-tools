@@ -174,6 +174,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${domain}/profit-leak-detector`,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${domain}/subscription-leak-detector`,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: `${domain}/break-even-calculator`,
       changeFrequency: "monthly",
       priority: 0.8,

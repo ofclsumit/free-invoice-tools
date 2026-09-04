@@ -6,9 +6,13 @@ export const sheetStyle: React.CSSProperties = {
   fontSize: "14px",
   lineHeight: "1.5",
   color: "#111111",
-  width: "100%",
+  width: "210mm",
+  minWidth: "210mm",
   maxWidth: "210mm",
   minHeight: "297mm",
+  boxSizing: "border-box",
+  backgroundColor: "#ffffff",
+  margin: "0 auto",
 }
 
 export const format = (amount: number, symbol?: string) =>

@@ -559,5 +559,143 @@ body {
   .dark a:hover .brand-wordmark-theme {
     filter: drop-shadow(0 0 16px rgba(192, 132, 252, 0.32));
   }
+
+  /* ------------------------------------------------------------------------- */
+  /* Smooth Theme Switch View Transitions                                      */
+  /* ------------------------------------------------------------------------- */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(root) {
+    z-index: 1;
+  }
+
+  ::view-transition-new(root) {
+    z-index: 9999;
+  }
+
+  .dark::view-transition-old(root) {
+    z-index: 9999;
+  }
+
+  .dark::view-transition-new(root) {
+    z-index: 1;
+  }
+}
+
+/* ========================================================================= */
+/* TURNIVO AUTHORITATIVE A4 EXACT PREVIEW-DOM PRINT / PDF ENGINE             */
+/* ========================================================================= */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: auto !important;
+    min-height: 297mm !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide all website chrome, navigation, toolbars, footers, buttons, and ads */
+  .no-print,
+  header,
+  nav,
+  footer,
+  aside,
+  button,
+  .no-print *,
+  [data-no-print="true"] {
+    display: none !important;
+  }
+
+  /* Reset PreviewShell wrappers so document renders directly without scale or pan */
+  main,
+  div {
+    overflow: visible !important;
+    max-width: none !important;
+  }
+
+  .preview-scaling-spacer,
+  .preview-scaled-canvas,
+  .preview-paper-container {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+    transform: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* A4 Document Containers */
+  .document-page,
+  .pld-page,
+  .sld-page,
+  .pdf-page,
+  .invoice-sheet,
+  .receipt-sheet,
+  .resume-doc-canvas {
+    width: 210mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    box-sizing: border-box !important;
+    background-color: #ffffff !important;
+    position: relative !important;
+  }
+
+  /* Multi-page document page-breaks */
+  .pld-page:last-child,
+  .sld-page:last-child,
+  .document-page:last-child,
+  .pdf-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+
+  /* Clean table pagination */
+  table {
+    page-break-inside: auto !important;
+  }
+
+  tr,
+  th,
+  td {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
+  }
 }
 

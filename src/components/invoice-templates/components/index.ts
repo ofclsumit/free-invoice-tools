@@ -11,4 +11,4 @@ export type {
 } from "../data/invoiceTypes";
 
 export { computeInvoiceTotals, formatCurrency, numberToWords } from "../data/invoiceTypes";
-export { printInvoice, exportNodeToPdf } from "../utils/exportPdf";
+export { printInvoice, exportNodeToPdf, exportNodeToHtml, generateStandaloneHtml } from "../utils/exportPdf";

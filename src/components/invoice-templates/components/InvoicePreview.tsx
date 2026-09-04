@@ -54,25 +54,31 @@ export default function InvoicePreview({
     }
   }
 
+  if (hideToolbar) {
+    return (
+      <div id="invoice-print-root" ref={pageRef} style={{ width: "100%", margin: "0 auto" }}>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
-      {!hideToolbar && (
-        <div className="no-print flex items-center justify-end gap-2 mb-4 px-1">
-          <button
-            onClick={printInvoice}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors"
-          >
-            Print
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={exporting}
-            className="px-4 py-2 text-sm font-medium rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors disabled:opacity-50"
-          >
-            {exporting ? "Generating…" : "Download PDF"}
-          </button>
-        </div>
-      )}
+      <div className="no-print flex items-center justify-end gap-2 mb-4 px-1">
+        <button
+          onClick={printInvoice}
+          className="px-4 py-2 text-sm font-medium rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors"
+        >
+          Print
+        </button>
+        <button
+          onClick={handleDownload}
+          disabled={exporting}
+          className="px-4 py-2 text-sm font-medium rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors disabled:opacity-50"
+        >
+          {exporting ? "Generating…" : "Download PDF"}
+        </button>
+      </div>
 
       <div ref={containerRef} className="invoice-page-mobile-scale-wrapper">
         <div

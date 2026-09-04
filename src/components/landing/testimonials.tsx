@@ -59,10 +59,10 @@ const testimonials = [
 
 export function TestimonialsSection() {
   return (
-    <section id="testimonials" className="py-20 sm:py-28 relative z-20">
+    <section id="testimonials" className="py-14 sm:py-20 relative z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-3 mb-14 sm:mb-16">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-violet-500/10 text-violet-600 dark:text-violet-300 border border-violet-500/20">
+        <div className="text-center space-y-3 mb-12 sm:mb-14">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-violet-500/10 text-violet-600 dark:text-violet-300 border border-violet-500/20">
             Loved By Thousands
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
@@ -83,7 +83,7 @@ export function TestimonialsSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 items-stretch">
           {testimonials.map((t) => (
             <div
               key={t.name}
@@ -97,37 +97,40 @@ export function TestimonialsSection() {
                 hover:-translate-y-[3px] hover:bg-white dark:hover:bg-white/[0.06]
                 hover:border-violet-300/60 dark:hover:border-white/[0.14]
                 hover:shadow-[0_12px_28px_-12px_rgba(124,58,237,0.28)]
+                h-full
               "
             >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`h-10 w-10 rounded-[12px] ${t.avatarBg} flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-sm`}
-                    >
-                      {t.avatar}
+              <div className="flex flex-col justify-between h-full space-y-4">
+                <div className="space-y-3.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`h-10 w-10 rounded-[12px] ${t.avatarBg} flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-sm`}
+                      >
+                        {t.avatar}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-[14.5px] leading-tight text-zinc-900 dark:text-white">
+                          {t.name}
+                        </p>
+                        <p className="text-xs text-zinc-500 dark:text-white/45 mt-0.5">
+                          {t.role}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-[14.5px] leading-tight text-zinc-900 dark:text-white">
-                        {t.name}
-                      </p>
-                      <p className="text-xs text-zinc-500 dark:text-white/45 mt-0.5">
-                        {t.role}
-                      </p>
-                    </div>
+                  </div>
+
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star
+                        key={i}
+                        className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
+                      />
+                    ))}
                   </div>
                 </div>
 
-                <div className="flex gap-0.5">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star
-                      key={i}
-                      className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
-                    />
-                  ))}
-                </div>
-
-                <p className="text-[13.5px] leading-relaxed text-zinc-600 dark:text-white/65">
+                <p className="text-[13.5px] leading-relaxed text-zinc-600 dark:text-white/65 flex-1 pt-1">
                   &ldquo;{t.content}&rdquo;
                 </p>
               </div>

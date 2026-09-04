@@ -31,10 +31,10 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="py-20 sm:py-28 relative z-20">
+    <section id="how-it-works" className="py-14 sm:py-20 relative z-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-3 mb-14 sm:mb-16">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-violet-500/10 text-violet-600 dark:text-violet-300 border border-violet-500/20">
+        <div className="text-center space-y-3 mb-12 sm:mb-14">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-violet-500/10 text-violet-600 dark:text-violet-300 border border-violet-500/20">
             Simple Process
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
@@ -46,7 +46,7 @@ export function HowItWorksSection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          {steps.map((step, i) => (
+          {steps.map((step) => (
             <div
               key={step.number}
               className="
@@ -66,11 +66,6 @@ export function HowItWorksSection() {
                   <span className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-gradient-to-br from-violet-500/20 to-fuchsia-500/10 border border-violet-500/25 dark:border-white/10 text-violet-600 dark:text-violet-300 font-bold text-sm">
                     {step.number}
                   </span>
-                  {i < steps.length - 1 && (
-                    <span className="hidden lg:inline text-zinc-300 dark:text-white/20 text-xs font-medium">
-                      Step {i + 1}
-                    </span>
-                  )}
                 </div>
 
                 <h3 className="text-[15.5px] font-semibold leading-snug text-zinc-900 dark:text-white mb-2 group-hover:text-violet-600 dark:group-hover:text-violet-300 transition-colors">

@@ -173,6 +173,13 @@ export default function RootLayout({
           <PageTransition>{children}</PageTransition>
           <Toaster />
         </ThemeProvider>
+
+        {/* Swapad Ad Exchange Script */}
+        <script
+          src="https://swapad.net/api/public/embed.js"
+          data-swapboard="89a03b74774787304a"
+          async
+        />
       </body>
     </html>
   )

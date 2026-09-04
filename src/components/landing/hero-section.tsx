@@ -124,29 +124,29 @@ export function HeroSection() {
         }
 
         /* Search bar */
-        .hero-search-wrap { position: relative; width: 100%; max-width: 560px; margin: 0 auto; }
+        .hero-search-wrap { position: relative; width: 100%; max-width: 580px; margin: 0 auto; }
         .hero-search-box {
-          display: flex; align-items: center; gap: .75rem;
+          display: flex; align-items: center; gap: .85rem;
           width: 100%;
-          padding: .85rem 1rem;
+          padding: .95rem 1.25rem;
           border-radius: 9999px;
-          background: rgba(255,255,255,0.85);
-          border: 1px solid rgba(15,23,42,0.12);
-          backdrop-filter: blur(14px);
-          -webkit-backdrop-filter: blur(14px);
-          box-shadow: 0 10px 40px -12px rgba(124,58,237,0.25);
-          transition: border-color .2s ease, box-shadow .2s ease;
+          background: rgba(255,255,255,0.92);
+          border: 1.5px solid rgba(139,92,246,0.22);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          box-shadow: 0 12px 35px -10px rgba(124,58,237,0.22), 0 0 0 1px rgba(255,255,255,0.8);
+          transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
         }
         .hero-search-box:focus-within {
-          border-color: rgba(139,92,246,0.6);
-          box-shadow: 0 0 0 4px rgba(139,92,246,0.14), 0 10px 40px -12px rgba(124,58,237,0.35);
+          border-color: rgba(139,92,246,0.8);
+          box-shadow: 0 0 0 4px rgba(139,92,246,0.2), 0 16px 40px -10px rgba(124,58,237,0.35);
         }
-        .hero-search-box svg.search-ico { color: rgba(99,102,241,0.8); flex-shrink: 0; }
+        .hero-search-box svg.search-ico { color: #7c3aed; flex-shrink: 0; }
         .hero-search-input {
           flex: 1; background: transparent; border: none; outline: none;
-          color: #0f172a; font-size: .98rem;
+          color: #0f172a; font-size: 1.02rem; font-weight: 500;
         }
-        .hero-search-input::placeholder { color: rgba(71,85,105,0.6); }
+        .hero-search-input::placeholder { color: rgba(71,85,105,0.65); font-weight: 400; }
 
         .hero-search-clear {
           display: flex; align-items: center; justify-content: center;
@@ -188,17 +188,17 @@ export function HeroSection() {
 
         /* Dark search bar */
         .dark .hero-search-box {
-          background: rgba(13,8,30,0.6);
-          border: 1px solid rgba(255,255,255,0.14);
-          box-shadow: 0 10px 40px -12px rgba(124,58,237,0.4);
+          background: rgba(18,12,38,0.85);
+          border: 1.5px solid rgba(167,139,250,0.35);
+          box-shadow: 0 14px 40px -10px rgba(124,58,237,0.45), 0 0 0 1px rgba(255,255,255,0.06);
         }
         .dark .hero-search-box:focus-within {
-          border-color: rgba(167,139,250,0.6);
-          box-shadow: 0 0 0 4px rgba(139,92,246,0.18), 0 10px 40px -12px rgba(124,58,237,0.5);
+          border-color: rgba(196,181,253,0.8);
+          box-shadow: 0 0 0 4px rgba(139,92,246,0.25), 0 16px 45px -10px rgba(124,58,237,0.6);
         }
-        .dark .hero-search-box svg.search-ico { color: rgba(196,181,253,0.8); }
+        .dark .hero-search-box svg.search-ico { color: #c4b5fd; }
         .dark .hero-search-input { color: #fff; }
-        .dark .hero-search-input::placeholder { color: rgba(196,181,253,0.55); }
+        .dark .hero-search-input::placeholder { color: rgba(196,181,253,0.6); }
         .dark .hero-search-clear { color: rgba(196,181,253,0.7); }
         .dark .hero-search-clear:hover { background: rgba(255,255,255,0.08); color: #fff; }
         .dark .hero-search-results {
@@ -244,7 +244,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-5 max-w-2xl text-[15px] text-muted-foreground sm:text-[17px]"
+          className="mt-4 max-w-2xl text-[15px] text-muted-foreground sm:text-[17px]"
         >
           Create invoices, quotations, GST invoices, purchase orders, delivery challans and more in seconds.
         </motion.p>
@@ -254,7 +254,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-9 w-full"
+          className="mt-6 w-full"
           ref={wrapRef}
         >
           <div className="hero-search-wrap">
@@ -315,14 +315,53 @@ export function HeroSection() {
            </div>
          </motion.div>
 
+        {/* Primary and secondary Call to Action buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="mt-6 flex flex-wrap items-center justify-center gap-3.5"
+        >
+          <Link
+            href="/invoice-generator"
+            className="
+              inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+              text-[15px] font-semibold text-white
+              bg-gradient-to-r from-violet-600 to-indigo-600
+              hover:from-violet-500 hover:to-indigo-500
+              shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40
+              transition-all duration-200 hover:-translate-y-0.5
+              active:translate-y-0 active:scale-[0.98]
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2
+            "
+          >
+            <span>Create an Invoice Free</span>
+            <ArrowRight size={16} />
+          </Link>
+          <a
+            href="#tools"
+            className="
+              inline-flex items-center justify-center gap-2 rounded-full px-5 py-3
+              text-[14.5px] font-semibold text-zinc-700 dark:text-zinc-200
+              bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/15
+              border border-black/10 dark:border-white/15
+              backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5
+              active:translate-y-0 active:scale-[0.98]
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2
+            "
+          >
+            <span>Explore All 25+ Tools</span>
+          </a>
+        </motion.div>
+
         {/* Gentle cue to scroll into the tools below */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.45 }}
-          className="mt-10 text-center text-[13px] text-muted-foreground"
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="mt-6 text-center text-[13px] text-muted-foreground"
         >
-          Explore all tools below — invoices, calculators, GST utilities &amp; more.
+          Instant PDF download · 100% Free · No registration required
         </motion.p>
       </div>
     </section>

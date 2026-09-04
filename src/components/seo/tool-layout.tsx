@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/accordion"
 import { StarsBackground } from "../shared/stars-background"
 import { SiteLogo } from "@/components/shared/site-logo"
+import { SwapadAd } from "@/components/ads/swapad-ad"
 
 export interface ToolLayoutProps {
   title: string
@@ -129,19 +130,33 @@ export function ToolLayout({
   const howToSchema = {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    name: howToUse.title || `How to use ${h1}`,
+    name: howToUse?.title || `How to use ${h1 || "Tool"}`,
     description: description,
-    step: howToUse.steps.map((step, idx) => ({
-      "@type": "HowToStep",
-      position: idx + 1,
-      name: step.substring(0, 40) + "...",
-      text: step,
-      url: `${schemaUrl}#step-${idx + 1}`
-    }))
+    step: Array.isArray(howToUse?.steps)
+      ? howToUse.steps.map((step: any, idx: number) => {
+          const stepText =
+            typeof step === "string"
+              ? step
+              : step?.description || step?.title || String(step || "")
+          const stepName =
+            typeof step === "string"
+              ? step.length > 40
+                ? step.slice(0, 40) + "..."
+                : step
+              : step?.title || (stepText.length > 40 ? stepText.slice(0, 40) + "..." : stepText)
+          return {
+            "@type": "HowToStep",
+            position: idx + 1,
+            name: stepName,
+            text: stepText,
+            url: `${schemaUrl}#step-${idx + 1}`,
+          }
+        })
+      : [],
   }
 
   const isCalculator = [
-    "gst-calculator", "reverse-gst-calculator", "gst-split-calculator",
+    "profit-leak-detector", "subscription-leak-detector", "gst-calculator", "reverse-gst-calculator", "gst-split-calculator",
     "discount-calculator", "profit-margin", "break-even-calculator",
     "commission-calculator", "emi-calculator", "loan-calculator", "interest-calculator"
   ].some(slug => schemaUrl?.includes(slug));
@@ -175,8 +190,8 @@ export function ToolLayout({
       <JsonLd data={organizationSchema} />
       <JsonLd data={websiteSchema} />
       <JsonLd data={breadcrumbSchema} />
-      {faqs.length > 0 && <JsonLd data={faqSchema} />}
-      {howToUse.steps.length > 0 && <JsonLd data={howToSchema} />}
+      {faqs && faqs.length > 0 && <JsonLd data={faqSchema} />}
+      {howToUse && howToUse.steps && howToUse.steps.length > 0 && <JsonLd data={howToSchema} />}
       
       <StarsBackground className="min-h-screen py-8 px-4 sm:py-12 relative text-foreground">
 
@@ -300,6 +315,9 @@ export function ToolLayout({
               <RelatedTools tools={relatedTools} isUltra={true} />
             </div>
           )}
+
+          {/* Non-intrusive Swapad ad exchange banner (Website-only, hidden in print/PDF) */}
+          <SwapadAd />
           
         </div>
       </StarsBackground>

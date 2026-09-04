@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import QRCode from "qrcode"
 import { buildShareUrl } from "@/lib/share-utils"
+import { TurnivoDialog } from "@/components/ui/turnivo-dialog"
 
 interface ShareButtonProps {
   invoiceData: any
@@ -99,48 +100,45 @@ export function ShareButton({ invoiceData, template, title, disabled }: ShareBut
         {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share2 className="h-4 w-4" />}
       </button>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-sm w-full mx-4 p-6 animate-in zoom-in-95 duration-300">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-3 right-3 h-7 w-7 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center"
-            >
-              <X className="h-4 w-4" />
-            </button>
-
-            <h3 className="text-lg font-display font-semibold mb-1">Share Document</h3>
-            <p className="text-xs text-muted-foreground mb-4">This link will expire in 15 minutes.</p>
-
-            {qrDataUrl && (
-              <div className="flex justify-center mb-4">
-                <img src={qrDataUrl} alt="QR Code" className="w-48 h-48 rounded-xl border border-border" />
-              </div>
-            )}
-
-            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2 border border-border mb-3">
-              <span className="text-xs truncate flex-1 font-mono">{shareUrl}</span>
-              <button
-                onClick={handleCopyLink}
-                className="shrink-0 h-7 w-7 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
-              >
-                {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-              </button>
-            </div>
-
-            {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
-
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" className="flex-1 text-xs" onClick={handleDownloadQR}>
-                Download QR
-              </Button>
-              <Button size="sm" className="flex-1 text-xs" onClick={handleCopyLink}>
-                {copied ? "Copied!" : "Copy Link"}
-              </Button>
-            </div>
+      <TurnivoDialog
+        open={showModal}
+        onOpenChange={setShowModal}
+        title="Share Document"
+        description="This link will expire in 15 minutes."
+        maxWidth="sm"
+        footer={
+          <div className="flex gap-2 w-full">
+            <Button size="sm" variant="outline" className="flex-1 text-xs" onClick={handleDownloadQR}>
+              Download QR
+            </Button>
+            <Button size="sm" className="flex-1 text-xs" onClick={handleCopyLink}>
+              {copied ? "Copied!" : "Copy Link"}
+            </Button>
           </div>
+        }
+      >
+        <div className="space-y-4">
+          {qrDataUrl && (
+            <div className="flex justify-center">
+              <img src={qrDataUrl} alt="QR Code" className="w-44 h-44 rounded-xl border border-border" />
+            </div>
+          )}
+
+          <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/60 rounded-xl px-3 py-2 border border-slate-200 dark:border-white/10">
+            <span className="text-xs truncate flex-1 font-mono text-slate-700 dark:text-slate-300">{shareUrl}</span>
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="shrink-0 h-7 w-7 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 flex items-center justify-center transition-colors"
+              title="Copy share URL"
+            >
+              {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+
+          {error && <p className="text-xs text-rose-500">{error}</p>}
         </div>
-      )}
+      </TurnivoDialog>
     </>
   )
 }
