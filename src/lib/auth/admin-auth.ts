@@ -10,7 +10,7 @@ import crypto from "crypto"
 import { cookies } from "next/headers"
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
-import { supabase } from "@/lib/supabase/client"
+import { supabase, supabaseAuth, supabaseAdmin } from "@/lib/supabase/client"
 
 export const AUTHORIZED_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "smrtx.sumit@gmail.com").toLowerCase().trim()
 export const ADMIN_COOKIE_NAME = "turnivo_admin_session"
@@ -107,9 +107,9 @@ export async function verifyAdminCredentials(
   }
 
   // 1. Primary verification: Supabase Auth if available
-  if (supabase) {
+  if (supabaseAuth) {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabaseAuth.auth.signInWithPassword({
         email: normalizedEmail,
         password: passwordInput,
       })
@@ -117,8 +117,12 @@ export async function verifyAdminCredentials(
       if (!error && data?.user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL) {
         return { success: true, email: normalizedEmail }
       }
-    } catch {
-      // Supabase failed or offline; continue to secure fallback
+
+      if (error) {
+        console.warn("[Admin Auth] Supabase signInWithPassword error:", error.message)
+      }
+    } catch (err: any) {
+      console.warn("[Admin Auth] Supabase connection error:", err?.message || err)
     }
   }
 
