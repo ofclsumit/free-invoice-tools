@@ -5,6 +5,7 @@ import { ResumeData, ResumeExperience, ResumeEducation, ResumeLanguage } from "@
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { exportNodeToPdf } from "@/components/invoice-templates/components"
+import { trackPdfDownload } from "@/lib/analytics/tracker"
 import {
   ArrowLeft,
   ZoomIn,
@@ -278,6 +279,9 @@ export function ResumeEditor({ initialData, onBackToForm }: ResumeEditorProps) {
     const origTitle = document.title
     document.title = cleanName
     window.print()
+    try {
+      trackPdfDownload("resume-generator")
+    } catch {}
     setTimeout(() => {
       document.title = origTitle
     }, 1000)

@@ -1,11 +1,42 @@
+import { trackPdfDownload } from "@/lib/analytics/tracker"
+
 export function printInvoice() {
   window.print()
+}
+
+function inferToolIdFromContext(fileName: string): string {
+  if (typeof window !== "undefined") {
+    const path = window.location.pathname.replace(/^\//, "").split("/")[0]
+    if (path && path !== "preview" && path !== "share") {
+      return path
+    }
+  }
+  const clean = fileName.toLowerCase()
+  if (clean.includes("invoice")) return "invoice-generator"
+  if (clean.includes("quotation")) return "quotation-generator"
+  if (clean.includes("resume")) return "resume-generator"
+  if (clean.includes("proforma")) return "proforma-invoice"
+  if (clean.includes("purchase") || clean.includes("po")) return "purchase-order"
+  if (clean.includes("challan")) return "delivery-challan"
+  if (clean.includes("receipt") && clean.includes("rent")) return "rent-receipt"
+  if (clean.includes("receipt")) return "payment-receipt"
+  if (clean.includes("salary") || clean.includes("payslip")) return "salary-slip"
+  if (clean.includes("estimate")) return "estimate-generator"
+  if (clean.includes("credit")) return "credit-note"
+  if (clean.includes("debit")) return "debit-note"
+  if (clean.includes("letter")) return "business-letter"
+  if (clean.includes("profit-leak")) return "profit-leak-detector"
+  if (clean.includes("subscription-leak")) return "subscription-leak-detector"
+  if (clean.includes("gst")) return "gst-calculator"
+  if (clean.includes("emi")) return "emi-calculator"
+  return "invoice-generator"
 }
 
 export async function exportNodeToPdf(
   node: HTMLElement,
   fileName = "invoice.pdf",
-  returnBlob = false
+  returnBlob = false,
+  toolId?: string
 ) {
   const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
     import("html2canvas"),
@@ -299,6 +330,13 @@ export async function exportNodeToPdf(
       return pdf.output("blob")
     }
     pdf.save(fileName)
+    try {
+      const resolvedId = toolId || inferToolIdFromContext(fileName)
+      if (resolvedId) {
+        trackPdfDownload(resolvedId, "pdf")
+      }
+    } catch {}
+    return pdf
   }
   return null
 }

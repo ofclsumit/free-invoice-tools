@@ -9,9 +9,11 @@ import {
   ZoomIn,
   ZoomOut,
   Loader2,
+  Download,
 } from "lucide-react"
 import { exportNodeToPdf } from "@/components/invoice-templates/components"
 import { useToast } from "@/hooks/use-toast"
+import { trackPreview, trackShare, trackPdfDownload } from "@/lib/analytics/tracker"
 
 const HeartBeat = () => (
   <span className="inline-block animate-pulse text-red-500" style={{ animationDuration: "1.5s" }}>
@@ -52,6 +54,14 @@ export function PreviewShell({
 }: PreviewShellProps) {
   const { toast } = useToast()
   const [isSharing, setIsSharing] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  // Track preview event on mount
+  useEffect(() => {
+    if (documentType) {
+      trackPreview(documentType)
+    }
+  }, [documentType])
 
   // Viewport & Zoom / Pan State
   const [zoom, setZoom] = useState<number>(1)
@@ -372,6 +382,7 @@ export function PreviewShell({
           text: shareText,
           files: [file],
         })
+        trackShare(documentType || "invoice")
       } else {
         const dlUrl = URL.createObjectURL(blob)
         const a = document.createElement("a")
@@ -379,6 +390,7 @@ export function PreviewShell({
         a.download = fileName
         a.click()
         URL.revokeObjectURL(dlUrl)
+        trackPdfDownload(documentType || "invoice")
         toast({
           title: "Downloaded to your device",
           description: "Native sharing is not supported by your browser. The PDF is saved!",
@@ -393,7 +405,29 @@ export function PreviewShell({
     } finally {
       setIsSharing(false)
     }
-  }, [fileName, title, printRootId, toast])
+  }, [fileName, title, printRootId, toast, documentType])
+
+  const handleDownloadPdf = useCallback(async () => {
+    setIsDownloading(true)
+    try {
+      const node = document.getElementById(printRootId)
+      if (!node) throw new Error("Document element not found")
+
+      await exportNodeToPdf(node, fileName, false, documentType)
+      toast({
+        title: "Download Started",
+        description: `"${fileName}" is saving to your device.`,
+      })
+    } catch (err: any) {
+      toast({
+        title: "Failed to generate PDF",
+        description: err?.message || "An error occurred",
+        variant: "destructive",
+      })
+    } finally {
+      setIsDownloading(false)
+    }
+  }, [fileName, printRootId, documentType, toast])
 
   const currentZoomPercentage = Math.round(zoom * 100)
 
@@ -489,13 +523,26 @@ export function PreviewShell({
                   size="sm"
                   className="h-8.5 gap-1.5 px-3 rounded-xl text-xs font-semibold bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-2xs transition-colors"
                   onClick={handleNativeShare}
-                  disabled={isSharing}
+                  disabled={isSharing || isDownloading}
                   aria-label="Share Document"
                 >
                   {isSharing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Share2 className="h-3.5 w-3.5" />}
                   <span className="hidden xs:inline">Share</span>
                 </Button>
               )}
+
+              {/* Download PDF Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8.5 gap-1.5 px-3 rounded-xl text-xs font-semibold bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 shadow-2xs transition-colors"
+                onClick={handleDownloadPdf}
+                disabled={isDownloading || isSharing}
+                aria-label="Download PDF"
+              >
+                {isDownloading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />}
+                <span className="hidden sm:inline">Download PDF</span>
+              </Button>
 
               {/* Primary Print Button */}
               <Button

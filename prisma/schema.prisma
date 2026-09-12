@@ -309,3 +309,49 @@ model ShareLink {
 // QuotationStatus: DRAFT, SENT, VIEWED, ACCEPTED, REJECTED, EXPIRED, CONVERTED
 // GstType: CGST_SGST, IGST, EXEMPT
 // TemplateType: INVOICE, QUOTATION
+
+// ============================================================
+// TURNIVO ADMIN & TOOL ANALYTICS MODELS
+// ============================================================
+
+model ToolEvent {
+  id           String   @id @default(cuid())
+  toolId       String   @map("tool_id")
+  toolName     String   @map("tool_name")
+  category     String   @map("category")
+  eventType    String   @map("event_type") // pdf_download, tool_open, calculate, preview, share
+  downloadType String?  @map("download_type") // pdf, etc.
+  country      String?  @map("country") // India, United States, Other
+  deviceType   String?  @map("device_type") // Mobile, Desktop, Tablet
+  sessionId    String?  @map("session_id")
+  metadata     String?  @map("metadata")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@index([toolId])
+  @@index([eventType])
+  @@index([category])
+  @@map("tool_events")
+}
+
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  action     String   @map("action") // Admin login, Report export, Analytics tracking enabled/disabled, Settings changed
+  adminEmail String   @map("admin_email")
+  details    String?  @map("details")
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("admin_audit_logs")
+}
+
+model AdminSetting {
+  id             String   @id @default("global")
+  trackingActive Boolean  @default(true) @map("tracking_active")
+  timezone       String   @default("Asia/Kolkata") @map("timezone")
+  retentionDays  Int?     @map("retention_days")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("admin_settings")
+}
