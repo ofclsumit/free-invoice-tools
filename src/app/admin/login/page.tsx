@@ -21,25 +21,33 @@ export default function AdminLoginPage() {
     setIsLoading(true)
 
     try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 10000)
+
       const res = await fetch("/api/admin/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), password }),
+        signal: controller.signal,
       })
+      clearTimeout(timeoutId)
 
       const data = await res.json().catch(() => ({}))
 
       if (!res.ok || !data.success) {
-        setErrorMessage("Invalid admin credentials.")
+        setErrorMessage(data?.error || "Invalid admin credentials.")
         setIsLoading(false)
         return
       }
 
-      // Successful login redirect
-      router.push("/admin/dashboard")
-      router.refresh()
-    } catch {
-      setErrorMessage("Invalid admin credentials.")
+      // Hard redirect to dashboard so the session cookie is immediately active
+      window.location.href = "/admin/dashboard"
+    } catch (err: any) {
+      if (err?.name === "AbortError") {
+        setErrorMessage("Login request timed out. Please try again.")
+      } else {
+        setErrorMessage("Invalid admin credentials.")
+      }
       setIsLoading(false)
     }
   }

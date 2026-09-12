@@ -106,13 +106,18 @@ export async function verifyAdminCredentials(
     return { success: false }
   }
 
-  // 1. Primary verification: Supabase Auth if available
+  // 1. Primary verification: Supabase Auth if available (with 5s max timeout)
   if (supabaseAuth) {
     try {
-      const { data, error } = await supabaseAuth.auth.signInWithPassword({
+      const authPromise = supabaseAuth.auth.signInWithPassword({
         email: normalizedEmail,
         password: passwordInput,
       })
+      const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((_, reject) =>
+        setTimeout(() => reject(new Error("Supabase auth request timed out")), 5000)
+      )
+
+      const { data, error } = (await Promise.race([authPromise, timeoutPromise])) as any
 
       if (!error && data?.user?.email?.toLowerCase() === AUTHORIZED_ADMIN_EMAIL) {
         return { success: true, email: normalizedEmail }

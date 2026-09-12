@@ -31,13 +31,13 @@ export async function POST(req: NextRequest) {
       req.headers.get("x-real-ip") ||
       "127.0.0.1"
 
-    // Log admin login to audit log
-    await logAdminAction({
+    // Log admin login to audit log in background (non-blocking)
+    logAdminAction({
       action: "Admin login",
       adminEmail: verification.email,
       ipAddress: ip,
       details: "Admin successfully signed in to dashboard",
-    })
+    }).catch(() => {})
 
     const response = NextResponse.json({
       success: true,
