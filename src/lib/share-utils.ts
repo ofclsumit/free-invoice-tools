@@ -22,7 +22,8 @@ export function decodeShareData(encoded: string): unknown {
 
 export function buildShareUrl(data: unknown): string {
   const encoded = encodeShareData(data)
-  return `${window.location.origin}/view?d=${encodeURIComponent(encoded)}`
+  const origin = typeof window !== "undefined" ? window.location.origin : ""
+  return `${origin}/share?d=${encodeURIComponent(encoded)}`
 }
 
 export async function tryNativeShare(blob: Blob, fileName: string, title: string, text: string): Promise<boolean> {
@@ -36,18 +37,7 @@ export async function tryNativeShare(blob: Blob, fileName: string, title: string
   return false
 }
 
-export async function shareViaAPI(invoiceData: unknown, template: string, title: string): Promise<string | null> {
-  try {
-    const res = await fetch("/api/share", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ invoiceData, template, title }) })
-    if (!res.ok) return null
-    const { id } = await res.json()
-    return `${window.location.origin}/view/${id}`
-  } catch { return null }
-}
-
 export async function generateShareUrl(invoiceData: unknown, template: string, title: string): Promise<string> {
-  const apiUrl = await shareViaAPI(invoiceData, template, title)
-  if (apiUrl) return apiUrl
   return buildShareUrl({ invoiceData, template, title, _t: Date.now() })
 }
 

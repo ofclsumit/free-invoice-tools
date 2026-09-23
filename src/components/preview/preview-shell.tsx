@@ -13,7 +13,6 @@ import {
 } from "lucide-react"
 import { exportNodeToPdf } from "@/components/invoice-templates/components"
 import { useToast } from "@/hooks/use-toast"
-import { trackPreview, trackShare, trackPdfDownload } from "@/lib/analytics/tracker"
 
 const HeartBeat = () => (
   <span className="inline-block animate-pulse text-red-500" style={{ animationDuration: "1.5s" }}>
@@ -56,12 +55,6 @@ export function PreviewShell({
   const [isSharing, setIsSharing] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
 
-  // Track preview event on mount
-  useEffect(() => {
-    if (documentType) {
-      trackPreview(documentType)
-    }
-  }, [documentType])
 
   // Viewport & Zoom / Pan State
   const [zoom, setZoom] = useState<number>(1)
@@ -382,7 +375,6 @@ export function PreviewShell({
           text: shareText,
           files: [file],
         })
-        trackShare(documentType || "invoice")
       } else {
         const dlUrl = URL.createObjectURL(blob)
         const a = document.createElement("a")
@@ -390,7 +382,6 @@ export function PreviewShell({
         a.download = fileName
         a.click()
         URL.revokeObjectURL(dlUrl)
-        trackPdfDownload(documentType || "invoice")
         toast({
           title: "Downloaded to your device",
           description: "Native sharing is not supported by your browser. The PDF is saved!",

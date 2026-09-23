@@ -65,7 +65,7 @@ export const invoiceGeneratorDictionary: Record<string, SeoContent> = {
     features: [
       "100% digital vector PDFs with selectable & copyable text",
       "One-click native mobile PDF sharing sheet integration",
-      "Secure cloud-backed sharing links (Supabase database)",
+      "Instant QR code & link sharing for documents",
       "Automatic GST calculation with CGST/SGST split",
       "Unlimited invoices with custom company logo support",
       "Privacy-first: all processing runs locally inside your browser",
@@ -483,7 +483,7 @@ export const quotationGeneratorDictionary: Record<string, SeoContent> = {
     features: [
       "100% digital vector PDFs with copyable & selectable text",
       "One-click native mobile PDF sharing sheet integration",
-      "Secure cloud-backed sharing links (Supabase database)",
+      "Instant QR code & link sharing for documents",
       "Custom Company Logo and automated subtotals calculation",
       "Unlimited line items suitable for complex estimations",
     ],

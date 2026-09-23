@@ -887,7 +887,7 @@ export function InvoiceGenerator() {
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 mt-0.5 shrink-0" />
-                      <span>To view your saved invoices, return to the dashboard. You can edit, download, or delete them anytime.</span>
+                      <span>Your saved drafts remain accessible on this device anytime you reopen the generator.</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 mt-0.5 shrink-0" />

@@ -116,7 +116,7 @@ export default function GlobalError({
           <div className="icon-circle">⚡</div>
           <h1>System Encountered an Error</h1>
           <p>
-            A critical error occurred while initializing the application layout. You can reload the page or return to the main dashboard.
+            A critical error occurred while initializing the application layout. You can reload the page or return to the homepage.
           </p>
           <div className="actions">
             <button className="btn-primary" onClick={() => reset()}>

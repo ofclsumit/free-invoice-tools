@@ -23,27 +23,11 @@ export function savePreviewData(item: PreviewStoreItem): string {
   try {
     sessionStorage.setItem(PREFIX + id, JSON.stringify(item))
   } catch {}
-  fetch("/api/preview", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, data: item, title: item.title }),
-  }).catch(() => {})
   return id
 }
 
 export async function fetchPreviewData(id: string): Promise<PreviewStoreItem | null> {
-  const local = loadPreviewData(id)
-  if (local) return local
-  try {
-    const res = await fetch(`/api/preview/${id}`)
-    if (!res.ok) return null
-    const json = await res.json()
-    const item = json.data as PreviewStoreItem
-    memoryStore.set(id, item)
-    return item
-  } catch {
-    return null
-  }
+  return loadPreviewData(id)
 }
 
 export function loadPreviewData(id: string): PreviewStoreItem | null {

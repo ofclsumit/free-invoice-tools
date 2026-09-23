@@ -1,24 +1,20 @@
 import Link from "next/link"
-import { ShareClient } from "./share-client"
+import { ShareClient } from "./[documentId]/share-client"
 import { decodeShareData } from "@/lib/share-utils"
 
 interface PageProps {
-  params: Promise<{ documentId: string }>
   searchParams: Promise<{ d?: string }>
 }
 
-export default async function SharePage({ params, searchParams }: PageProps) {
-  const { documentId } = await params
+export default async function ShareRootPage({ searchParams }: PageProps) {
   const { d } = await searchParams
-
-  const rawEncoded = d || (documentId !== "view" ? documentId : "")
   let documentData: any = null
   let documentType = ""
   let template = ""
 
-  if (rawEncoded) {
+  if (d) {
     try {
-      const decoded = decodeShareData(rawEncoded) as any
+      const decoded = decodeShareData(d) as any
       if (decoded) {
         documentData = decoded.invoiceData || decoded.data || decoded
         documentType = decoded.template || decoded.docType || "invoice"

@@ -39,35 +39,15 @@ export function ShareButton({ invoiceData, template, title, disabled }: ShareBut
     setIsLoading(true)
     setError("")
     try {
-      const res = await fetch("/api/share", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ invoiceData, template, title }),
-      })
-      let url: string
-      if (res.ok) {
-        const { id } = await res.json()
-        url = `${window.location.origin}/view/${id}`
-        toast({ title: "Share link created! Valid for 15 minutes." })
-      } else {
-        throw new Error("API failed")
-      }
+      const url = buildShareUrl({ invoiceData, template, title, _t: Date.now() })
       setShareUrl(url)
       const qr = await QRCode.toDataURL(url, { width: 256, margin: 2, color: { dark: "#000000", light: "#ffffff" } })
       setQrDataUrl(qr)
       setShowModal(true)
-    } catch {
-      try {
-        const url = buildShareUrl({ invoiceData, template, title, _t: Date.now() })
-        setShareUrl(url)
-        const qr = await QRCode.toDataURL(url, { width: 256, margin: 2, color: { dark: "#000000", light: "#ffffff" } })
-        setQrDataUrl(qr)
-        setShowModal(true)
-        toast({ title: "Share link created!" })
-      } catch (e: any) {
-        setError(e.message || "Failed to create share link")
-        toast({ title: "Failed to create share link", variant: "destructive" })
-      }
+      toast({ title: "Share link created!" })
+    } catch (e: any) {
+      setError(e.message || "Failed to create share link")
+      toast({ title: "Failed to create share link", variant: "destructive" })
     } finally {
       setIsLoading(false)
     }
@@ -104,7 +84,7 @@ export function ShareButton({ invoiceData, template, title, disabled }: ShareBut
         open={showModal}
         onOpenChange={setShowModal}
         title="Share Document"
-        description="This link will expire in 15 minutes."
+        description="Share this document via link or QR code."
         maxWidth="sm"
         footer={
           <div className="flex gap-2 w-full">
